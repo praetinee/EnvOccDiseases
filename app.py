@@ -1,6 +1,7 @@
 import streamlit as st
 from forms import (
     lead_occupational,
+    lead_occupational_medical, # Import the new medical form
     lead_env_adult_history,
     lead_env_adult_investigation,
     lead_env_child_history,
@@ -28,18 +29,19 @@ PAGE_MAP = {
     "home": ("หน้าหลัก", lambda: st.header("ยินดีต้อนรับสู่ระบบ SOP การสอบสวนโรค") or st.info("กรุณาเลือกแบบสอบสวนจากเมนูด้านซ้าย")),
     
     # Occupational Diseases
-    "occ_lead": ("โรคจากตะกั่ว (อาชีพ)", lead_occupational.render),
+    "occ_lead_investigation": ("แบบสอบสวน (เจ้าหน้าที่)", lead_occupational.render),
+    "occ_lead_medical": ("แบบบันทึกตรวจร่างกาย (แพทย์)", lead_occupational_medical.render),
     "occ_silica": ("โรคจากฝุ่นซิลิกา", silicosis.render),
-    "occ_asbestos": ("โรคจากแอสเบสตอส", render_placeholder), # Using placeholder
-    "occ_confined_space": ("โรคจากภาวะอับอากาศ", render_placeholder), # Using placeholder
-    "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", render_placeholder), # Using placeholder
+    "occ_asbestos": ("โรคจากแอสเบสตอส", render_placeholder),
+    "occ_confined_space": ("โรคจากภาวะอับอากาศ", render_placeholder),
+    "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", render_placeholder),
 
     # Environmental Diseases
     "env_lead_adult_history": ("ซักประวัติผู้ใหญ่-ตะกั่ว (PbC04)", lead_env_adult_history.render),
     "env_lead_adult_investigation": ("สอบสวนผู้ใหญ่-ตะกั่ว (Pb-1)", lead_env_adult_investigation.render),
     "env_lead_child_history": ("ซักประวัติเด็ก-ตะกั่ว (PbC01)", lead_env_child_history.render),
     "env_lead_child_investigation": ("สอบสวนเด็ก-ตะกั่ว (Pb)", lead_env_child_investigation.render),
-    "env_pm25": ("โรคจากฝุ่น PM2.5", render_placeholder), # Using placeholder
+    "env_pm25": ("โรคจากฝุ่น PM2.5", render_placeholder),
 }
 
 # --- Session State Initialization ---
@@ -54,7 +56,10 @@ with st.sidebar:
     st.title("เมนูแบบสอบสวน")
     
     with st.expander("โรคจากการประกอบอาชีพ", expanded=True):
-        st.button("โรคจากตะกั่ว", on_click=set_page, args=("occ_lead",), use_container_width=True)
+        st.markdown("**โรคจากตะกั่ว**")
+        st.button("แบบสอบสวน (เจ้าหน้าที่)", on_click=set_page, args=("occ_lead_investigation",), use_container_width=True)
+        st.button("แบบบันทึกตรวจร่างกาย (แพทย์)", on_click=set_page, args=("occ_lead_medical",), use_container_width=True)
+        st.markdown("---")
         st.button("โรคจากฝุ่นซิลิกา", on_click=set_page, args=("occ_silica",), use_container_width=True)
         st.button("โรคจากแอสเบสตอส", on_click=set_page, args=("occ_asbestos",), use_container_width=True)
         st.button("โรคจากภาวะอับอากาศ", on_click=set_page, args=("occ_confined_space",), use_container_width=True)
