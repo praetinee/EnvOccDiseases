@@ -203,7 +203,7 @@ def render():
                  with cols_hygiene[i % 2]:
                     form_data[f'สุขลักษณะ: {item}'] = st.radio(f"{i+1}. {item}", hygiene_options, horizontal=True, key=f"hygiene_{i}")
 
-        # --- Section 5: Symptoms (New Table Format) ---
+        # --- Section 5: Symptoms (Corrected Table Format) ---
         with st.container(border=True):
             st.subheader("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ (3 สัปดาห์ที่ผ่านมา)")
             
@@ -215,28 +215,41 @@ def render():
             ]
             symptom_options = ["เป็นประจำหรือแทบทุกวัน", "นาน ๆ ครั้ง", "ไม่มี"]
 
-            # Display header row
-            col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
-            col1.write("**อาการ**")
-            col2.write(f"**{symptom_options[0]}**")
-            col3.write(f"**{symptom_options[1]}**")
-            col4.write(f"**{symptom_options[2]}**")
+            # Create the header for the table
+            header_cols = st.columns([2, 3])
+            header_cols[0].markdown("**อาการ**")
+            
+            # Create sub-columns for the option headers for better alignment
+            with header_cols[1]:
+                sub_cols = st.columns(3)
+                sub_cols[0].markdown(f"**{symptom_options[0]}**")
+                sub_cols[1].markdown(f"**{symptom_options[1]}**")
+                sub_cols[2].markdown(f"**{symptom_options[2]}**")
 
-            # Display each symptom as a row with radio buttons
+            st.markdown("""<hr style="margin-top:0.5rem; margin-bottom:0.5rem;" />""", unsafe_allow_html=True)
+
+            # Create a row for each symptom with the radio button group
             for symptom in symptoms:
-                col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
-                col1.write(symptom)
+                row_cols = st.columns([2, 3])
                 
-                # The radio button group for each symptom
-                # The key must be unique for each radio group
-                selected_option = st.radio(
-                    "Select frequency", 
-                    symptom_options, 
-                    key=f"symptom_{symptom.replace(' ', '_')}", 
-                    horizontal=True, 
-                    label_visibility="collapsed"
-                )
-                form_data[f'อาการ: {symptom}'] = selected_option
+                # Column 1: Symptom name
+                # Use markdown with div to help with vertical alignment
+                row_cols[0].markdown(f"""
+                <div style="height: 2.5rem; display: flex; align-items: center;">
+                    {symptom}
+                </div>
+                """, unsafe_allow_html=True)
+
+                # Column 2: The entire radio button group for that row
+                with row_cols[1]:
+                    selected_option = st.radio(
+                        "Select frequency", # This label is hidden but required
+                        symptom_options,
+                        key=f"symptom_{symptom.replace(' ', '_')}", # Unique key for each radio group
+                        horizontal=True,
+                        label_visibility="collapsed"
+                    )
+                    form_data[f'อาการ: {symptom}'] = selected_option
 
 
         # --- Submitter Information ---
