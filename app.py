@@ -1,5 +1,14 @@
-# praetinee/envoccdiseases/EnvOccDiseases-main/app.py
+# praetinee/envoccdiseases/Envoccdiseases-main/app.py
 import streamlit as st
+import sys
+import os
+
+# --- PATH CORRECTION ---
+# This code adds the project's root directory to Python's path.
+# This ensures that Python can find the 'forms' module regardless of
+# how the script is executed.
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 
 # --- CORRECTED IMPORTS ---
 # We are now importing each form's render function directly
