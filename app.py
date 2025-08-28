@@ -1,6 +1,11 @@
 import streamlit as st
-import os
-import glob
+from forms import (
+    lead_occupational,
+    lead_env_adult_history,
+    lead_env_adult_investigation,
+    lead_env_child_history,
+    lead_env_child_investigation
+)
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -8,53 +13,35 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Helper Functions ---
-
-def read_html_file(path):
-    """อ่านไฟล์ HTML และคืนค่าเป็น string"""
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return f.read()
-    except FileNotFoundError:
-        return f"<p>Error: ไม่พบไฟล์ {os.path.basename(path)}</p>"
-
-def get_html_pages(folder_path):
-    """ค้นหาไฟล์ HTML ทั้งหมดในโฟลเดอร์ที่ระบุ และจัดเรียงตามชื่อ"""
-    search_path = os.path.join(folder_path, "*.html")
-    files = glob.glob(search_path)
-    # จัดเรียงไฟล์เพื่อให้เมนูเป็นไปตามลำดับ
-    files.sort()
-    # สร้าง dictionary โดยมี key เป็นชื่อที่สวยงามสำหรับแสดงผล และ value เป็น path ของไฟล์
-    pages = {os.path.basename(f).split('_', 1)[1].replace('.html', '').replace('_', ' ').title(): f for f in files}
-    return pages
-
-# --- Main Application ---
-
-st.title("ระบบ SOP การสอบสวนโรค")
-st.markdown("จากการประกอบอาชีพและสิ่งแวดล้อม")
-
 # --- Sidebar Navigation ---
-PAGES_DIR = "pages"
-pages_dict = get_html_pages(PAGES_DIR)
+st.sidebar.title("SOP การสอบสวนโรค")
+st.sidebar.markdown("จากการประกอบอาชีพและสิ่งแวดล้อม")
 
-st.sidebar.header("เมนูนำทาง")
-selection = st.sidebar.radio("เลือกหน้าที่ต้องการ", list(pages_dict.keys()))
+# Dictionary to map form names to their render functions
+FORMS = {
+    "หน้าหลัก": None, # Placeholder for a potential welcome page
+    "โรคจากตะกั่ว (จากการประกอบอาชีพ)": lead_occupational.render,
+    "ซักประวัติผู้ใหญ่-สิ่งแวดล้อม (PbC04)": lead_env_adult_history.render,
+    "สอบสวนผู้ใหญ่-สิ่งแวดล้อม (Pb-1)": lead_env_adult_investigation.render,
+    "ซักประวัติเด็ก-สิ่งแวดล้อม (PbC01)": lead_env_child_history.render,
+    "สอบสวนเด็ก-สิ่งแวดล้อม (Pb)": lead_env_child_investigation.render,
+}
 
-# --- HTML Content Display ---
+selection = st.sidebar.radio("เลือกแบบสอบสวน", list(FORMS.keys()))
 
-# อ่านส่วนหัวและส่วนท้ายที่ใช้ร่วมกัน
-header_html = read_html_file(os.path.join("common", "header.html"))
-footer_html = read_html_file(os.path.join("common", "footer.html"))
+# --- Main Content Area ---
 
-# อ่านเนื้อหาของหน้าที่ถูกเลือก
-selected_page_path = pages_dict[selection]
-page_content_html = read_html_file(selected_page_path)
+# Get the selected function from the dictionary
+selected_form_func = FORMS[selection]
 
-# รวม HTML ทั้งหมดเข้าด้วยกัน
-full_html = f"{header_html}{page_content_html}{footer_html}"
+# Call the selected function to render the form
+if selected_form_func:
+    selected_form_func()
+else:
+    # Display a welcome message or instructions on the main page
+    st.header("ยินดีต้อนรับสู่ระบบ SOP การสอบสวนโรค")
+    st.info("กรุณาเลือกแบบสอบสวนที่ต้องการจากเมนูด้านซ้ายมือเพื่อเริ่มต้น")
+    st.image("https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=2070&auto=format&fit=crop",
+             caption="Medical Professional using a tablet",
+             use_column_width=True)
 
-# แสดงผล HTML
-# ปรับความสูงให้ยืดหยุ่นตามเนื้อหา
-st.components.v1.html(full_html, height=1800, scrolling=True)
-
-st.sidebar.info(f"กำลังแสดงผล: **{selection}**")
