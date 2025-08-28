@@ -425,7 +425,7 @@ def generate_report(form_data, risk_level, risk_score, recommendations_occ, reco
         report += f"- {rec}\n"
     report += "\n"
     
-    report += "### คำแนะนำในการปฏิบัติตัวสำหรับผู้ป่วย:\n"
+    report += "### คำแนะนำในการปฏิบัตัวสำหรับผู้ป่วย:\n"
     for rec in recommendations_patient:
         report += f"- {rec}\n"
     
