@@ -396,7 +396,7 @@ def evaluate_and_display_results(form_data):
     risk_level, risk_score, recommendations_occ, recommendations_patient = evaluate_lead_risk(form_data)
 
     if risk_level == "ความเสี่ยงสูง":
-        st.error(f"**ผลการประเมิน: {risk_level}** (คะแนน: {risk_score})", icon="�")
+        st.error(f"**ผลการประเมิน: {risk_level}** (คะแนน: {risk_score})", icon="🚨")
     elif risk_level == "ความเสี่ยงปานกลาง":
         st.warning(f"**ผลการประเมิน: {risk_level}** (คะแนน: {risk_score})", icon="⚠️")
     else:
@@ -420,4 +420,3 @@ def evaluate_and_display_results(form_data):
         st.subheader("รายงานสรุปสำหรับพิมพ์")
         st.info("คุณสามารถคัดลอกข้อความด้านล่าง หรือใช้ฟังก์ชันพิมพ์ของเบราว์เซอร์ (Ctrl+P หรือ Cmd+P) เพื่อบันทึกเป็น PDF")
         st.markdown(report_text)
-�
