@@ -207,6 +207,18 @@ def render():
         with st.container(border=True):
             st.subheader("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ (3 สัปดาห์ที่ผ่านมา)")
             
+            # Inject CSS to force radio buttons to space out and align
+            st.markdown("""
+            <style>
+                /* Target the container of the radio buttons to space them out */
+                div[data-testid="stRadio"] > div {
+                    display: flex;
+                    justify-content: space-around;
+                    width: 100%;
+                }
+            </style>
+            """, unsafe_allow_html=True)
+
             symptoms = [
                 "อ่อนเพลีย", "เบื่ออาหาร", "คลื่นไส้ อาเจียน", "ท้องผูก", "ปวดท้องรุนแรงเป็นพัก ๆ",
                 "ปวดตามข้อ กล้ามเนื้อ", "อาการปวดเมื่อยตามร่างกาย", "ปวดศีรษะ", "ซีด", "ซึม", "ชัก",
@@ -218,13 +230,11 @@ def render():
             # Create the header for the table
             header_cols = st.columns([2, 3])
             header_cols[0].markdown("**อาการ**")
-            
-            # Create sub-columns for the option headers for better alignment
             with header_cols[1]:
                 sub_cols = st.columns(3)
-                sub_cols[0].markdown(f"**{symptom_options[0]}**")
-                sub_cols[1].markdown(f"**{symptom_options[1]}**")
-                sub_cols[2].markdown(f"**{symptom_options[2]}**")
+                sub_cols[0].markdown(f"<div style='text-align: center;'><b>{symptom_options[0]}</b></div>", unsafe_allow_html=True)
+                sub_cols[1].markdown(f"<div style='text-align: center;'><b>{symptom_options[1]}</b></div>", unsafe_allow_html=True)
+                sub_cols[2].markdown(f"<div style='text-align: center;'><b>{symptom_options[2]}</b></div>", unsafe_allow_html=True)
 
             st.markdown("""<hr style="margin-top:0.5rem; margin-bottom:0.5rem;" />""", unsafe_allow_html=True)
 
@@ -233,7 +243,6 @@ def render():
                 row_cols = st.columns([2, 3])
                 
                 # Column 1: Symptom name
-                # Use markdown with div to help with vertical alignment
                 row_cols[0].markdown(f"""
                 <div style="height: 2.5rem; display: flex; align-items: center;">
                     {symptom}
