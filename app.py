@@ -1,28 +1,39 @@
 # praetinee/envoccdiseases/Envoccdiseases-main/app.py
 import streamlit as st
-import sys
 import os
+import importlib.util
 
-# --- PATH CORRECTION ---
-# This code adds the project's root directory to Python's path.
-# This ensures that Python can find the 'forms' module regardless of
-# how the script is executed.
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+# --- DYNAMIC MODULE LOADING ---
+# Due to persistent import issues in the execution environment,
+# we are now dynamically loading each form module directly from its file path.
+# This is a robust way to bypass Python's standard path resolution mechanism.
 
+def load_render_function(form_name):
+    """Dynamically loads a form module from the 'forms' directory and returns its render function."""
+    # Construct the full path to the form's .py file
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    forms_dir = os.path.join(app_dir, 'forms')
+    file_path = os.path.join(forms_dir, f"{form_name}.py")
+    
+    # Load the module from the file path
+    spec = importlib.util.spec_from_file_location(form_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    
+    # Return the render function from the loaded module
+    return module.render
 
-# --- CORRECTED IMPORTS ---
-# We are now importing each form's render function directly
-# and giving it a unique alias to avoid name conflicts.
-from forms.lead_occupational import render as lead_occupational_render
-from forms.lead_occupational_medical import render as lead_occupational_medical_render
-from forms.lead_env_adult_history import render as lead_env_adult_history_render
-from forms.lead_env_adult_investigation import render as lead_env_adult_investigation_render
-from forms.lead_env_child_history import render as lead_env_child_history_render
-from forms.lead_env_child_investigation import render as lead_env_child_investigation_render
-from forms.silicosis import render as silicosis_render
-from forms.confined_space import render as confined_space_render
-from forms.pesticide import render as pesticide_render
-from forms.pm25 import render as pm25_render
+# Load all render functions using our dynamic loader
+lead_occupational_render = load_render_function("lead_occupational")
+lead_occupational_medical_render = load_render_function("lead_occupational_medical")
+lead_env_adult_history_render = load_render_function("lead_env_adult_history")
+lead_env_adult_investigation_render = load_render_function("lead_env_adult_investigation")
+lead_env_child_history_render = load_render_function("lead_env_child_history")
+lead_env_child_investigation_render = load_render_function("lead_env_child_investigation")
+silicosis_render = load_render_function("silicosis")
+confined_space_render = load_render_function("confined_space")
+pesticide_render = load_render_function("pesticide")
+pm25_render = load_render_function("pm25")
 
 
 # --- Page Configuration ---
