@@ -7,10 +7,10 @@ from forms import (
     lead_env_child_history,
     lead_env_child_investigation,
     silicosis,
-    asbestosis, # Import the new asbestosis module
+    # asbestosis, # Import the new asbestosis module <- ถูกลบออกเนื่องจากไม่มีไฟล์
     confined_space,
     pesticide,
-    pm25 
+    pm25
 )
 
 # --- Page Configuration ---
@@ -26,12 +26,12 @@ def render_placeholder():
 # --- Page Rendering Dictionary ---
 PAGE_MAP = {
     "home": ("หน้าหลัก", lambda: st.header("ยินดีต้อนรับสู่ระบบ SOP การสอบสวนโรค") or st.info("กรุณาเลือกแบบสอบสวนจากเมนูด้านซ้าย")),
-    
+
     # Occupational Diseases
     "occ_lead_investigation": ("แบบสอบสวน (เจ้าหน้าที่)", lead_occupational.render),
     "occ_lead_medical": ("แบบบันทึกตรวจร่างกาย (แพทย์)", lead_occupational_medical.render),
     "occ_silica": ("โรคจากฝุ่นซิลิกา", silicosis.render),
-    "occ_asbestos": ("โรคจากแอสเบสตอส", asbestosis.render), # Point to the new asbestosis render function
+    # "occ_asbestos": ("โรคจากแอสเบสตอส", asbestosis.render), # <- ถูกลบออก
     "occ_confined_space": ("โรคจากภาวะอับอากาศ", confined_space.render),
     "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", pesticide.render),
 
@@ -53,20 +53,20 @@ def set_page(page_key):
 # --- Sidebar Navigation ---
 with st.sidebar:
     st.title("เมนูแบบสอบสวน")
-    
+
     with st.expander("โรคจากการประกอบอาชีพ", expanded=True):
         st.markdown("**โรคจากตะกั่ว**")
         st.button("แบบสอบสวน (เจ้าหน้าที่)", on_click=set_page, args=("occ_lead_investigation",), use_container_width=True)
         st.button("แบบบันทึกตรวจร่างกาย (แพทย์)", on_click=set_page, args=("occ_lead_medical",), use_container_width=True)
         st.markdown("---")
         st.button("โรคจากฝุ่นซิลิกา", on_click=set_page, args=("occ_silica",), use_container_width=True)
-        st.button("โรคจากแอสเบสตอส", on_click=set_page, args=("occ_asbestos",), use_container_width=True)
+        # st.button("โรคจากแอสเบสตอส", on_click=set_page, args=("occ_asbestos",), use_container_width=True) # <- ถูกลบออก
         st.button("โรคจากภาวะอับอากาศ", on_click=set_page, args=("occ_confined_space",), use_container_width=True)
         st.button("พิษจากสารกำจัดศัตรูพืช", on_click=set_page, args=("occ_pesticide",), use_container_width=True)
 
     with st.expander("โรคจากสิ่งแวดล้อม", expanded=True):
         st.button("โรคจากฝุ่น PM2.5", on_click=set_page, args=("env_pm25",), use_container_width=True)
-        
+
         st.markdown("**โรคจากตะกั่ว (สิ่งแวดล้อม)**")
         st.button("ซักประวัติผู้ใหญ่ (PbC04)", on_click=set_page, args=("env_lead_adult_history",), use_container_width=True)
         st.button("สอบสวนผู้ใหญ่ (Pb-1)", on_click=set_page, args=("env_lead_adult_investigation",), use_container_width=True)
