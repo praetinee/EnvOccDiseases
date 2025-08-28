@@ -1,0 +1,33 @@
+<!-- Env Adult History Form (PbC04) -->
+<div id="lead-env-adult-history-form" class="printable-area">
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-8"><h1 class="text-3xl md:text-4xl font-bold text-blue-800">แบบซักประวัติพฤติกรรมที่เกี่ยวข้องกับการสัมผัสสารตะกั่วในผู้ใหญ่และหญิงตั้งครรภ์</h1><p class="text-lg text-gray-600 mt-2">(แบบ PbC04)</p></header>
+        <form id="pbc04Form">
+            <div class="form-section">
+                <h2>ส่วนที่ 1: ข้อมูลทั่วไป</h2>
+                <h3 class="mt-4">ข้อมูลหน่วยบริการสาธารณสุข</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div><label class="form-label block mb-2">โรงพยาบาล</label><input type="text" class="form-input"></div>
+                    <div><label class="form-label block mb-2">อำเภอ</label><input type="text" class="form-input"></div>
+                    <div><label class="form-label block mb-2">จังหวัด</label><input type="text" class="form-input"></div>
+                </div>
+                <div class="mt-6">
+                    <label class="form-label block mb-2">ขนาดของโรงพยาบาล</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพศ. (A)</span></div>
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพท. (S)</span></div>
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพท. ขนาดเล็ก (M1)</span></div>
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพช. แม่ข่าย (M2)</span></div>
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพช. ขนาดใหญ่ (F1)</span></div>
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพช. ขนาดกลาง (F2)</span></div>
+                        <div class="flex items-center"><input type="radio" name="hospital_size" class="h-4 w-4"><span class="ml-2">รพช. ขนาดเล็ก (F3)</span></div>
+                    </div>
+                </div>
+                <!-- ... (The rest of the form sections go here) ... -->
+            </div>
+        </form>
+        <div class="mt-8 text-center flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 no-print">
+            <button type="button" onclick="window.print()" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">พิมพ์</button>
+        </div>
+    </div>
+</div>
