@@ -203,47 +203,40 @@ def render():
                  with cols_hygiene[i % 2]:
                     form_data[f'สุขลักษณะ: {item}'] = st.radio(f"{i+1}. {item}", hygiene_options, horizontal=True, key=f"hygiene_{i}")
 
-        # --- Section 5: Symptoms (Table Format) ---
+        # --- Section 5: Symptoms (New Table Format) ---
         with st.container(border=True):
             st.subheader("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ (3 สัปดาห์ที่ผ่านมา)")
+            
             symptoms = [
                 "อ่อนเพลีย", "เบื่ออาหาร", "คลื่นไส้ อาเจียน", "ท้องผูก", "ปวดท้องรุนแรงเป็นพัก ๆ",
                 "ปวดตามข้อ กล้ามเนื้อ", "อาการปวดเมื่อยตามร่างกาย", "ปวดศีรษะ", "ซีด", "ซึม", "ชัก",
                 "กระวนกระวาย/ไม่มีสมาธิ", "หงุดหงิดง่าย", "น้ำหนักลดโดยไม่ทราบสาเหตุ", "มือสั่น",
                 "มือ เท้า อ่อนแรง", "ผื่น"
             ]
-            symptom_options = ["ไม่มี", "นาน ๆ ครั้ง", "เป็นประจําหรือแทบทุกวัน"]
+            symptom_options = ["เป็นประจำหรือแทบทุกวัน", "นาน ๆ ครั้ง", "ไม่มี"]
 
-            # Create a DataFrame for the symptoms table
-            symptom_data = {
-                "อาการ": symptoms,
-                "ความถี่": ["ไม่มี"] * len(symptoms)  # Default value
-            }
-            df_symptoms = pd.DataFrame(symptom_data)
+            # Display header row
+            col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+            col1.write("**อาการ**")
+            col2.write(f"**{symptom_options[0]}**")
+            col3.write(f"**{symptom_options[1]}**")
+            col4.write(f"**{symptom_options[2]}**")
 
-            st.write("กรุณาเลือกความถี่ของแต่ละอาการ:")
-            # Use data_editor to create an interactive table
-            edited_df = st.data_editor(
-                df_symptoms,
-                column_config={
-                    "อาการ": st.column_config.TextColumn(
-                        "อาการ",
-                        disabled=True, # Make the symptom names read-only
-                    ),
-                    "ความถี่": st.column_config.SelectboxColumn(
-                        "ความถี่",
-                        options=symptom_options,
-                        required=True,
-                    )
-                },
-                hide_index=True,
-                use_container_width=True,
-                key="symptoms_table"
-            )
-            
-            # Process the data from the data_editor and save it to form_data
-            for index, row in edited_df.iterrows():
-                form_data[f'อาการ: {row["อาการ"]}'] = row["ความถี่"]
+            # Display each symptom as a row with radio buttons
+            for symptom in symptoms:
+                col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+                col1.write(symptom)
+                
+                # The radio button group for each symptom
+                # The key must be unique for each radio group
+                selected_option = st.radio(
+                    "Select frequency", 
+                    symptom_options, 
+                    key=f"symptom_{symptom.replace(' ', '_')}", 
+                    horizontal=True, 
+                    label_visibility="collapsed"
+                )
+                form_data[f'อาการ: {symptom}'] = selected_option
 
 
         # --- Submitter Information ---
@@ -298,7 +291,7 @@ def evaluate_lead_risk(form_data):
     # Symptom Scoring
     for key, value in form_data.items():
         if key.startswith('อาการ:'):
-            if value == "เป็นประจําหรือแทบทุกวัน":
+            if value == "เป็นประจำหรือแทบทุกวัน":
                 risk_score += 2
             elif value == "นาน ๆ ครั้ง":
                 risk_score += 1
