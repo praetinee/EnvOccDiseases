@@ -203,7 +203,7 @@ def render():
                  with cols_hygiene[i % 2]:
                     form_data[f'สุขลักษณะ: {item}'] = st.radio(f"{i+1}. {item}", hygiene_options, horizontal=True, key=f"hygiene_{i}")
 
-        # --- Section 5: Symptoms ---
+        # --- Section 5: Symptoms (Table Format) ---
         with st.container(border=True):
             st.subheader("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ (3 สัปดาห์ที่ผ่านมา)")
             symptoms = [
@@ -213,11 +213,38 @@ def render():
                 "มือ เท้า อ่อนแรง", "ผื่น"
             ]
             symptom_options = ["ไม่มี", "นาน ๆ ครั้ง", "เป็นประจําหรือแทบทุกวัน"]
+
+            # Create a DataFrame for the symptoms table
+            symptom_data = {
+                "อาการ": symptoms,
+                "ความถี่": ["ไม่มี"] * len(symptoms)  # Default value
+            }
+            df_symptoms = pd.DataFrame(symptom_data)
+
+            st.write("กรุณาเลือกความถี่ของแต่ละอาการ:")
+            # Use data_editor to create an interactive table
+            edited_df = st.data_editor(
+                df_symptoms,
+                column_config={
+                    "อาการ": st.column_config.TextColumn(
+                        "อาการ",
+                        disabled=True, # Make the symptom names read-only
+                    ),
+                    "ความถี่": st.column_config.SelectboxColumn(
+                        "ความถี่",
+                        options=symptom_options,
+                        required=True,
+                    )
+                },
+                hide_index=True,
+                use_container_width=True,
+                key="symptoms_table"
+            )
             
-            cols_symptoms = st.columns(3)
-            for i, symptom in enumerate(symptoms):
-                with cols_symptoms[i % 3]:
-                    form_data[f'อาการ: {symptom}'] = st.radio(symptom, symptom_options, key=f"occ_symptom_{symptom.replace(' ', '_')}", horizontal=False)
+            # Process the data from the data_editor and save it to form_data
+            for index, row in edited_df.iterrows():
+                form_data[f'อาการ: {row["อาการ"]}'] = row["ความถี่"]
+
 
         # --- Submitter Information ---
         with st.container(border=True):
