@@ -7,11 +7,10 @@ from forms import (
     lead_env_child_history,
     lead_env_child_investigation,
     silicosis,
-    confined_space, # Import the new form
-    # --- Temporarily disable missing forms to prevent errors ---
-    # asbestosis, 
-    # pesticide,
-    # pm25
+    asbestosis, # Import the new asbestosis module
+    confined_space,
+    pesticide,
+    pm25 
 )
 
 # --- Page Configuration ---
@@ -32,16 +31,16 @@ PAGE_MAP = {
     "occ_lead_investigation": ("แบบสอบสวน (เจ้าหน้าที่)", lead_occupational.render),
     "occ_lead_medical": ("แบบบันทึกตรวจร่างกาย (แพทย์)", lead_occupational_medical.render),
     "occ_silica": ("โรคจากฝุ่นซิลิกา", silicosis.render),
-    "occ_asbestos": ("โรคจากแอสเบสตอส", render_placeholder),
-    "occ_confined_space": ("โรคจากภาวะอับอากาศ", confined_space.render), # Update to use the new render function
-    "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", render_placeholder),
+    "occ_asbestos": ("โรคจากแอสเบสตอส", asbestosis.render), # Point to the new asbestosis render function
+    "occ_confined_space": ("โรคจากภาวะอับอากาศ", confined_space.render),
+    "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", pesticide.render),
 
     # Environmental Diseases
     "env_lead_adult_history": ("ซักประวัติผู้ใหญ่-ตะกั่ว (PbC04)", lead_env_adult_history.render),
     "env_lead_adult_investigation": ("สอบสวนผู้ใหญ่-ตะกั่ว (Pb-1)", lead_env_adult_investigation.render),
     "env_lead_child_history": ("ซักประวัติเด็ก-ตะกั่ว (PbC01)", lead_env_child_history.render),
     "env_lead_child_investigation": ("สอบสวนเด็ก-ตะกั่ว (Pb)", lead_env_child_investigation.render),
-    "env_pm25": ("โรคจากฝุ่น PM2.5", render_placeholder),
+    "env_pm25": ("โรคจากฝุ่น PM2.5", pm25.render),
 }
 
 # --- Session State Initialization ---
