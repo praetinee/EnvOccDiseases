@@ -1,3 +1,4 @@
+# praetinee/envoccdiseases/EnvOccDiseases-main/forms/lead_occupational.py
 import streamlit as st
 import datetime
 import pandas as pd
@@ -419,5 +420,4 @@ def evaluate_and_display_results(form_data):
         st.subheader("รายงานสรุปสำหรับพิมพ์")
         st.info("คุณสามารถคัดลอกข้อความด้านล่าง หรือใช้ฟังก์ชันพิมพ์ของเบราว์เซอร์ (Ctrl+P หรือ Cmd+P) เพื่อบันทึกเป็น PDF")
         st.markdown(report_text)
-
 �
