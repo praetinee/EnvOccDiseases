@@ -7,7 +7,6 @@ from forms import (
     lead_env_child_history,
     lead_env_child_investigation,
     silicosis,
-    # asbestosis, # Import the new asbestosis module <- ถูกลบออกเนื่องจากไม่มีไฟล์
     confined_space,
     pesticide,
     pm25
@@ -31,7 +30,6 @@ PAGE_MAP = {
     "occ_lead_investigation": ("แบบสอบสวน (เจ้าหน้าที่)", lead_occupational.render),
     "occ_lead_medical": ("แบบบันทึกตรวจร่างกาย (แพทย์)", lead_occupational_medical.render),
     "occ_silica": ("โรคจากฝุ่นซิลิกา", silicosis.render),
-    # "occ_asbestos": ("โรคจากแอสเบสตอส", asbestosis.render), # <- ถูกลบออก
     "occ_confined_space": ("โรคจากภาวะอับอากาศ", confined_space.render),
     "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", pesticide.render),
 
@@ -60,7 +58,6 @@ with st.sidebar:
         st.button("แบบบันทึกตรวจร่างกาย (แพทย์)", on_click=set_page, args=("occ_lead_medical",), use_container_width=True)
         st.markdown("---")
         st.button("โรคจากฝุ่นซิลิกา", on_click=set_page, args=("occ_silica",), use_container_width=True)
-        # st.button("โรคจากแอสเบสตอส", on_click=set_page, args=("occ_asbestos",), use_container_width=True) # <- ถูกลบออก
         st.button("โรคจากภาวะอับอากาศ", on_click=set_page, args=("occ_confined_space",), use_container_width=True)
         st.button("พิษจากสารกำจัดศัตรูพืช", on_click=set_page, args=("occ_pesticide",), use_container_width=True)
 
