@@ -1,0 +1,117 @@
+import streamlit as st
+import datetime
+
+def render():
+    """Renders the Confined Space Investigation Form."""
+    
+    st.header("แบบสอบสวนผู้บาดเจ็บหรือเสียชีวิตด้วยโรคจากภาวะอับอากาศ")
+
+    # Initialize session state for conditional UI elements
+    if 'cs_comorbidity_status' not in st.session_state:
+        st.session_state.cs_comorbidity_status = 'ไม่มี'
+    if 'cs_symptom_status' not in st.session_state:
+        st.session_state.cs_symptom_status = 'ไม่มี'
+
+    # --- Data Collection Dictionary ---
+    form_data = {}
+
+    with st.container(border=True):
+        respondent_type_opt = st.radio(
+            "ผู้ตอบแบบสอบถาม:",
+            ["ผู้ร่วมอยู่ในเหตุการณ์ขณะเกิดเหตุ", "ทีมกู้ภัย/ทีมกู้ชีพ", "ญาติ/คนในครอบครัว", "อื่นๆ"],
+            key="cs_respondent_type"
+        )
+        respondent_type_other = st.text_input("ระบุอื่นๆ:", key="cs_respondent_other", label_visibility="collapsed")
+        form_data['ผู้ตอบแบบสอบถาม'] = respondent_type_other if respondent_type_opt == "อื่นๆ" else respondent_type_opt
+
+    # --- Section 1: General Info ---
+    with st.expander("ส่วนที่ 1: ข้อมูลทั่วไป", expanded=True):
+        col1, col2 = st.columns([3, 1])
+        form_data['ชื่อ-นามสกุล'] = col1.text_input("1.1 ชื่อ - นามสกุล:")
+        form_data['อายุ'] = col2.number_input("อายุ (ปี):", min_value=0, step=1)
+
+        col1, col2 = st.columns(2)
+        form_data['เพศ'] = col1.radio("1.2 เพศ:", ["ชาย", "หญิง"], horizontal=True)
+        
+        nationality_opt = col2.radio("1.3 สัญชาติ:", ["ไทย", "กัมพูชา", "พม่า", "อื่นๆ"], horizontal=True)
+        nationality_other = col2.text_input("ระบุสัญชาติอื่นๆ:", key="cs_nationality_other", label_visibility="collapsed")
+        form_data['สัญชาติ'] = nationality_other if nationality_opt == "อื่นๆ" else nationality_opt
+
+        form_data['ที่อยู่ปัจจุบัน'] = st.text_area("1.4 ที่อยู่ปัจจุบัน:", placeholder="บ้านเลขที่, หมู่ที่, ถนน, ตรอก/ซอย, ตำบล, อำเภอ, จังหวัด, เบอร์โทร")
+
+        occupation_opt = st.radio("1.5 อาชีพ:", ["รับจ้าง", "ค้าขาย", "แม่บ้าน", "เกษตร", "อื่นๆ"])
+        occupation_other = st.text_input("ระบุอาชีพ:", key="cs_occupation_other", label_visibility="collapsed")
+        form_data['อาชีพ'] = occupation_other if occupation_opt in ["รับจ้าง", "อื่นๆ"] else occupation_opt
+
+        col1, col2 = st.columns(2)
+        form_data['การดื่มแอลกอฮอล์'] = col1.radio("1.6 ปัจจุบันท่านดื่มเครื่องดื่มแอลกอฮอล์ หรือไม่:", ["ไม่ดื่ม", "ดื่มเป็นบางครั้ง", "ดื่มเป็นประจำ"])
+        form_data['การสูบบุหรี่'] = col2.radio("1.7 ปัจจุบันท่านสูบบุหรี่/ยาเส้น หรือไม่:", ["ไม่สูบ", "สูบเป็นบางครั้ง", "สูบเป็นประจำ"])
+
+    # --- Section 2: Medical History ---
+    with st.expander("ส่วนที่ 2: ข้อมูลประวัติการเจ็บป่วย", expanded=True):
+        st.radio(
+            "2.1 ท่านมีโรคประจําตัว หรือไม่:",
+            ["ไม่มี", "มี"],
+            key='cs_comorbidity_status',
+            horizontal=True
+        )
+        if st.session_state.cs_comorbidity_status == 'มี':
+            comorbidities = st.multiselect(
+                "ระบุโรคประจำตัว:",
+                ["โรคหลอดลมอักเสบเรื้อรัง", "โรคหอบหืด", "โรคลมชัก", "โรคหัวใจ", "โรคความดันโลหิตสูง", "โรคภูมิแพ้"]
+            )
+            other_comorbidity = st.text_input("โรคประจำตัวอื่นๆ:")
+            if other_comorbidity:
+                comorbidities.append(other_comorbidity)
+            form_data['โรคประจำตัว'] = ", ".join(comorbidities)
+        else:
+            form_data['โรคประจำตัว'] = "ไม่มี"
+
+    # --- Section 3: Exposure History ---
+    with st.expander("ส่วนที่ 3: ประวัติการสัมผัส", expanded=True):
+        form_data['จุดที่อยู่ขณะเกิดเหตุ'] = st.text_input("3.1 ขณะเกิดเหตุการณ์ ท่านอยู่จุดใด:", placeholder="ระบุตำแหน่ง และระยะห่างจากที่เกิดเหตุ (เมตร)")
+        
+        smell_opt = st.radio("3.2 ท่านได้กลิ่น/ไอระเหยสารเคมี ในระหว่างอยู่ในสถานที่เกิดเหตุ หรือไม่:", ["ไม่เคย", "เคย"])
+        smell_desc = st.text_input("อธิบายกลิ่น:", label_visibility="collapsed")
+        form_data['ได้กลิ่นสารเคมี'] = f"เคย ({smell_desc})" if smell_opt == "เคย" else "ไม่เคย"
+
+        form_data['ลักษณะการได้กลิ่น'] = st.radio("3.3 ท่านได้กลิ่น/รับสัมผัสกลิ่นช่วงเวลาใด:", ["รู้สึกได้กลิ่นตลอดระยะเวลา", "รู้สึกได้กลิ่นเป็นช่วงๆ", "อื่นๆ"])
+        
+        st.radio("3.4 ท่านมีอาการผิดปกติระหว่าง หรือหลังจากได้กลิ่น หรือไม่:", ["ไม่มี", "มี"], key='cs_symptom_status', horizontal=True)
+        if st.session_state.cs_symptom_status == 'มี':
+            symptoms = st.multiselect(
+                "ระบุอาการ:",
+                ["ปวดศีรษะ", "มึนงง", "วิงเวียน", "หน้ามืด", "หายใจไม่ออก", "คลื่นไส้", "อาเจียน"]
+            )
+            form_data['อาการผิดปกติ'] = ", ".join(symptoms)
+        else:
+            form_data['อาการผิดปกติ'] = "ไม่มี"
+        
+        action_opt = st.radio("3.5 เมื่อท่านมีอาการแล้ว ท่านปฏิบัติตัวอย่างไร:", ["ไม่ได้ทำอะไร", "ไปพบแพทย์", "อื่นๆ"])
+        action_detail = st.text_input("ระบุสถานพยาบาล/การปฏิบัติ:", label_visibility="collapsed")
+        form_data['การปฏิบัติตัวหลังมีอาการ'] = f"{action_opt} ({action_detail})" if action_opt != "ไม่ได้ทำอะไร" else "ไม่ได้ทำอะไร"
+
+    # --- Section 4: Treatment Information ---
+    with st.expander("ส่วนที่ 4: ข้อมูลการรักษา", expanded=True):
+        st.write("4.1 ท่านเข้ารับการรักษาในโรงพยาบาล:")
+        col1, col2, col3, col4 = st.columns(4)
+        treat_date = col1.date_input("วันที่เข้ารับการรักษา", datetime.date.today())
+        treat_time = col2.time_input("เวลา", datetime.datetime.now().time())
+        patient_type = col3.selectbox("ประเภทผู้ป่วย", ["เสียชีวิต", "ผู้ป่วยนอก", "ผู้ป่วยใน"])
+        ipd_days = col4.number_input("จำนวนวันการรักษา (กรณีผู้ป่วยใน)", min_value=0, step=1)
+        form_data['ข้อมูลการรักษา'] = f"วันที่ {treat_date} เวลา {treat_time}, ประเภท: {patient_type}"
+        if patient_type == "ผู้ป่วยใน":
+            form_data['ข้อมูลการรักษา'] += f", จำนวน {ipd_days} วัน"
+
+    # --- Recorder Info ---
+    with st.expander("ข้อมูลผู้บันทึก", expanded=True):
+        col1, col2, col3 = st.columns(3)
+        form_data['ผู้บันทึก'] = col1.text_input("ชื่อ - สกุล:")
+        form_data['เบอร์โทรผู้บันทึก'] = col2.text_input("เบอร์โทรศัพท์:")
+        form_data['หน่วยงานผู้บันทึก'] = col3.text_input("หน่วยงาน:")
+
+    st.markdown("---")
+    if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
+        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+        # In a real app, you would save the 'form_data' dictionary here.
+        st.write(form_data)
