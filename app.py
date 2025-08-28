@@ -1,15 +1,15 @@
 import streamlit as st
 from forms import (
     lead_occupational,
-    lead_occupational_medical, # Import the new medical form
+    lead_occupational_medical,
     lead_env_adult_history,
     lead_env_adult_investigation,
     lead_env_child_history,
     lead_env_child_investigation,
     silicosis,
+    confined_space, # Import the new form
     # --- Temporarily disable missing forms to prevent errors ---
     # asbestosis, 
-    # confined_space,
     # pesticide,
     # pm25
 )
@@ -33,7 +33,7 @@ PAGE_MAP = {
     "occ_lead_medical": ("แบบบันทึกตรวจร่างกาย (แพทย์)", lead_occupational_medical.render),
     "occ_silica": ("โรคจากฝุ่นซิลิกา", silicosis.render),
     "occ_asbestos": ("โรคจากแอสเบสตอส", render_placeholder),
-    "occ_confined_space": ("โรคจากภาวะอับอากาศ", render_placeholder),
+    "occ_confined_space": ("โรคจากภาวะอับอากาศ", confined_space.render), # Update to use the new render function
     "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", render_placeholder),
 
     # Environmental Diseases
