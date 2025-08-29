@@ -183,8 +183,19 @@ def render():
         hygiene_items = ["ล้างมือก่อนรับประทานอาหาร", "อาบน้ำก่อนออกจากที่ทำงาน", "เปลี่ยนเสื้อผ้าก่อนออกจากที่ทำงาน", "เปลี่ยนรองเท้าก่อนออกจากที่ทำงาน", "นำเสื้อผ้าที่ปนเปื้อนกลับบ้าน"]
         hygiene_options = ["ไม่ได้ปฏิบัติ/ไม่ใช่", "บางครั้ง", "ทุกครั้ง/ประจํา"]
         
-        for i, item in enumerate(hygiene_items):
-            form_data[f'สุขลักษณะ: {item}'] = st.radio(f"{item}", hygiene_options, horizontal=True, key=f"hygiene_{i}")
+        for item in hygiene_items:
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
+            with col2:
+                value = st.radio(
+                    item, 
+                    hygiene_options,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key=f"hygiene_{item}"
+                )
+                form_data[f'สุขลักษณะ: {item}'] = value
 
     # --- Section 5: Symptoms ---
     with st.container(border=True):
