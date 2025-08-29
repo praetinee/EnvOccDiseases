@@ -41,12 +41,17 @@ def render():
                     form_data[f'ตรวจร่างกาย: {item}'] = cns_grade
                 
                 elif key in ["exam_upper", "exam_lower"]:
-                    sub_col1, sub_col2 = st.columns([1, 4])
+                    sub_col1, sub_col2, sub_col3 = st.columns([1, 1, 3])
                     with sub_col1:
                         grade = st.text_input("Grade", max_chars=1, key=f"{key}_grade", label_visibility="collapsed")
                     with sub_col2:
                         st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'> / 5</div>", unsafe_allow_html=True)
-                    form_data[f'ตรวจร่างกาย: {item}'] = f"{grade}/5" if grade else ""
+                    with sub_col3:
+                        detail = st.text_input("Detail", key=f"{key}_detail", placeholder="ระบุรายละเอียด", label_visibility="collapsed")
+                    
+                    grade_str = f"{grade}/5" if grade else ""
+                    full_detail = ", ".join(filter(None, [grade_str, detail]))
+                    form_data[f'ตรวจร่างกาย: {item}'] = full_detail
 
                 # Default Normal/Abnormal for other items
                 else:
