@@ -107,11 +107,21 @@ def render():
         if use_ppe == "ใช้":
             mask_types = st.multiselect(
                 "กรณีใช้หน้ากาก ใช้หน้ากากชนิดใด",
-                ["หน้ากาก N95", "หน้ากากผ้า", "หน้ากากอนามัย", "หน้ากากชนิดมีไส้กรอง (canister)"]
+                ["หน้ากาก N95", "หน้ากากผ้า", "หน้ากากอนามัย", "หน้ากากชนิดมีไส้กรอง (canister)", "หน้ากากอื่นๆ"]
             )
-            mask_other = st.text_input("หน้ากากอื่นๆ:")
-            if mask_other: mask_types.append(mask_other)
-            form_data['ชนิดหน้ากาก'] = ", ".join(mask_types)
+            
+            mask_other_text = ""
+            if "หน้ากากอื่นๆ" in mask_types:
+                mask_other_text = st.text_input("ระบุชนิดหน้ากากอื่นๆ:")
+
+            final_mask_types = []
+            for mask in mask_types:
+                if mask != "หน้ากากอื่นๆ":
+                    final_mask_types.append(mask)
+            if mask_other_text:
+                final_mask_types.append(mask_other_text)
+            
+            form_data['ชนิดหน้ากาก'] = ", ".join(final_mask_types)
 
             form_data['การสวมหน้ากาก'] = st.radio("ใช้ครอบทั้งปากและจมูกหรือไม่", ["ไม่ครอบ", "ครอบ"])
             
