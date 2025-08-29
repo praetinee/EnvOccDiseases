@@ -84,7 +84,12 @@ def render():
 
     # --- Section 3: Exposure History ---
     with st.expander("ส่วนที่ 3: ประวัติการสัมผัส", expanded=True):
-        form_data['จุดที่อยู่ขณะเกิดเหตุ'] = st.text_input("3.1 ขณะเกิดเหตุการณ์ ท่านอยู่จุดใด:", placeholder="ระบุตำแหน่ง และระยะห่างจากที่เกิดเหตุ (เมตร)")
+        st.write("3.1 ขณะเกิดเหตุการณ์ ท่านอยู่จุดใด:")
+        col1, col2 = st.columns(2)
+        location = col1.text_input("ระบุตำแหน่ง:", key="cs_location")
+        distance = col2.number_input("ระยะห่างจากที่เกิดเหตุ (เมตร):", min_value=0.0, format="%.2f", key="cs_distance")
+        form_data['จุดที่อยู่ขณะเกิดเหตุ'] = f"ตำแหน่ง: {location}, ระยะห่าง: {distance} เมตร"
+
         
         smell_opt = st.radio("3.2 ท่านได้กลิ่น/ไอระเหยสารเคมี ในระหว่างอยู่ในสถานที่เกิดเหตุ หรือไม่:", ["ไม่เคย", "เคย"])
         if smell_opt == "เคย":
