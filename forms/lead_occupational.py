@@ -198,35 +198,17 @@ def render():
         ]
         symptom_options = ["เป็นประจำ", "นาน ๆ ครั้ง", "ไม่มี"]
 
-        # Create a header for the symptom table
-        header_cols = st.columns([2, 1, 1, 1])
-        header_cols[0].markdown("**อาการ**")
-        header_cols[1].markdown(f"<p style='text-align: center;'><b>{symptom_options[0]}</b></p>", unsafe_allow_html=True)
-        header_cols[2].markdown(f"<p style='text-align: center;'><b>{symptom_options[1]}</b></p>", unsafe_allow_html=True)
-        header_cols[3].markdown(f"<p style='text-align: center;'><b>{symptom_options[2]}</b></p>", unsafe_allow_html=True)
-        st.divider()
-
         # Create a row for each symptom
         for symptom in symptoms:
-            row_cols = st.columns([2, 1, 1, 1])
-            row_cols[0].write(symptom)
-            
-            # Use a unique key for the radio group in each row
-            selected_option = row_cols[1].radio(" ", ["เป็นประจำ"], label_visibility="collapsed", key=f"{symptom}_regular")
-            selected_option = row_cols[2].radio(" ", ["นาน ๆ ครั้ง"], label_visibility="collapsed", key=f"{symptom}_occasional")
-            selected_option = row_cols[3].radio(" ", ["ไม่มี"], label_visibility="collapsed", key=f"{symptom}_none")
-            
-            # Logic to determine the selected value
-            if selected_option:
-                if selected_option[0] == "เป็นประจำ":
-                    value = "เป็นประจำ"
-                elif selected_option[0] == "นาน ๆ ครั้ง":
-                    value = "นาน ๆ ครั้ง"
-                else:
-                    value = "ไม่มี"
-            else:
-                value = "ไม่มี" # Default value
-
+            # We use a hidden radio group to get the value, which is a common pattern in Streamlit
+            # for complex layouts where direct widget placement is tricky.
+            value = st.radio(
+                symptom, # The label is visible and placed to the left
+                symptom_options,
+                horizontal=True,
+                label_visibility="visible",
+                key=f"symptom_{symptom}"
+            )
             form_data[f'อาการ: {symptom}'] = value
 
     # --- Submitter Information ---
