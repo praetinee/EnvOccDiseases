@@ -123,50 +123,27 @@ def render():
         ]
         
         # Table Header
-        header_cols = st.columns([3, 1, 1, 2, 2])
+        header_cols = st.columns([3, 2, 3])
         header_cols[0].markdown("**ลักษณะอาการ**")
-        header_cols[1].markdown("<div style='text-align: center;'><b>มี</b></div>", unsafe_allow_html=True)
-        header_cols[2].markdown("<div style='text-align: center;'><b>ไม่มี</b></div>", unsafe_allow_html=True)
-        header_cols[3].markdown("<div style='text-align: center;'><b>ไม่ได้รับการรักษา</b></div>", unsafe_allow_html=True)
-        header_cols[4].markdown("<div style='text-align: center;'><b>รักษา/admit</b></div>", unsafe_allow_html=True)
+        header_cols[1].markdown("<div style='text-align: center;'><b>อาการ</b></div>", unsafe_allow_html=True)
+        header_cols[2].markdown("<div style='text-align: center;'><b>การรักษา (กรณีมีอาการ)</b></div>", unsafe_allow_html=True)
         st.divider()
 
         for symptom in symptoms:
-            row_cols = st.columns([3, 1, 1, 2, 2])
+            row_cols = st.columns([3, 2, 3])
             row_cols[0].write(symptom)
             
-            # Use a unique key for each radio group
-            has_symptom = st.radio(
-                "has_symptom_" + symptom, 
-                ["มี", "ไม่มี"], 
-                key=f"has_{symptom}", 
-                label_visibility="collapsed",
-                horizontal=True
-            )
-            
-            # Place radio buttons in the correct columns
-            if has_symptom == "มี":
-                row_cols[1].radio(" ", [" "], key=f"dummy_yes_{symptom}", index=0) # Visually check "Yes"
-            else:
-                row_cols[2].radio(" ", [" "], key=f"dummy_no_{symptom}", index=0) # Visually check "No"
-            
-            treatment = ""
-            if has_symptom == "มี":
-                treatment = st.radio(
-                    "treatment_" + symptom,
-                    ["ไม่ได้รับการรักษา", "รักษา/admit"],
-                    key=f"treat_{symptom}",
-                    label_visibility="collapsed",
-                    horizontal=True
-                )
-                if treatment == "ไม่ได้รับการรักษา":
-                    row_cols[3].radio(" ", [" "], key=f"dummy_treat_no_{symptom}", index=0)
+            with row_cols[1]:
+                has_symptom = st.radio("", ["มี", "ไม่มี"], key=f"has_{symptom}", label_visibility="collapsed", horizontal=True)
+
+            with row_cols[2]:
+                if has_symptom == "มี":
+                    treatment = st.radio("", ["ไม่ได้รับการรักษา", "รักษา/admit"], key=f"treat_{symptom}", label_visibility="collapsed", horizontal=True)
+                    form_data[f"การรักษา: {symptom}"] = treatment
                 else:
-                    row_cols[4].radio(" ", [" "], key=f"dummy_treat_yes_{symptom}", index=0)
+                    st.write("") # Placeholder for alignment
 
             form_data[f"อาการ: {symptom}"] = has_symptom
-            if has_symptom == "มี":
-                form_data[f"การรักษา: {symptom}"] = treatment
 
 
     # --- Section 4: Other Info ---
