@@ -158,8 +158,19 @@ def render():
         ppe_items = ["ถุงมือยาง/หนัง", "หมวก/ผ้าคลุมผม", "หน้ากากป้องกันฝุ่น/ผ้าปิดจมูก", "แว่นตา", "รองเท้าบูธ/ผ้าใบ", "เสื้อแขนยาว", "กางเกงขายาว"]
         ppe_options = ["ไม่ใช้", "ใช้บางครั้ง", "ใช้ทุกครั้ง"]
         
-        for i, item in enumerate(ppe_items):
-            form_data[f'PPE: {item}'] = st.radio(f"{item}", ppe_options, horizontal=True, key=f"ppe_{i}")
+        for item in ppe_items:
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
+            with col2:
+                value = st.radio(
+                    item, 
+                    ppe_options,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key=f"ppe_{item}"
+                )
+                form_data[f'PPE: {item}'] = value
         
         ppe_other_name = st.text_input("อื่นๆ ระบุ", key="ppe_other_name")
         if ppe_other_name:
