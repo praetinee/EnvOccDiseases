@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
 
@@ -21,8 +22,11 @@ def render():
             ["ผู้ร่วมอยู่ในเหตุการณ์ขณะเกิดเหตุ", "ทีมกู้ภัย/ทีมกู้ชีพ", "ญาติ/คนในครอบครัว", "อื่นๆ"],
             key="cs_respondent_type"
         )
-        respondent_type_other = st.text_input("ระบุอื่นๆ:", key="cs_respondent_other", label_visibility="collapsed")
-        form_data['ผู้ตอบแบบสอบถาม'] = respondent_type_other if respondent_type_opt == "อื่นๆ" else respondent_type_opt
+        if respondent_type_opt == "อื่นๆ":
+            respondent_type_other = st.text_input("ระบุอื่นๆ:", key="cs_respondent_other")
+            form_data['ผู้ตอบแบบสอบถาม'] = respondent_type_other
+        else:
+            form_data['ผู้ตอบแบบสอบถาม'] = respondent_type_opt
 
     # --- Section 1: General Info ---
     with st.expander("ส่วนที่ 1: ข้อมูลทั่วไป", expanded=True):
@@ -34,14 +38,25 @@ def render():
         form_data['เพศ'] = col1.radio("1.2 เพศ:", ["ชาย", "หญิง"], horizontal=True)
         
         nationality_opt = col2.radio("1.3 สัญชาติ:", ["ไทย", "กัมพูชา", "พม่า", "อื่นๆ"], horizontal=True)
-        nationality_other = col2.text_input("ระบุสัญชาติอื่นๆ:", key="cs_nationality_other", label_visibility="collapsed")
-        form_data['สัญชาติ'] = nationality_other if nationality_opt == "อื่นๆ" else nationality_opt
+        if nationality_opt == "อื่นๆ":
+            nationality_other = col2.text_input("ระบุสัญชาติอื่นๆ:", key="cs_nationality_other")
+            form_data['สัญชาติ'] = nationality_other
+        else:
+            form_data['สัญชาติ'] = nationality_opt
 
         form_data['ที่อยู่ปัจจุบัน'] = st.text_area("1.4 ที่อยู่ปัจจุบัน:", placeholder="บ้านเลขที่, หมู่ที่, ถนน, ตรอก/ซอย, ตำบล, อำเภอ, จังหวัด, เบอร์โทร")
 
         occupation_opt = st.radio("1.5 อาชีพ:", ["รับจ้าง", "ค้าขาย", "แม่บ้าน", "เกษตร", "อื่นๆ"])
-        occupation_other = st.text_input("ระบุอาชีพ:", key="cs_occupation_other", label_visibility="collapsed")
-        form_data['อาชีพ'] = occupation_other if occupation_opt in ["รับจ้าง", "อื่นๆ"] else occupation_opt
+        
+        if occupation_opt == "รับจ้าง":
+            occupation_detail = st.text_input("ระบุ (รับจ้าง):", key="cs_occupation_detail")
+            form_data['อาชีพ'] = f"รับจ้าง ({occupation_detail})"
+        elif occupation_opt == "อื่นๆ":
+            occupation_other = st.text_input("ระบุ (อื่นๆ):", key="cs_occupation_other")
+            form_data['อาชีพ'] = f"อื่นๆ ({occupation_other})"
+        else:
+            form_data['อาชีพ'] = occupation_opt
+
 
         col1, col2 = st.columns(2)
         form_data['การดื่มแอลกอฮอล์'] = col1.radio("1.6 ปัจจุบันท่านดื่มเครื่องดื่มแอลกอฮอล์ หรือไม่:", ["ไม่ดื่ม", "ดื่มเป็นบางครั้ง", "ดื่มเป็นประจำ"])
@@ -72,8 +87,11 @@ def render():
         form_data['จุดที่อยู่ขณะเกิดเหตุ'] = st.text_input("3.1 ขณะเกิดเหตุการณ์ ท่านอยู่จุดใด:", placeholder="ระบุตำแหน่ง และระยะห่างจากที่เกิดเหตุ (เมตร)")
         
         smell_opt = st.radio("3.2 ท่านได้กลิ่น/ไอระเหยสารเคมี ในระหว่างอยู่ในสถานที่เกิดเหตุ หรือไม่:", ["ไม่เคย", "เคย"])
-        smell_desc = st.text_input("อธิบายกลิ่น:", label_visibility="collapsed")
-        form_data['ได้กลิ่นสารเคมี'] = f"เคย ({smell_desc})" if smell_opt == "เคย" else "ไม่เคย"
+        if smell_opt == "เคย":
+            smell_desc = st.text_input("อธิบายกลิ่น:")
+            form_data['ได้กลิ่นสารเคมี'] = f"เคย ({smell_desc})"
+        else:
+            form_data['ได้กลิ่นสารเคมี'] = "ไม่เคย"
 
         form_data['ลักษณะการได้กลิ่น'] = st.radio("3.3 ท่านได้กลิ่น/รับสัมผัสกลิ่นช่วงเวลาใด:", ["รู้สึกได้กลิ่นตลอดระยะเวลา", "รู้สึกได้กลิ่นเป็นช่วงๆ", "อื่นๆ"])
         
@@ -88,8 +106,11 @@ def render():
             form_data['อาการผิดปกติ'] = "ไม่มี"
         
         action_opt = st.radio("3.5 เมื่อท่านมีอาการแล้ว ท่านปฏิบัติตัวอย่างไร:", ["ไม่ได้ทำอะไร", "ไปพบแพทย์", "อื่นๆ"])
-        action_detail = st.text_input("ระบุสถานพยาบาล/การปฏิบัติ:", label_visibility="collapsed")
-        form_data['การปฏิบัติตัวหลังมีอาการ'] = f"{action_opt} ({action_detail})" if action_opt != "ไม่ได้ทำอะไร" else "ไม่ได้ทำอะไร"
+        if action_opt != "ไม่ได้ทำอะไร":
+            action_detail = st.text_input("ระบุสถานพยาบาล/การปฏิบัติ:")
+            form_data['การปฏิบัติตัวหลังมีอาการ'] = f"{action_opt} ({action_detail})"
+        else:
+            form_data['การปฏิบัติตัวหลังมีอาการ'] = "ไม่ได้ทำอะไร"
 
     # --- Section 4: Treatment Information ---
     with st.expander("ส่วนที่ 4: ข้อมูลการรักษา", expanded=True):
@@ -98,7 +119,11 @@ def render():
         treat_date = col1.date_input("วันที่เข้ารับการรักษา", datetime.date.today())
         treat_time = col2.time_input("เวลา", datetime.datetime.now().time())
         patient_type = col3.selectbox("ประเภทผู้ป่วย", ["เสียชีวิต", "ผู้ป่วยนอก", "ผู้ป่วยใน"])
-        ipd_days = col4.number_input("จำนวนวันการรักษา (กรณีผู้ป่วยใน)", min_value=0, step=1)
+        
+        ipd_days = 0
+        if patient_type == "ผู้ป่วยใน":
+            ipd_days = col4.number_input("จำนวนวัน (ผู้ป่วยใน)", min_value=0, step=1)
+        
         form_data['ข้อมูลการรักษา'] = f"วันที่ {treat_date} เวลา {treat_time}, ประเภท: {patient_type}"
         if patient_type == "ผู้ป่วยใน":
             form_data['ข้อมูลการรักษา'] += f", จำนวน {ipd_days} วัน"
