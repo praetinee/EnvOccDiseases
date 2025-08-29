@@ -11,7 +11,7 @@ def render():
     if 'cs_comorbidity_status' not in st.session_state:
         st.session_state.cs_comorbidity_status = 'ไม่มี'
     if 'cs_symptom_status' not in st.session_state:
-        st.session_state.cs_symptom_status = 'ไม่มี'
+        st.session_state.cs_symptom_status = 'มี' # Default to 'มี' to show questions initially
 
     # --- Data Collection Dictionary ---
     form_data = {}
@@ -100,48 +100,50 @@ def render():
         else:
             form_data['ลักษณะการได้กลิ่น'] = smell_duration_opt
         
-        st.radio("3.4 ท่านมีอาการผิดปกติระหว่าง หรือหลังจากได้กลิ่น หรือไม่:", ["ไม่มี", "มี"], key='cs_symptom_status', horizontal=True)
+        st.radio("3.4 ท่านมีอาการผิดปกติระหว่าง หรือหลังจากได้กลิ่น หรือไม่:", ["มี", "ไม่มี (สิ้นสุดการสัมภาษณ์)"], key='cs_symptom_status', horizontal=True)
+        
         if st.session_state.cs_symptom_status == 'มี':
             symptoms = st.multiselect(
                 "ระบุอาการ:",
                 ["ปวดศีรษะ", "มึนงง", "วิงเวียน", "หน้ามืด", "หายใจไม่ออก", "คลื่นไส้", "อาเจียน"]
             )
             form_data['อาการผิดปกติ'] = ", ".join(symptoms)
-        else:
-            form_data['อาการผิดปกติ'] = "ไม่มี"
-        
-        action_opt = st.radio("3.5 เมื่อท่านมีอาการแล้ว ท่านปฏิบัติตัวอย่างไร:", ["ไม่ได้ทำอะไร", "ไปพบแพทย์", "อื่นๆ"])
-        if action_opt != "ไม่ได้ทำอะไร":
-            action_detail = st.text_input("ระบุสถานพยาบาล/การปฏิบัติ:")
-            form_data['การปฏิบัติตัวหลังมีอาการ'] = f"{action_opt} ({action_detail})"
-        else:
-            form_data['การปฏิบัติตัวหลังมีอาการ'] = "ไม่ได้ทำอะไร"
+            
+            action_opt = st.radio("3.5 เมื่อท่านมีอาการแล้ว ท่านปฏิบัติตัวอย่างไร:", ["ไม่ได้ทำอะไร", "ไปพบแพทย์", "อื่นๆ"])
+            if action_opt != "ไม่ได้ทำอะไร":
+                action_detail = st.text_input("ระบุสถานพยาบาล/การปฏิบัติ:")
+                form_data['การปฏิบัติตัวหลังมีอาการ'] = f"{action_opt} ({action_detail})"
+            else:
+                form_data['การปฏิบัติตัวหลังมีอาการ'] = "ไม่ได้ทำอะไร"
 
-    # --- Section 4: Treatment Information ---
-    with st.expander("ส่วนที่ 4: ข้อมูลการรักษา", expanded=True):
-        st.write("4.1 ท่านเข้ารับการรักษาในโรงพยาบาล:")
-        col1, col2, col3, col4 = st.columns(4)
-        treat_date = col1.date_input("วันที่เข้ารับการรักษา", datetime.date.today())
-        treat_time = col2.time_input("เวลา", datetime.datetime.now().time())
-        patient_type = col3.selectbox("ประเภทผู้ป่วย", ["เสียชีวิต", "ผู้ป่วยนอก", "ผู้ป่วยใน"])
-        
-        ipd_days = 0
-        if patient_type == "ผู้ป่วยใน":
-            ipd_days = col4.number_input("จำนวนวัน (ผู้ป่วยใน)", min_value=0, step=1)
-        
-        form_data['ข้อมูลการรักษา'] = f"วันที่ {treat_date} เวลา {treat_time}, ประเภท: {patient_type}"
-        if patient_type == "ผู้ป่วยใน":
-            form_data['ข้อมูลการรักษา'] += f", จำนวน {ipd_days} วัน"
+    # --- Conditional Sections based on symptoms ---
+    if st.session_state.cs_symptom_status == 'มี':
+        # --- Section 4: Treatment Information ---
+        with st.expander("ส่วนที่ 4: ข้อมูลการรักษา", expanded=True):
+            st.write("4.1 ท่านเข้ารับการรักษาในโรงพยาบาล:")
+            col1, col2, col3, col4 = st.columns(4)
+            treat_date = col1.date_input("วันที่เข้ารับการรักษา", datetime.date.today())
+            treat_time = col2.time_input("เวลา", datetime.datetime.now().time())
+            patient_type = col3.selectbox("ประเภทผู้ป่วย", ["เสียชีวิต", "ผู้ป่วยนอก", "ผู้ป่วยใน"])
+            
+            ipd_days = 0
+            if patient_type == "ผู้ป่วยใน":
+                ipd_days = col4.number_input("จำนวนวัน (ผู้ป่วยใน)", min_value=0, step=1)
+            
+            form_data['ข้อมูลการรักษา'] = f"วันที่ {treat_date} เวลา {treat_time}, ประเภท: {patient_type}"
+            if patient_type == "ผู้ป่วยใน":
+                form_data['ข้อมูลการรักษา'] += f", จำนวน {ipd_days} วัน"
 
-    # --- Recorder Info ---
-    with st.expander("ข้อมูลผู้บันทึก", expanded=True):
-        col1, col2, col3 = st.columns(3)
-        form_data['ผู้บันทึก'] = col1.text_input("ชื่อ - สกุล:")
-        form_data['เบอร์โทรผู้บันทึก'] = col2.text_input("เบอร์โทรศัพท์:")
-        form_data['หน่วยงานผู้บันทึก'] = col3.text_input("หน่วยงาน:")
+        # --- Recorder Info ---
+        with st.expander("ข้อมูลผู้บันทึก", expanded=True):
+            col1, col2, col3 = st.columns(3)
+            form_data['ผู้บันทึก'] = col1.text_input("ชื่อ - สกุล:")
+            form_data['เบอร์โทรผู้บันทึก'] = col2.text_input("เบอร์โทรศัพท์:")
+            form_data['หน่วยงานผู้บันทึก'] = col3.text_input("หน่วยงาน:")
 
-    st.markdown("---")
-    if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
-        # In a real app, you would save the 'form_data' dictionary here.
-        st.write(form_data)
+        st.markdown("---")
+        if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
+            st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+            # In a real app, you would save the 'form_data' dictionary here.
+            st.write(form_data)
+
