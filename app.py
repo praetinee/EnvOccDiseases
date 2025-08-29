@@ -54,7 +54,7 @@ PAGE_MAP = {
     # Occupational Diseases
     "occ_lead_investigation": ("แบบสอบสวน (เจ้าหน้าที่)", lead_occupational_render),
     "occ_lead_medical": ("แบบบันทึกตรวจร่างกาย (แพทย์)", lead_occupational_medical_render),
-    "occ_silica": ("โรคจากฝุ่นซิลิกา", silicosis_render),
+    "occ_silica": ("โรคซิลิโคสิสและโรคจากแอสเบสตอส", silicosis_render),
     "occ_confined_space": ("โรคจากภาวะอับอากาศ", confined_space_render),
     "occ_pesticide": ("พิษจากสารกำจัดศัตรูพืช", pesticide_render),
 
@@ -82,7 +82,7 @@ with st.sidebar:
         st.button("แบบสอบสวน (เจ้าหน้าที่)", on_click=set_page, args=("occ_lead_investigation",), use_container_width=True)
         st.button("แบบบันทึกตรวจร่างกาย (แพทย์)", on_click=set_page, args=("occ_lead_medical",), use_container_width=True)
         st.markdown("---")
-        st.button("โรคจากฝุ่นซิลิกา", on_click=set_page, args=("occ_silica",), use_container_width=True)
+        st.button("โรคซิลิโคสิสและโรคจากแอสเบสตอส", on_click=set_page, args=("occ_silica",), use_container_width=True)
         st.button("โรคจากภาวะอับอากาศ", on_click=set_page, args=("occ_confined_space",), use_container_width=True)
         st.button("พิษจากสารกำจัดศัตรูพืช", on_click=set_page, args=("occ_pesticide",), use_container_width=True)
 
