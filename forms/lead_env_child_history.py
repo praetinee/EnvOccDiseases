@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
 
@@ -38,12 +39,31 @@ def render():
     with st.expander("ส่วนที่ 2: ข้อมูลเด็ก", expanded=True):
         education_status = st.radio("1. การศึกษาของเด็ก:", ["ยังไม่ได้เข้าเรียน", "เข้าเรียน"])
         if education_status == "เข้าเรียน":
-            education_level = st.radio("ระดับชั้น:", ["ก่อนอนุบาล", "อนุบาล", "ประถม"], horizontal=True)
+            st.write("ระดับชั้น:")
+            col1, col2, col3 = st.columns(3)
+            pre_school = col1.checkbox("ก่อนอนุบาล")
+            
+            kindergarten_col, kindergarten_detail_col = col2.columns([1,2])
+            kindergarten = kindergarten_col.checkbox("อนุบาล")
+            kindergarten_detail = kindergarten_detail_col.text_input(" ", key="kindergarten_detail", label_visibility="collapsed")
+
+            primary_col, primary_detail_col = col3.columns([1,2])
+            primary = primary_col.checkbox("ประถม")
+            primary_detail = primary_detail_col.text_input(" ", key="primary_detail", label_visibility="collapsed")
+            
+            education_level = []
+            if pre_school:
+                education_level.append("ก่อนอนุบาล")
+            if kindergarten:
+                education_level.append(f"อนุบาล ({kindergarten_detail})")
+            if primary:
+                education_level.append(f"ประถม ({primary_detail})")
+
             st.write("เด็กเรียนอยู่ในโรงเรียนปัจจุบันเป็นระยะเวลา:")
             col1, col2 = st.columns(2)
             edu_years = col1.number_input("ปี", min_value=0, step=1, key="edu_years")
             edu_months = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="edu_months")
-            form_data['การศึกษา'] = f"เข้าเรียน ระดับ {education_level} (ระยะเวลา {edu_years} ปี {edu_months} เดือน)"
+            form_data['การศึกษา'] = f"เข้าเรียน ระดับ {', '.join(education_level)} (ระยะเวลา {edu_years} ปี {edu_months} เดือน)"
         else:
             form_data['การศึกษา'] = "ยังไม่ได้เข้าเรียน"
 
@@ -54,12 +74,18 @@ def render():
         form_data['ระยะเวลาอาศัย'] = f"{res_years} ปี {res_months} เดือน"
 
         comorbidity_status = st.radio("3. เด็กมีโรคประจำตัวหรือไม่:", ["ไม่มี", "มี"])
-        comorbidity_detail = st.text_input("ระบุโรคประจำตัว:", label_visibility="collapsed")
-        form_data['โรคประจำตัว'] = f"มี ({comorbidity_detail})" if comorbidity_status == "มี" else "ไม่มี"
+        if comorbidity_status == "มี":
+            comorbidity_detail = st.text_input("ระบุโรคประจำตัว:", label_visibility="collapsed")
+            form_data['โรคประจำตัว'] = f"มี ({comorbidity_detail})"
+        else:
+            form_data['โรคประจำตัว'] = "ไม่มี"
 
         medication_status = st.radio("4. เด็กรัปประทานยาประจำ:", ["ไม่ได้รับประทาน", "รับประทาน"])
-        medication_detail = st.text_input("ระบุยาประจำ:", label_visibility="collapsed")
-        form_data['ยาประจำ'] = f"รับประทาน ({medication_detail})" if medication_status == "รับประทาน" else "ไม่ได้รับประทาน"
+        if medication_status == "รับประทาน":
+            medication_detail = st.text_input("ระบุยาประจำ:", label_visibility="collapsed")
+            form_data['ยาประจำ'] = f"รับประทาน ({medication_detail})"
+        else:
+            form_data['ยาประจำ'] = "ไม่ได้รับประทาน"
 
         form_data['จำนวนอาบน้ำ'] = st.number_input("5. เด็กอาบน้ำวันละกี่ครั้ง:", min_value=0, step=1)
 
@@ -106,4 +132,3 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
-
