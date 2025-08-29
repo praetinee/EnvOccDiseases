@@ -121,16 +121,53 @@ def render():
             "เวียนศีรษะ/ปวดศีรษะ", "คลื่นไส้", "อาเจียน", "หายใจติดขัด",
             "เจ็บหน้าอก/แน่นหน้าอก", "คันที่ผิวหนัง/มีตุ่มที่ผิวหนัง", "แสบจมูก", "แสบตา/ตาแดง/คันตา"
         ]
-        st.write("กาเครื่องหมายในช่องที่ตรงกับอาการของท่าน")
+        
+        # Table Header
+        header_cols = st.columns([3, 1, 1, 2, 2])
+        header_cols[0].markdown("**ลักษณะอาการ**")
+        header_cols[1].markdown("<div style='text-align: center;'><b>มี</b></div>", unsafe_allow_html=True)
+        header_cols[2].markdown("<div style='text-align: center;'><b>ไม่มี</b></div>", unsafe_allow_html=True)
+        header_cols[3].markdown("<div style='text-align: center;'><b>ไม่ได้รับการรักษา</b></div>", unsafe_allow_html=True)
+        header_cols[4].markdown("<div style='text-align: center;'><b>รักษา/admit</b></div>", unsafe_allow_html=True)
+        st.divider()
+
         for symptom in symptoms:
-            col1, col2, col3 = st.columns([2, 1, 2])
-            col1.markdown(f"- {symptom}")
-            has_symptom = col2.radio(" ", ["ไม่มี", "มี"], key=f"symptom_{symptom}", label_visibility="collapsed", horizontal=True)
+            row_cols = st.columns([3, 1, 1, 2, 2])
+            row_cols[0].write(symptom)
+            
+            # Use a unique key for each radio group
+            has_symptom = st.radio(
+                "has_symptom_" + symptom, 
+                ["มี", "ไม่มี"], 
+                key=f"has_{symptom}", 
+                label_visibility="collapsed",
+                horizontal=True
+            )
+            
+            # Place radio buttons in the correct columns
             if has_symptom == "มี":
-                treatment = col3.text_input("การรักษา/ปฐมพยาบาล", key=f"treatment_{symptom}", label_visibility="collapsed")
-                form_data[f"อาการ: {symptom}"] = f"มี (การรักษา: {treatment})"
+                row_cols[1].radio(" ", [" "], key=f"dummy_yes_{symptom}", index=0) # Visually check "Yes"
             else:
-                 form_data[f"อาการ: {symptom}"] = "ไม่มี"
+                row_cols[2].radio(" ", [" "], key=f"dummy_no_{symptom}", index=0) # Visually check "No"
+            
+            treatment = ""
+            if has_symptom == "มี":
+                treatment = st.radio(
+                    "treatment_" + symptom,
+                    ["ไม่ได้รับการรักษา", "รักษา/admit"],
+                    key=f"treat_{symptom}",
+                    label_visibility="collapsed",
+                    horizontal=True
+                )
+                if treatment == "ไม่ได้รับการรักษา":
+                    row_cols[3].radio(" ", [" "], key=f"dummy_treat_no_{symptom}", index=0)
+                else:
+                    row_cols[4].radio(" ", [" "], key=f"dummy_treat_yes_{symptom}", index=0)
+
+            form_data[f"อาการ: {symptom}"] = has_symptom
+            if has_symptom == "มี":
+                form_data[f"การรักษา: {symptom}"] = treatment
+
 
     # --- Section 4: Other Info ---
     with st.expander("ส่วนที่ 4: ข้อมูลอื่นๆ เพิ่มเติม", expanded=True):
