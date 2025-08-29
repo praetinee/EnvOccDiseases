@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
 import pandas as pd
@@ -26,11 +27,23 @@ def render():
 
         diseases = st.multiselect(
             "ท่านมีโรคประจำตัวหรือไม่",
-            ["ไม่มี", "ปอดอุดกั้นเรื้อรัง", "หอบหืด", "วัณโรค"]
+            ["ไม่มี", "ปอดอุดกั้นเรื้อรัง", "หอบหืด", "วัณโรค", "อื่นๆ"]
         )
-        other_disease = st.text_input("โรคประจำตัวอื่นๆ:")
-        if other_disease: diseases.append(other_disease)
-        form_data['โรคประจำตัว'] = ", ".join(diseases)
+        
+        other_disease_text = ""
+        if "อื่นๆ" in diseases:
+            other_disease_text = st.text_input("โรคประจำตัวอื่นๆ (โปรดระบุ):")
+        
+        # Combine selected diseases and the "other" text input
+        final_diseases = []
+        for disease in diseases:
+            if disease != "อื่นๆ":
+                final_diseases.append(disease)
+        if other_disease_text:
+            final_diseases.append(other_disease_text)
+
+        form_data['โรคประจำตัว'] = ", ".join(final_diseases)
+
 
         form_data['ยาที่ใช้ประจำ'] = st.text_input("ยาที่ใช้ประจำ")
         
@@ -82,12 +95,12 @@ def render():
         st.write("ประวัติการทำงานในอดีต (โปรดระบุทุกงานที่เคยทำ)")
         
         # Create an editable table for work history
-        df_work_history = pd.DataFrame([
-            {"ชื่อและที่ตั้งสถานที่ทำงาน": "", "ประเภทการผลิต": "", "ลักษณะงานที่ทำ": "", "ระยะเวลา (ปี)": 0, "สัมผัสฝุ่น/แร่ใยหิน": False},
-            {"ชื่อและที่ตั้งสถานที่ทำงาน": "", "ประเภทการผลิต": "", "ลักษณะงานที่ทำ": "", "ระยะเวลา (ปี)": 0, "สัมผัสฝุ่น/แร่ใยหิน": False},
-            {"ชื่อและที่ตั้งสถานที่ทำงาน": "", "ประเภทการผลิต": "", "ลักษณะงานที่ทำ": "", "ระยะเวลา (ปี)": 0, "สัมผัสฝุ่น/แร่ใยหิน": False},
-        ])
-        edited_df = st.data_editor(df_work_history, num_rows="dynamic")
+        if 'work_history' not in st.session_state:
+            st.session_state.work_history = pd.DataFrame([
+                {"ชื่อและที่ตั้งสถานที่ทำงาน": "", "ประเภทการผลิต": "", "ลักษณะงานที่ทำ": "", "ระยะเวลา (ปี)": 0, "สัมผัสฝุ่น/แร่ใยหิน": False},
+            ])
+        
+        edited_df = st.data_editor(st.session_state.work_history, num_rows="dynamic")
         form_data['ประวัติการทำงาน'] = edited_df.to_dict('records')
 
         use_ppe = st.radio("ขณะปฏิบัติงานท่านมีการใช้อุปกรณ์ป้องกันอันตรายส่วนบุคคลหรือไม่", ["ไม่ใช้", "ใช้"])
@@ -157,4 +170,3 @@ def render():
     if st.button("ส่งข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกส่งเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
-
