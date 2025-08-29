@@ -84,11 +84,7 @@ def render():
 
     # --- Section 3: Exposure History ---
     with st.expander("ส่วนที่ 3: ประวัติการสัมผัส", expanded=True):
-        st.write("3.1 ขณะเกิดเหตุการณ์ ท่านอยู่จุดใด:")
-        col1, col2 = st.columns(2)
-        location = col1.text_input("ระบุตำแหน่ง:", key="cs_location")
-        distance = col2.number_input("อยู่ห่างจากที่เกิดเหตุ (เมตร):", min_value=0.0, format="%.2f", key="cs_distance")
-        form_data['จุดที่อยู่ขณะเกิดเหตุ'] = f"ตำแหน่ง: {location}, ระยะห่าง: {distance} เมตร"
+        form_data['จุดที่อยู่ขณะเกิดเหตุ'] = st.text_input("3.1 ขณะเกิดเหตุการณ์ ท่านอยู่จุดใด:", placeholder="ระบุตำแหน่ง และระยะห่างจากที่เกิดเหตุ (เมตร)")
         
         smell_opt = st.radio("3.2 ท่านได้กลิ่น/ไอระเหยสารเคมี ในระหว่างอยู่ในสถานที่เกิดเหตุ หรือไม่:", ["ไม่เคย", "เคย"])
         if smell_opt == "เคย":
@@ -97,7 +93,12 @@ def render():
         else:
             form_data['ได้กลิ่นสารเคมี'] = "ไม่เคย"
 
-        form_data['ลักษณะการได้กลิ่น'] = st.radio("3.3 ท่านได้กลิ่น/รับสัมผัสกลิ่นช่วงเวลาใด:", ["รู้สึกได้กลิ่นตลอดระยะเวลา", "รู้สึกได้กลิ่นเป็นช่วงๆ", "อื่นๆ"])
+        smell_duration_opt = st.radio("3.3 ท่านได้กลิ่น/รับสัมผัสกลิ่นช่วงเวลาใด:", ["รู้สึกได้กลิ่นตลอดระยะเวลา", "รู้สึกได้กลิ่นเป็นช่วงๆ", "อื่นๆ"])
+        if smell_duration_opt == "อื่นๆ":
+            smell_duration_other = st.text_input("ระบุ (ช่วงเวลาได้กลิ่น):", key="cs_smell_duration_other")
+            form_data['ลักษณะการได้กลิ่น'] = smell_duration_other
+        else:
+            form_data['ลักษณะการได้กลิ่น'] = smell_duration_opt
         
         st.radio("3.4 ท่านมีอาการผิดปกติระหว่าง หรือหลังจากได้กลิ่น หรือไม่:", ["ไม่มี", "มี"], key='cs_symptom_status', horizontal=True)
         if st.session_state.cs_symptom_status == 'มี':
@@ -109,7 +110,7 @@ def render():
         else:
             form_data['อาการผิดปกติ'] = "ไม่มี"
         
-        action_opt = st.radio("3.5 เมื่อท่านมีอาการแล้ว ท่านปฏิบัตัวอย่างไร:", ["ไม่ได้ทำอะไร", "ไปพบแพทย์", "อื่นๆ"])
+        action_opt = st.radio("3.5 เมื่อท่านมีอาการแล้ว ท่านปฏิบัติตัวอย่างไร:", ["ไม่ได้ทำอะไร", "ไปพบแพทย์", "อื่นๆ"])
         if action_opt != "ไม่ได้ทำอะไร":
             action_detail = st.text_input("ระบุสถานพยาบาล/การปฏิบัติ:")
             form_data['การปฏิบัติตัวหลังมีอาการ'] = f"{action_opt} ({action_detail})"
@@ -139,4 +140,8 @@ def render():
         form_data['เบอร์โทรผู้บันทึก'] = col2.text_input("เบอร์โทรศัพท์:")
         form_data['หน่วยงานผู้บันทึก'] = col3.text_input("หน่วยงาน:")
 
-   
+    st.markdown("---")
+    if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
+        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+        # In a real app, you would save the 'form_data' dictionary here.
+        st.write(form_data)
