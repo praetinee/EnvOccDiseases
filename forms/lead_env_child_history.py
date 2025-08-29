@@ -39,36 +39,25 @@ def render():
     with st.expander("ส่วนที่ 2: ข้อมูลเด็ก", expanded=True):
         education_status = st.radio("1. การศึกษาของเด็ก:", ["ยังไม่ได้เข้าเรียน", "เข้าเรียน"])
         if education_status == "เข้าเรียน":
-            st.write("ระดับชั้น:")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                pre_school = st.checkbox("ก่อนอนุบาล")
-            
-            kindergarten_detail = ""
-            with col2:
-                kindergarten = st.checkbox("อนุบาล")
-                if kindergarten:
-                    kindergarten_detail = st.text_input("ระบุ (อนุบาล)", key="kindergarten_detail", label_visibility="collapsed")
+            education_level_option = st.radio(
+                "ระดับชั้น:",
+                ("ก่อนอนุบาล", "อนุบาล", "ประถม"), 
+                key="education_level_radio"
+            )
 
-            primary_detail = ""
-            with col3:
-                primary = st.checkbox("ประถม")
-                if primary:
-                    primary_detail = st.text_input("ระบุ (ประถม)", key="primary_detail", label_visibility="collapsed")
-            
-            education_level = []
-            if pre_school:
-                education_level.append("ก่อนอนุบาล")
-            if kindergarten:
-                education_level.append(f"อนุบาล ({kindergarten_detail})")
-            if primary:
-                education_level.append(f"ประถม ({primary_detail})")
+            education_detail = ""
+            if education_level_option in ["อนุบาล", "ประถม"]:
+                education_detail = st.text_input(f"ระบุ ({education_level_option})", key=f"{education_level_option}_detail")
+
+            education_info = education_level_option
+            if education_detail:
+                education_info += f" ({education_detail})"
 
             st.write("เด็กเรียนอยู่ในโรงเรียนปัจจุบันเป็นระยะเวลา:")
             col1, col2 = st.columns(2)
             edu_years = col1.number_input("ปี", min_value=0, step=1, key="edu_years")
             edu_months = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="edu_months")
-            form_data['การศึกษา'] = f"เข้าเรียน ระดับ {', '.join(education_level)} (ระยะเวลา {edu_years} ปี {edu_months} เดือน)"
+            form_data['การศึกษา'] = f"เข้าเรียน ระดับ {education_info} (ระยะเวลา {edu_years} ปี {edu_months} เดือน)"
         else:
             form_data['การศึกษา'] = "ยังไม่ได้เข้าเรียน"
 
