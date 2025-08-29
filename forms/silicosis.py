@@ -68,19 +68,19 @@ def render():
         else:
             form_data['การสูบบุหรี่'] = "ไม่สูบ"
         
-        form_data['เคยตรวจสุขภาพประจำปี'] = st.radio("ท่านเคยตรวจสุขภาพประจำปีหรือไม่", ["ไม่เคย", "เคย"])
+        form_data['เคยตรวจสุขภาพประจำปี'] = st.radio("8. ท่านเคยตรวจสุขภาพประจำปีหรือไม่", ["ไม่เคย", "เคย"])
         
-        xray_status = st.radio("ท่านเคยถ่ายภาพรังสีทรวงอกหรือไม่", ["ไม่เคย", "ไม่แน่ใจ", "เคย"])
+        xray_status = st.radio("9. ท่านเคยถ่ายภาพรังสีทรวงอกหรือไม่", ["ไม่เคย", "ไม่แน่ใจ", "เคย"])
         if xray_status == "เคย":
-            xray_result = st.radio("ผลตรวจ X-ray", ["ปกติ", "ผิดปกติ"])
-            xray_detail = st.text_input("ระบุผล X-ray:")
-            form_data['ผลถ่ายภาพรังสีทรวงอก'] = f"เคย (ผล: {xray_result} - {xray_detail})"
+            xray_result = st.radio("ผลตรวจ", ["ปกติ", "ผิดปกติ"], key="xray_result_radio", horizontal=True)
+            xray_detail = st.text_input("ระบุ", key="xray_detail_text")
+            form_data['ผลถ่ายภาพรังสีทรวงอก'] = f"เคย (ผลตรวจ: {xray_result}, ระบุ: {xray_detail})"
         
-        pft_status = st.radio("ท่านเคยตรวจสมรรถภาพปอดหรือไม่", ["ไม่เคย", "ไม่แน่ใจ", "เคย"])
+        pft_status = st.radio("10. ท่านเคยตรวจสมรรถภาพปอดหรือไม่", ["ไม่เคย", "ไม่แน่ใจ", "เคย"])
         if pft_status == "เคย":
-            pft_result = st.radio("ผลตรวจสมรรถภาพปอด", ["ปกติ", "ผิดปกติ"])
-            pft_detail = st.text_input("ระบุผลตรวจสมรรถภาพปอด:")
-            form_data['ผลตรวจสมรรถภาพปอด'] = f"เคย (ผล: {pft_result} - {pft_detail})"
+            pft_result = st.radio("ผลตรวจ", ["ปกติ", "ผิดปกติ"], key="pft_result_radio", horizontal=True)
+            pft_detail = st.text_input("ระบุ", key="pft_detail_text")
+            form_data['ผลตรวจสมรรถภาพปอด'] = f"เคย (ผลตรวจ: {pft_result}, ระบุ: {pft_detail})"
 
     # --- Section 2: Work Information ---
     with st.expander("ส่วนที่ 2: ข้อมูลเกี่ยวกับการทำงาน", expanded=True):
