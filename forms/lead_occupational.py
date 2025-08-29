@@ -198,18 +198,23 @@ def render():
         ]
         symptom_options = ["เป็นประจำ", "นาน ๆ ครั้ง", "ไม่มี"]
 
-        # Create a row for each symptom
+        # Create a row for each symptom for better alignment
         for symptom in symptoms:
-            # We use a hidden radio group to get the value, which is a common pattern in Streamlit
-            # for complex layouts where direct widget placement is tricky.
-            value = st.radio(
-                symptom, # The label is visible and placed to the left
-                symptom_options,
-                horizontal=True,
-                label_visibility="visible",
-                key=f"symptom_{symptom}"
-            )
-            form_data[f'อาการ: {symptom}'] = value
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                # Use markdown for vertical alignment in the center of the radio button height
+                st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{symptom}</div>", unsafe_allow_html=True)
+            
+            with col2:
+                # Place the radio button group in the second column
+                value = st.radio(
+                    symptom, # Label is used for the key but hidden from view
+                    symptom_options,
+                    horizontal=True,
+                    label_visibility="collapsed", # Hide the label as it's already in col1
+                    key=f"symptom_{symptom}"
+                )
+                form_data[f'อาการ: {symptom}'] = value
 
     # --- Submitter Information ---
     with st.container(border=True):
