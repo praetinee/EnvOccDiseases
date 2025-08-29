@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
 
@@ -27,11 +28,29 @@ def render():
             "(2) Lower extremities": "exam_lower", "Gait": "exam_gait", "Sensation": "exam_sensation",
             "Cognition": "exam_cognition", "Mood": "exam_mood", "IQ หรือ Mentality": "exam_iq"
         }
+        
         for item, key in exam_items.items():
-            col1, col2 = st.columns([2, 3])
-            col1.markdown(f"**{item}**")
-            exam_status = col2.radio("Status", ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
-            exam_detail = col2.text_input("Detail", key=f"{key}_detail", placeholder="ระบุความผิดปกติ (ถ้ามี)")
+            col1, col2, col3 = st.columns([2, 2, 3])
+            with col1:
+                st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
+            
+            with col2:
+                exam_status = st.radio(
+                    "Status", 
+                    ["Normal", "Abnormal"], 
+                    key=f"{key}_status", 
+                    horizontal=True, 
+                    label_visibility="collapsed"
+                )
+            
+            with col3:
+                exam_detail = st.text_input(
+                    "Detail", 
+                    key=f"{key}_detail", 
+                    placeholder="ระบุความผิดปกติ (ถ้ามี)",
+                    label_visibility="collapsed"
+                )
+            
             form_data[f'ตรวจร่างกาย: {item}'] = exam_detail if exam_status == "Abnormal" and exam_detail else exam_status
 
     with st.container(border=True):
@@ -44,10 +63,14 @@ def render():
 
         lab_items = {"CBC": "lab_cbc", "BUN/Cr": "lab_bun", "SGPT/SGOT": "lab_sgpt", "TB/DB": "lab_tb", "Uric acid": "lab_uric", "UA": "lab_ua"}
         for item, key in lab_items.items():
-            col1, col2 = st.columns([1, 2])
-            col1.markdown(item)
-            lab_status = col2.radio("Status", ["ปกติ", "ผิดปกติ"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
-            lab_detail = col2.text_input("Detail", key=f"{key}_detail", placeholder="ระบุผล")
+            col1, col2, col3 = st.columns([1, 2, 3])
+            with col1:
+                st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
+            with col2:
+                lab_status = st.radio("Status", ["ปกติ", "ผิดปกติ"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+            with col3:
+                lab_detail = st.text_input("Detail", key=f"{key}_detail", placeholder="ระบุผล", label_visibility="collapsed")
+            
             form_data[f'ผลตรวจ: {item}'] = lab_detail if lab_status == "ผิดปกติ" and lab_detail else lab_status
         
     with st.container(border=True):
