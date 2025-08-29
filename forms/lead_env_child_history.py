@@ -41,15 +41,20 @@ def render():
         if education_status == "เข้าเรียน":
             st.write("ระดับชั้น:")
             col1, col2, col3 = st.columns(3)
-            pre_school = col1.checkbox("ก่อนอนุบาล")
+            with col1:
+                pre_school = st.checkbox("ก่อนอนุบาล")
             
-            kindergarten_col, kindergarten_detail_col = col2.columns([1,2])
-            kindergarten = kindergarten_col.checkbox("อนุบาล")
-            kindergarten_detail = kindergarten_detail_col.text_input(" ", key="kindergarten_detail", label_visibility="collapsed")
+            kindergarten_detail = ""
+            with col2:
+                kindergarten = st.checkbox("อนุบาล")
+                if kindergarten:
+                    kindergarten_detail = st.text_input("ระบุ (อนุบาล)", key="kindergarten_detail", label_visibility="collapsed")
 
-            primary_col, primary_detail_col = col3.columns([1,2])
-            primary = primary_col.checkbox("ประถม")
-            primary_detail = primary_detail_col.text_input(" ", key="primary_detail", label_visibility="collapsed")
+            primary_detail = ""
+            with col3:
+                primary = st.checkbox("ประถม")
+                if primary:
+                    primary_detail = st.text_input("ระบุ (ประถม)", key="primary_detail", label_visibility="collapsed")
             
             education_level = []
             if pre_school:
