@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 
 def render():
@@ -32,16 +33,22 @@ def render():
         form_data['การดื่มแอลกอฮอล์'] = col2.radio("1.8 ท่านดื่มเครื่องดื่มแอลกอฮอล์หรือไม่:", ["ดื่ม", "ไม่ดื่ม"])
 
         occupation_opt = st.radio("1.9 ลักษณะอาชีพที่ทำ:", ["เพาะปลูกด้วยตนเอง", "รับจ้างเพาะปลูก", "อื่นๆ"])
-        occupation_other = st.text_input("ระบุลักษณะอาชีพอื่นๆ:", label_visibility="collapsed")
-        form_data['ลักษณะอาชีพที่ทำ'] = occupation_other if occupation_opt == "อื่นๆ" else occupation_opt
+        if occupation_opt == "อื่นๆ":
+            occupation_other = st.text_input("ระบุลักษณะอาชีพอื่นๆ:", label_visibility="collapsed")
+            form_data['ลักษณะอาชีพที่ทำ'] = occupation_other
+        else:
+            form_data['ลักษณะอาชีพที่ทำ'] = occupation_opt
 
         col1, col2 = st.columns(2)
         form_data['ประเภทของพืชที่เพาะปลูก'] = col1.text_input("1.10 ประเภทของพืชที่ทำการเพาะปลูก:")
         form_data['พื้นที่เกษตรกรรม (ไร่)'] = col2.number_input("1.11 พื้นที่เกษตรกรรมของท่านทั้งหมด (ไร่):", min_value=0)
 
         knowledge_opt = st.radio("1.12 ท่านเคยรู้เรื่องอันตรายจากสารกำจัดศัตรูพืชหรือไม่:", ["ไม่เคย", "เคย"])
-        knowledge_source = st.text_input("จากแหล่งใด:", label_visibility="collapsed")
-        form_data['ความรู้เรื่องอันตราย'] = f"เคย (จาก: {knowledge_source})" if knowledge_opt == "เคย" else "ไม่เคย"
+        if knowledge_opt == "เคย":
+            knowledge_source = st.text_input("จากแหล่ง (ระบุ):")
+            form_data['ความรู้เรื่องอันตราย'] = f"เคย (จาก: {knowledge_source})"
+        else:
+            form_data['ความรู้เรื่องอันตราย'] = "ไม่เคย"
 
     # --- Section 2: Exposure Possibility ---
     with st.expander("ส่วนที่ 2: ความเป็นไปได้ของการได้รับสัมผัส", expanded=True):
@@ -62,8 +69,11 @@ def render():
         form_data['แหล่งที่มาของสารเคมี'] = ", ".join(source_opts)
 
         chem_knowledge_opt = st.radio("2.5 ในวันดังกล่าว ก่อนการใช้สารเคมีท่านทราบหรือไม่ว่าสารเคมีนี้ คืออะไร:", ["ไม่ทราบ", "ทราบ"])
-        chem_name = st.text_input("ระบุชื่อสาร:", label_visibility="collapsed")
-        form_data['ทราบชนิดสารเคมี'] = f"ทราบ (ชื่อ: {chem_name})" if chem_knowledge_opt == "ทราบ" else "ไม่ทราบ"
+        if chem_knowledge_opt == "ทราบ":
+            chem_name = st.text_input("ระบุชื่อสาร:", label_visibility="collapsed")
+            form_data['ทราบชนิดสารเคมี'] = f"ทราบ (ชื่อ: {chem_name})"
+        else:
+             form_data['ทราบชนิดสารเคมี'] = "ไม่ทราบ"
         
         st.write("พฤติกรรมการป้องกัน:")
         col1, col2, col3 = st.columns(3)
@@ -77,8 +87,11 @@ def render():
         form_data['แยกซักเสื้อผ้า'] = st.radio("2.12 ท่านมีการแยกซักเสื้อผ้าที่สวมใส่ทำงานกับเสื้อผ้าอื่นๆ:", ["ใช่", "ไม่ใช่"])
         
         disposal_opt = st.radio("2.13 ท่านทิ้งภาชนะที่ใส่เมล็ดพืชที่ไหนอย่างไร:", ["ทิ้งไว้ทั่วไป", "ฝังกลบ", "เผา", "อื่นๆ"])
-        disposal_other = st.text_input("วิธีทิ้งภาชนะอื่นๆ:", label_visibility="collapsed")
-        form_data['การทิ้งภาชนะ'] = disposal_other if disposal_opt == "อื่นๆ" else disposal_opt
+        if disposal_opt == "อื่นๆ":
+            disposal_other = st.text_input("วิธีทิ้งภาชนะอื่นๆ:", label_visibility="collapsed")
+            form_data['การทิ้งภาชนะ'] = disposal_other
+        else:
+            form_data['การทิ้งภาชนะ'] = disposal_opt
 
         col1, col2 = st.columns(2)
         form_data['ล้างมือ/ร่างกายหลังทำงาน'] = col1.radio("2.14 ล้างมือ/ร่างกายหลังทำงาน หรือไม่:", ["มี", "ไม่มี"])
@@ -99,8 +112,8 @@ def render():
             col1, col2, col3 = st.columns([2, 1, 2])
             col1.markdown(f"- {symptom}")
             has_symptom = col2.radio(" ", ["ไม่มี", "มี"], key=f"symptom_{symptom}", label_visibility="collapsed", horizontal=True)
-            treatment = col3.text_input("การรักษา/ปฐมพยาบาล", key=f"treatment_{symptom}", label_visibility="collapsed")
             if has_symptom == "มี":
+                treatment = col3.text_input("การรักษา/ปฐมพยาบาล", key=f"treatment_{symptom}", label_visibility="collapsed")
                 form_data[f"อาการ: {symptom}"] = f"มี (การรักษา: {treatment})"
             else:
                  form_data[f"อาการ: {symptom}"] = "ไม่มี"
@@ -111,8 +124,11 @@ def render():
             "4.1 ท่านรู้จักคลินิกเกษตรกรหรือไม่:",
             ["ไม่รู้จัก", "รู้จัก และเคยไปใช้บริการ", "รู้จัก แต่ไม่เคยไปรับบริการ", "อื่นๆ"]
         )
-        clinic_other = st.text_input("อื่นๆ (เกี่ยวกับคลินิกเกษตรกร):", label_visibility="collapsed")
-        form_data['รู้จักคลินิกเกษตรกร'] = clinic_other if clinic_opt == "อื่นๆ" else clinic_opt
+        if clinic_opt == "อื่นๆ":
+            clinic_other = st.text_input("อื่นๆ (เกี่ยวกับคลินิกเกษตรกร):", label_visibility="collapsed")
+            form_data['รู้จักคลินิกเกษตรกร'] = clinic_other
+        else:
+            form_data['รู้จักคลินิกเกษตรกร'] = clinic_opt
 
         form_data['ข้อมูลอื่นๆ'] = st.text_area("4.2 ข้อมูลอื่นๆ:")
         
