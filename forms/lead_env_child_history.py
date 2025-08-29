@@ -113,7 +113,11 @@ def render():
 
         st.write("2. พัฒนาการเด็ก")
         dev_check_status = st.radio("สถานะการตรวจ:", ["ไม่ได้ตรวจ", "ตรวจ"])
-        if dev_check_status == "ตรวจ":
+        
+        if dev_check_status == "ไม่ได้ตรวจ":
+            not_checked_reason = st.text_input("ระบุเหตุผลที่ไม่ได้ตรวจ:", key="dev_not_checked_reason")
+            form_data['ผลตรวจพัฒนาการเด็ก'] = f"ไม่ได้ตรวจ (เหตุผล: {not_checked_reason})"
+        else:
             dev_domains = st.multiselect(
                 "ระบุด้านที่ตรวจ:",
                 ["ด้านการเคลื่อนไหว (GM)", "ด้านการใช้กล้ามเนื้อมัดเล็กและสติปัญญา (FM)", 
@@ -121,8 +125,6 @@ def render():
             )
             dev_check_date = st.date_input("วันที่ตรวจพัฒนาการ", key="dev_check_date")
             form_data['ผลตรวจพัฒนาการเด็ก'] = f"ตรวจ (ด้าน: {', '.join(dev_domains)}, วันที่: {dev_check_date})"
-        else:
-            form_data['ผลตรวจพัฒนาการเด็ก'] = "ไม่ได้ตรวจ"
 
     # --- Section 4 & 5: Diagnosis & Recommendations ---
     with st.expander("ส่วนที่ 4 และ 5: การวินิจฉัยและข้อเสนอแนะ", expanded=True):
