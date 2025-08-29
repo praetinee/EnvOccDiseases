@@ -35,27 +35,41 @@ def render():
                 st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
             
             with col2:
-                sub_col1, sub_col2 = st.columns([1, 2])
-                with sub_col1:
-                    exam_status = st.radio(
-                        "Status", 
-                        ["Normal", "Abnormal"], 
-                        key=f"{key}_status", 
-                        horizontal=True, 
-                        label_visibility="collapsed"
-                    )
+                # Custom input for specific items based on the original form
+                if key == "exam_cns":
+                    cns_grade = st.text_input("Grade", key=f"{key}_detail", placeholder="ระบุผล", label_visibility="collapsed")
+                    form_data[f'ตรวจร่างกาย: {item}'] = cns_grade
                 
-                exam_detail = ""
-                if exam_status == "Abnormal":
+                elif key in ["exam_upper", "exam_lower"]:
+                    sub_col1, sub_col2 = st.columns([1, 4])
+                    with sub_col1:
+                        grade = st.text_input("Grade", max_chars=1, key=f"{key}_grade", label_visibility="collapsed")
                     with sub_col2:
-                        exam_detail = st.text_input(
-                            "Detail", 
-                            key=f"{key}_detail", 
-                            placeholder="ระบุความผิดปกติ",
+                        st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'> / 5</div>", unsafe_allow_html=True)
+                    form_data[f'ตรวจร่างกาย: {item}'] = f"{grade}/5" if grade else ""
+
+                # Default Normal/Abnormal for other items
+                else:
+                    sub_col1, sub_col2 = st.columns([1, 2])
+                    with sub_col1:
+                        exam_status = st.radio(
+                            "Status", 
+                            ["Normal", "Abnormal"], 
+                            key=f"{key}_status", 
+                            horizontal=True, 
                             label_visibility="collapsed"
                         )
-            
-            form_data[f'ตรวจร่างกาย: {item}'] = exam_detail if exam_status == "Abnormal" and exam_detail else exam_status
+                    
+                    exam_detail = ""
+                    if exam_status == "Abnormal":
+                        with sub_col2:
+                            exam_detail = st.text_input(
+                                "Detail", 
+                                key=f"{key}_detail", 
+                                placeholder="ระบุความผิดปกติ",
+                                label_visibility="collapsed"
+                            )
+                    form_data[f'ตรวจร่างกาย: {item}'] = exam_detail if exam_status == "Abnormal" and exam_detail else exam_status
 
     with st.container(border=True):
         st.subheader("ข้อมูลผลตรวจทางห้องปฏิบัติการ")
@@ -90,7 +104,7 @@ def render():
 
     st.markdown("---")
     if st.button("ประเมินผล", use_container_width=True, type="primary"):
-        if blood_lead_level > 10:
+        if 'blood_lead_level' in locals() and blood_lead_level > 10:
             st.error("ผลการประเมิน: มีความเสี่ยง", icon="⚠️")
             with st.expander("ดูคำแนะนำ", expanded=True):
                 st.subheader("คำแนะนำสำหรับกลุ่มงานอาชีวเวชกรรม")
