@@ -29,8 +29,71 @@ def render():
         form_data['สมาชิกเด็ก<7ปี'] = col2.number_input("เด็ก < 7 ปี (คน)", min_value=0, step=1)
 
         st.subheader("ประวัติเด็ก")
-        # ... (Questions from PbC01 can be reused here if needed) ...
-        st.info("ส่วนนี้สามารถนำข้อมูลจากแบบซักประวัติ (PbC01) มาใช้ได้")
+        
+        # 1. การศึกษาของเด็ก
+        education_status = st.radio("1) การศึกษาของเด็ก:", ["ยังไม่ได้เข้าเรียน", "เข้าเรียน"])
+        if education_status == "เข้าเรียน":
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.write("ระดับ:")
+                education_level = st.radio("ระดับชั้น:", ["ก่อนอนุบาล", "อนุบาล", "ประถม"], label_visibility="collapsed")
+            with col2:
+                st.write("ระยะเวลาที่เรียน (ปี):")
+                edu_years = st.number_input("ปี", min_value=0, step=1, key="edu_years", label_visibility="collapsed")
+            with col3:
+                st.write("ระยะเวลาที่เรียน (เดือน):")
+                edu_months = st.number_input("เดือน", min_value=0, max_value=11, step=1, key="edu_months", label_visibility="collapsed")
+            form_data['การศึกษา'] = f"เข้าเรียน ระดับ {education_level} (ระยะเวลา {edu_years} ปี {edu_months} เดือน)"
+        else:
+            form_data['การศึกษา'] = "ยังไม่ได้เข้าเรียน"
+
+        # 2. ระยะเวลาอาศัย
+        st.write("2) เด็กอาศัยอยู่ในที่อยู่ปัจจุบันมาประมาณ:")
+        col1, col2 = st.columns(2)
+        res_years = col1.number_input("ปี", min_value=0, step=1, key="res_years_child")
+        res_months = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="res_months_child")
+        form_data['ระยะเวลาอาศัย'] = f"{res_years} ปี {res_months} เดือน"
+
+        # 3. โรคประจำตัว
+        comorbidity_status = st.radio("3) เด็กมีโรคประจำตัวหรือไม่:", ["ไม่มี", "มี"])
+        if comorbidity_status == "มี":
+            comorbidity_detail = st.text_input("ระบุโรคประจำตัว:", key="comorbidity_detail")
+            form_data['โรคประจำตัว'] = f"มี ({comorbidity_detail})"
+        else:
+            form_data['โรคประจำตัว'] = "ไม่มี"
+
+        # 4. ยาประจำ
+        medication_opts = st.multiselect("4) เด็กรับประทานยาประจำ:", 
+                                         ["ไม่ได้รับประทาน", "รับประทาน (ระบุ)", "รับประทานยาสมุนไพร (ระบุ)", "ยากวาดลิ้น"])
+        
+        med_details = []
+        if "รับประทาน (ระบุ)" in medication_opts:
+            med_regular = st.text_input("ระบุยาที่รับประทานประจำ")
+            if med_regular: med_details.append(f"รับประทาน ({med_regular})")
+        if "รับประทานยาสมุนไพร (ระบุ)" in medication_opts:
+            med_herbal = st.text_input("ระบุยาสมุนไพร")
+            if med_herbal: med_details.append(f"ยาสมุนไพร ({med_herbal})")
+        if "ยากวาดลิ้น" in medication_opts:
+            med_details.append("ยากวาดลิ้น")
+        if "ไม่ได้รับประทาน" in medication_opts:
+             med_details.append("ไม่ได้รับประทาน")
+        form_data['ยาประจำ'] = ", ".join(med_details)
+
+
+        # 5. อาบน้ำ
+        form_data['จำนวนอาบน้ำ'] = st.number_input("5) เด็กอาบน้ำวันละกี่ครั้ง:", min_value=0, step=1)
+
+        # 6. ดื่มนม
+        form_data['การดื่มนม'] = st.radio("6) เด็กดื่มนมอะไร:", ["นมแม่อย่างเดียว", "นมกระป๋อง/นมกล่องอย่างเดียว", "ทั้งนมแม่และนมกระป๋อง/นมกล่อง"])
+        
+        # 7-9. การไปในที่ทำงานเกี่ยวกับตะกั่ว
+        visit_workplace = st.radio("7) เด็กเคยไปบริเวณที่ทำงานเกี่ยวกับตะกั่วบ้างหรือไม่:", ["ไม่ไป", "ไป"])
+        if visit_workplace == "ไป":
+            form_data['ความถี่ในการไป'] = st.radio("8) เด็กไปที่บริเวณงานเกี่ยวกับตะกั่วบ่อยแค่ไหน:", ["นานๆ ไปครั้ง", "บ่อยมาก"])
+            form_data['ระยะเวลาที่อยู่'] = st.radio("9) ระยะเวลาเฉลี่ยในแต่ละวันที่เด็กอยู่บริเวณงานเกี่ยวกับตะกั่ว:", ["น้อยกว่า 2 ชม.", "2 - 4 ชม.", "5 - 8 ชม.", "8 ชม. ขึ้นไป"])
+        else:
+            form_data['ความถี่ในการไป'] = "ไม่ไป"
+            form_data['ระยะเวลาที่อยู่'] = "ไม่ไป"
 
 
     # --- Section 2: Risk Factors ---
@@ -90,8 +153,10 @@ def render():
         }
         for category, factors in risk_factors.items():
             st.markdown(f"**{category}**")
-            for factor in factors:
-                form_data[factor] = st.radio(factor, ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, label_visibility="collapsed")
+            for i, factor in enumerate(factors):
+                cols = st.columns([3, 2])
+                cols[0].write(factor)
+                form_data[factor] = cols[1].radio(f"select_{category}_{i}", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, label_visibility="collapsed")
 
 
     # --- Section 3: Environmental Measurement ---
@@ -116,7 +181,9 @@ def render():
             "ท้องผูก", "เบื่ออาหาร", "กระวนกระวาย/ไม่มีสมาธิ", "หงุดหงิดง่าย"
         ]
         for symptom in symptoms:
-            form_data[symptom] = st.radio(symptom, ["ไม่มี", "นานๆครั้ง", "เป็นประจำ/แทบทุกวัน"], horizontal=True)
+            cols = st.columns([2, 3])
+            cols[0].write(symptom)
+            form_data[symptom] = cols[1].radio(symptom, ["ไม่มี", "นานๆครั้ง", "เป็นประจำ/แทบทุกวัน"], horizontal=True, label_visibility="collapsed")
 
         st.subheader("4.2 การตรวจร่างกายตามระบบ")
         # ... (Physical exam section can be added here, similar to lead_occupational_medical.py) ...
@@ -131,4 +198,5 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
 
