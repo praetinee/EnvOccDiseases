@@ -161,11 +161,13 @@ def render():
         
         # Header
         col_q, col_a, col_b = st.columns([4, 1, 1])
+        with col_q:
+             st.markdown("**การประเมินความเสี่ยงของเด็กในการสัมผัสสารตะกั่ว**")
         with col_a:
-            st.markdown("**ไม่ใช่ (0 คะแนน)**")
+            st.markdown("<div style='text-align: center;'><b>ไม่ใช่ (0 คะแนน)</b></div>", unsafe_allow_html=True)
         with col_b:
-            st.markdown("**ใช่ (1 คะแนน)**")
-            
+            st.markdown("<div style='text-align: center;'><b>ใช่ (1 คะแนน)</b></div>", unsafe_allow_html=True)
+
         for question, weight in risk_questions.items():
             col1, col2 = st.columns([4, 2])
             with col1:
