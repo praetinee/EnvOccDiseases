@@ -238,9 +238,11 @@ def render():
         }
 
         for item, key in exam_items_normal_abnormal.items():
-            status = st.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True)
+            col1, col2, col3 = st.columns([2, 2, 2])
+            col1.write(item)
+            status = col2.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
             if status == "Abnormal":
-                detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail")
+                detail = col3.text_input("ระบุ", key=f"{key}_detail", label_visibility="collapsed")
                 form_data[item] = f"Abnormal: {detail}"
             else:
                 form_data[item] = "Normal"
