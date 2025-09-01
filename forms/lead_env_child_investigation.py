@@ -74,43 +74,47 @@ def render():
 
         st.subheader("2.3 ประวัติเด็ก")
         child_history_data = {}
-        child_history_data['ประวัติการเจ็บป่วย (โรคประจำตัว)'] = st.text_input("ประวัติการเจ็บป่วยในอดีต (โรคประจำตัว):")
         
-        st.markdown("**ประวัติการคลอด**")
-        col1, col2, col3, col4 = st.columns(4)
-        child_history_data['การคลอด'] = col1.radio("การคลอด:", ["ครบกำหนด", "ก่อนกำหนด"])
-        child_history_data['น้ำหนักแรกคลอด'] = col2.number_input("น้ำหนักแรกคลอด (กรัม):", min_value=0)
-        child_history_data['วิธีคลอด'] = col3.radio("วิธีคลอด:", ["ปกติ", "ผ่าตัด"])
-        child_history_data['ภาวะแทรกซ้อน'] = col4.radio("ภาวะแทรกซ้อน:", ["ไม่มี", "มี"])
-        
-        st.markdown("**ประวัติพัฒนาการ** (อายุที่เริ่มทำได้)")
-        dev_col1, dev_col2, dev_col3, dev_col4 = st.columns(4)
-        child_history_data['ชันคอ'] = dev_col1.text_input("ชันคอ:")
-        child_history_data['นั่ง'] = dev_col2.text_input("นั่ง:")
-        child_history_data['คลาน'] = dev_col3.text_input("คลาน:")
-        child_history_data['ยืน'] = dev_col4.text_input("ยืน:")
-        child_history_data['เดิน'] = dev_col1.text_input("เดิน:")
-        child_history_data['พูดคำแรก'] = dev_col2.text_input("พูดคำแรก:")
-        child_history_data['พูดเป็นประโยค'] = dev_col3.text_input("พูดเป็นประโยค:")
-        
-        child_history_data['ประวัติวัคซีน'] = st.radio("ประวัติการได้รับวัคซีน:", ["ครบตามเกณฑ์", "ไม่ครบ/ไม่แน่ใจ"])
-        
-        st.markdown("**พฤติกรรมของเด็ก**")
-        behavior_cols = st.columns(2)
-        child_history_data['ดูดนิ้ว'] = behavior_cols[0].checkbox("ดูดนิ้ว")
-        child_history_data['เอาของเข้าปาก'] = behavior_cols[1].checkbox("เอาของเล่น/สิ่งแปลกปลอมเข้าปาก")
-        child_history_data['ไม่ล้างมือก่อนกินข้าว'] = behavior_cols[0].checkbox("ไม่ล้างมือก่อนรับประทานอาหาร")
-        child_history_data['กินอาหาร/น้ำจากภาชนะเสี่ยง'] = behavior_cols[1].checkbox("กินอาหาร/น้ำจากภาชนะที่มีสีสัน หรือหม้อที่ไม่ได้มาตรฐาน")
-        child_history_data['เล่นนอกบ้าน'] = behavior_cols[0].checkbox("ชอบเล่นนอกบ้าน")
-        child_history_data['เล่นดินทราย'] = behavior_cols[1].checkbox("ชอบเล่นคลุกคลีกับดิน ทราย")
-        child_history_data['พฤติกรรมอื่นๆ'] = st.text_input("พฤติกรรมอื่นๆ:")
+        education_status = st.radio("1) การศึกษาของเด็ก", ["ยังไม่ได้เข้าเรียน", "เข้าเรียน"], horizontal=True)
+        if education_status == "เข้าเรียน":
+            education_level = st.radio("ระดับ", ["ก่อนอนุบาล", "อนุบาล", "ประถม"], horizontal=True)
+            st.write("เด็กเรียนอยู่ในโรงเรียนปัจจุบันเป็นระยะเวลา:")
+            col1, col2 = st.columns(2)
+            edu_years = col1.number_input("ปี", min_value=0, step=1, key="edu_years_pb_invest")
+            edu_months = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="edu_months_pb_invest")
+            child_history_data['การศึกษา'] = f"เข้าเรียน ระดับ {education_level} (ระยะเวลา {edu_years} ปี {edu_months} เดือน)"
+        else:
+            child_history_data['การศึกษา'] = "ยังไม่ได้เข้าเรียน"
 
-        st.markdown("**ประวัติการใช้ยา/อาหารเสริม**")
-        med_cols = st.columns(3)
-        child_history_data['ยาหม้อ/ยาลูกกลอน'] = med_cols[0].checkbox("ยาหม้อ/ยาลูกกลอน")
-        child_history_data['แคลเซียม'] = med_cols[1].checkbox("แคลเซียม")
-        child_history_data['วิตามิน'] = med_cols[2].checkbox("วิตามิน")
+        st.write("2) เด็กอาศัยอยู่ในที่อยู่ปัจจุบันมาประมาณ")
+        col1, col2 = st.columns(2)
+        res_years_child = col1.number_input("ปี", min_value=0, step=1, key="res_years_child_pb_invest")
+        res_months_child = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="res_months_child_pb_invest")
+        child_history_data['ระยะเวลาอาศัย'] = f"{res_years_child} ปี {res_months_child} เดือน"
+
+        chronic_disease_status = st.radio("3) เด็กมีโรคประจำตัวหรือไม่", ["ไม่มี", "มี"], horizontal=True)
+        if chronic_disease_status == "มี":
+            chronic_disease_detail = st.text_input("ระบุ:", key="chronic_disease_detail_pb_invest")
+            child_history_data['โรคประจำตัว'] = f"มี ({chronic_disease_detail})"
+        else:
+            child_history_data['โรคประจำตัว'] = "ไม่มี"
         
+        medication_status = st.radio("4) เด็กรัปประทานยาประจำ", ["ไม่ได้รับประทาน", "รับประทานสมุนไพร", "ยากวาดลิ้น"], horizontal=True)
+        if medication_status == "ไม่ได้รับประทาน":
+             child_history_data['ยาประจำ'] = "ไม่ได้รับประทาน"
+        else:
+             child_history_data['ยาประจำ'] = medication_status
+
+        child_history_data['จำนวนอาบน้ำ'] = st.number_input("5) เด็กอาบน้ำวันละกี่ครั้ง", min_value=0, step=1)
+        
+        child_history_data['การดื่มนม'] = st.radio("6) เด็กดื่มนมอะไร", ["นมแม่อย่างเดียว", "นมกระป๋อง/นมกล่องอย่างเดียว", "ทั้งนมแม่และนมกระป๋อง/นมกล่อง"])
+
+        visit_workplace = st.radio("7) เด็กเคยไปบริเวณที่ทำงานเกี่ยวกับตะกั่วบ้างหรือไม่", ["ไม่ไป", "ไป"], horizontal=True)
+        child_history_data['เคยไปที่ทำงาน'] = visit_workplace
+        if visit_workplace == "ไป":
+            child_history_data['ความถี่ไปที่ทำงาน'] = st.radio("8) เด็กไปที่บริเวณงานเกี่ยวกับตะกั่วบ่อยแค่ไหน", ["นานๆ ไปครั้ง", "บ่อยมาก"], horizontal=True)
+            child_history_data['ระยะเวลาอยู่ทีทำงาน'] = st.radio("9) ระยะเวลาเฉลี่ยในแต่ละวันที่เด็กอยู่บริเวณงานเกี่ยวกับตะกั่ว", ["น้อยกว่า 2 ชม.", "2 - 4 ชม.", "5 - 8 ชม.", "8 ชม. ขึ้นไป"], horizontal=True)
+
         form_data['ประวัติเด็ก'] = child_history_data
 
         st.subheader("2.4 ปัจจัยเกี่ยวข้องกับการสัมผัสสารตะกั่วของเด็ก")
