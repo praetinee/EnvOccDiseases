@@ -30,6 +30,8 @@ lead_env_adult_history_render = load_render_function("lead_env_adult_history")
 lead_env_adult_investigation_render = load_render_function("lead_env_adult_investigation")
 lead_env_child_history_render = load_render_function("lead_env_child_history")
 lead_env_child_investigation_render = load_render_function("lead_env_child_investigation")
+# Add the new form
+lead_env_child_risk_render = load_render_function("lead_env_child_risk")
 silicosis_render = load_render_function("silicosis")
 confined_space_render = load_render_function("confined_space")
 pesticide_render = load_render_function("pesticide")
@@ -63,6 +65,7 @@ PAGE_MAP = {
     "env_lead_adult_investigation": ("สอบสวนผู้ใหญ่-ตะกั่ว (Pb-1)", lead_env_adult_investigation_render),
     "env_lead_child_history": ("ซักประวัติเด็ก-ตะกั่ว (PbC01)", lead_env_child_history_render),
     "env_lead_child_investigation": ("สอบสวนเด็ก-ตะกั่ว (Pb)", lead_env_child_investigation_render),
+    "env_lead_child_risk": ("ประเมินความเสี่ยงเด็ก-ตะกั่ว (PbC03)", lead_env_child_risk_render), # Add new page
     "env_pm25": ("โรคจากฝุ่น PM2.5", pm25_render),
 }
 
@@ -94,6 +97,7 @@ with st.sidebar:
         st.button("สอบสวนผู้ใหญ่ (Pb-1)", on_click=set_page, args=("env_lead_adult_investigation",), use_container_width=True)
         st.button("ซักประวัติเด็ก (PbC01)", on_click=set_page, args=("env_lead_child_history",), use_container_width=True)
         st.button("สอบสวนเด็ก (Pb)", on_click=set_page, args=("env_lead_child_investigation",), use_container_width=True)
+        st.button("ประเมินความเสี่ยงเด็ก (PbC03)", on_click=set_page, args=("env_lead_child_risk",), use_container_width=True) # Add button for new form
 
 # --- Main Content Area ---
 page_title, render_function = PAGE_MAP.get(st.session_state.selected_page, PAGE_MAP["home"])
