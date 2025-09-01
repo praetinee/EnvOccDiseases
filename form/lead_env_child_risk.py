@@ -1,0 +1,194 @@
+# -*- coding: utf-8 -*-
+import streamlit as st
+import pandas as pd
+
+def render():
+    """Renders the Lead Environmental Child Risk Assessment Form (PbC03)."""
+    st.header("แบบประเมินความเสี่ยงการสัมผัสสารตะกั่วในเด็กแรกเกิดถึงอายุต่ำกว่า 15 ปี")
+    st.caption("(แบบ PbC03) (ใช้ได้ทั้งกรณีเชิงรับและเชิงรุก)")
+
+    form_data = {}
+
+    # --- Section 1: General Info ---
+    with st.expander("ส่วนที่ 1: ข้อมูลทั่วไป", expanded=True):
+        col1, col2 = st.columns(2)
+        form_data['name'] = col1.text_input("ชื่อ ด.ช./ด.ญ.:")
+        form_data['gender'] = col2.radio("เพศ:", ["ชาย", "หญิง"], horizontal=True)
+
+        col1, col2, col3 = st.columns(3)
+        form_data['birthdate'] = col1.date_input("วัน/เดือน/ปีเกิด:")
+        form_data['weight'] = col2.number_input("น้ำหนัก (กก.):", min_value=0.0, format="%.2f")
+        form_data['height'] = col3.number_input("ส่วนสูง (ซม.):", min_value=0.0, format="%.2f")
+
+        form_data['parent_name'] = st.text_input("ชื่อผู้ปกครอง:")
+        form_data['address'] = st.text_area("ที่อยู่ปัจจุบัน:", placeholder="บ้านเลขที่, หมู่, ตำบล, อำเภอ, จังหวัด")
+
+    # --- Section 2: Exposure Opportunity Assessment ---
+    with st.expander("ส่วนที่ 2: ประเมินโอกาสการสัมผัสสารตะกั่ว", expanded=True):
+        exposure_data = {}
+        
+        st.write("1. ทำงานเกี่ยวข้องกับตะกั่ว โดยสถานที่ทำงานอยู่นอกบ้าน")
+        is_work_outside = st.radio(" ", ["ไม่ใช่", "ใช่"], key="work_outside_radio", label_visibility="collapsed", horizontal=True)
+        if is_work_outside == 'ใช่':
+            work_outside_options = st.multiselect(
+                "ระบุอาชีพ:",
+                ["ทำเครื่องประดับ", "ก่อสร้าง/รื้อถอนอาคาร", "อู่ซ่อมเรือไม้", "งานเกี่ยวข้องกับสี", "งานเกี่ยวกับเครื่องยนต์", 
+                 "งานเกี่ยวกับแบตเตอรี่", "หลอมตะกั่ว/กระสุน", "รีไซเคิลขยะอิเล็กทรอนิกส์", "ร้อยเม็ดตะกั่ว เบ็ดตกปลา/อวนหาปลา"],
+                key="work_outside_multiselect"
+            )
+            other_work_outside = st.text_input("อื่นๆ:", key="work_outside_other")
+            if other_work_outside: work_outside_options.append(other_work_outside)
+            exposure_data['work_outside'] = ", ".join(work_outside_options)
+            exposure_data['work_outside_relation'] = st.multiselect("ความเกี่ยวข้องกับเด็ก:", ["บิดา", "มารดา", "พี่", "ญาติคนอื่นๆ"], key="work_outside_relation")
+        else:
+            exposure_data['work_outside'] = "ไม่ใช่"
+
+        st.write("2. ทำงานที่เกี่ยวข้องกับตะกั่วในบ้าน/บริเวณบ้าน")
+        is_work_inside = st.radio(" ", ["ไม่ใช่", "ใช่"], key="work_inside_radio", label_visibility="collapsed", horizontal=True)
+        if is_work_inside == 'ใช่':
+            work_inside_options = st.multiselect(
+                "ระบุอาชีพ:",
+                ["ทำเครื่องประดับ", "ก่อสร้าง/รื้อถอนอาคาร", "อู่ซ่อมเรือไม้", "งานเกี่ยวข้องกับสี", "งานเกี่ยวกับเครื่องยนต์", 
+                 "งานเกี่ยวกับแบตเตอรี่", "หลอมตะกั่ว/กระสุน", "รีไซเคิลขยะอิเล็กทรอนิกส์", "ร้อยเม็ดตะกั่ว เบ็ดตกปลา/อวนหาปลา"],
+                key="work_inside_multiselect"
+            )
+            other_work_inside = st.text_input("อื่นๆ:", key="work_inside_other")
+            if other_work_inside: work_inside_options.append(other_work_inside)
+            exposure_data['work_inside'] = ", ".join(work_inside_options)
+            exposure_data['work_inside_relation'] = st.multiselect("ความเกี่ยวข้องกับเด็ก:", ["บิดา", "มารดา", "พี่", "ญาติคนอื่นๆ"], key="work_inside_relation")
+        else:
+             exposure_data['work_inside'] = "ไม่ใช่"
+
+        st.write("3. บ้านอยู่ใกล้แหล่งอุตสาหกรรม หรือกิจการ ร้านค้าที่เกี่ยวข้องกับตะกั่ว (ระยะไม่เกิน 30 เมตร)")
+        is_near_source = st.radio(" ", ["ไม่ใช่", "ใช่"], key="near_source_radio", label_visibility="collapsed", horizontal=True)
+        if is_near_source == 'ใช่':
+             source_options = st.multiselect(
+                "ระบุ:",
+                ["ทำเครื่องประดับ", "ก่อสร้าง/รื้อถอนอาคาร", "อู่ซ่อมเรือไม้", "งานเกี่ยวข้องกับสี", "งานเกี่ยวกับเครื่องยนต์", 
+                 "งานเกี่ยวกับแบตเตอรี่", "หลอมตะกั่ว/กระสุน", "รีไซเคิลขยะอิเล็กทรอนิกส์", "ร้อยเม็ดตะกั่ว เบ็ดตกปลา/อวนหาปลา"],
+                key="near_source_multiselect"
+            )
+             other_source = st.text_input("อื่นๆ:", key="near_source_other")
+             if other_source: source_options.append(other_source)
+             exposure_data['near_source'] = ", ".join(source_options)
+        else:
+            exposure_data['near_source'] = "ไม่ใช่"
+            
+        exposure_data['paint_peeling'] = st.radio("4. อาศัยอยู่ในบ้านที่มีสีทาบ้านหลุดลอก", ["ไม่ใช่", "ใช่"], horizontal=True)
+        
+        is_not_related = st.checkbox("5. ไม่เกี่ยวข้องกับ ข้อ 1 - 4 ดังกล่าวข้างต้น (จัดเป็นกลุ่มที่ไม่ได้สัมผัส จบข้อคำถาม)")
+        form_data['exposure_assessment'] = exposure_data
+        
+        if is_not_related:
+            st.info("จากข้อมูลข้างต้น จัดเป็นกลุ่มที่ไม่ได้สัมผัส")
+            return # Stop rendering the rest of the form
+
+    # --- Section 3: Risk Assessment ---
+    with st.expander("ส่วนที่ 3: การประเมินความเสี่ยงของเด็กในการสัมผัสสารตะกั่ว", expanded=True):
+        
+        risk_questions = {
+            "บ้านมีการหลุดลอกของสีทาบ้าน": 1.5,
+            "บ้านอยู่ใกล้แหล่งอุตสาหกรรม หรือกิจการ ร้านค้าที่เกี่ยวข้องกับตะกั่ว (ระยะไม่เกิน 30 เมตร)": 1.5,
+            "โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น": 1.0,
+            "มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน": 1.0,
+            "ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป": 1.5,
+            "บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้านหรือบริเวณบ้าน": 3.0,
+            "หลังเลิกงานที่เกี่ยวข้องกับตะกั่ว ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที": 1.5,
+            "การเก็บวัสดุ อุปกรณ์ ที่ทำงานเกี่ยวข้องกับตะกั่วไว้ในบ้าน หรือมีแบตเตอรี่วางไว้ในบ้าน": 1.5,
+            "เก็บชุดทำงานที่ใส่แล้วไว้ในบ้าน": 1.5,
+            "ซักชุดทำงานรวมกับเสื้อผ้าอื่นๆ": 1.0,
+            "เด็กชอบอมหรือดูดนิ้วหรือไม่": 1.5,
+            "เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่": 1.5,
+            "ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร": 1.5,
+            "เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว": 1.5,
+            "บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว": 2.0,
+            "ของเล่นของเด็ก เป็นวัสดุที่สีหลุดลอก": 1.5,
+            "มีประวัติสมาชิกครอบครัวป่วยด้วยโรคจากตะกั่ว หรือสารประกอบของตะกั่ว": 3.0
+        }
+
+        scores = {}
+        total_score = 0
+        
+        # Header
+        col_q, col_a, col_b = st.columns([4, 1, 1])
+        with col_a:
+            st.markdown("**ไม่ใช่ (0 คะแนน)**")
+        with col_b:
+            st.markdown("**ใช่ (1 คะแนน)**")
+            
+        for question, weight in risk_questions.items():
+            col1, col2, col3 = st.columns([4, 1, 1])
+            with col1:
+                st.write(question)
+            
+            # Use unique keys for radio buttons
+            key = f"risk_{question.replace(' ', '_')}"
+            
+            # The radio button returns the index (0 or 1), which is the score.
+            score = st.radio("", [0, 1], key=key, horizontal=True, label_visibility="collapsed", index=0)
+            
+            scores[question] = {
+                'answer': score,
+                'weight': weight,
+                'calculated_score': score * weight
+            }
+            total_score += score * weight
+
+        form_data['risk_scores'] = scores
+        form_data['total_risk_score'] = total_score
+        
+    # --- Section 4: Summary ---
+    with st.expander("ส่วนที่ 4: สรุปผลการประเมินความเสี่ยงเบื้องต้น", expanded=True):
+        st.write(f"**คะแนนรวมของคำตอบข้อ 1 - 17: {total_score:.2f}**")
+        
+        risk_level = ""
+        if total_score >= 19:
+            risk_level = "สูง"
+            st.error(f"**ระดับความเสี่ยง: {risk_level}**")
+        elif 10 <= total_score < 19:
+            risk_level = "ปานกลาง"
+            st.warning(f"**ระดับความเสี่ยง: {risk_level}**")
+        else: # < 10
+            risk_level = "ต่ำ"
+            st.success(f"**ระดับความเสี่ยง: {risk_level}**")
+        
+        form_data['risk_level'] = risk_level
+        
+        if risk_level in ["ปานกลาง", "สูง"]:
+            st.info("ควรประเมินระดับฝุ่นตะกั่วในบ้านเพิ่มเติม, ซักประวัติเด็กเพิ่มเติมตามแบบฟอร์ม PbC01 พร้อมเจาะเลือดหาระดับตะกั่วในเลือด หรือส่งเด็กไปยังหน่วยบริการสาธารณสุขในพื้นที่")
+
+    # --- Section 5: Environmental Dust Levels (Conditional) ---
+    if form_data.get('risk_level') in ["ปานกลาง", "สูง"]:
+        with st.expander("ส่วนที่ 5: ระดับฝุ่นตะกั่วในบ้าน (เก็บด้วย Wipe technique)", expanded=True):
+            env_data = {}
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.write("**จุดเก็บตัวอย่าง**")
+            with col2:
+                st.write("**ระดับตะกั่วบนพื้นผิว (µg/ft²)**")
+            with col3:
+                st.write("**ค่าอ้างอิง EPA (µg/ft²)**")
+
+            env_data['floor'] = col2.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", key="env_floor", label_visibility="collapsed")
+            col1.write("พื้น (Floors)")
+            col3.write("5")
+
+            env_data['window_sills'] = col2.number_input("ขอบหน้าต่าง (Window Sills)", min_value=0.0, format="%.2f", key="env_sills", label_visibility="collapsed")
+            col1.write("ขอบหน้าต่าง (Window Sills)")
+            col3.write("40")
+            
+            env_data['window_troughs'] = col2.number_input("รางหน้าต่าง (window troughs)", min_value=0.0, format="%.2f", key="env_troughs", label_visibility="collapsed")
+            col1.write("รางหน้าต่าง (window troughs)")
+            col3.write("100")
+            
+            form_data['environmental_dust'] = env_data
+
+    # --- Section 6: Recommendations ---
+    with st.expander("ส่วนที่ 6: ข้อเสนอแนะในการควบคุมความเสี่ยงจากการสัมผัสสารตะกั่ว", expanded=True):
+        form_data['recommendations'] = st.text_area("", key="recommendations_text", label_visibility="collapsed")
+        
+    st.date_input("วันที่เก็บข้อมูล:", key="collection_date")
+
+    if st.button("บันทึกข้อมูล", use_container_width=True, type="primary"):
+        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+        # st.write(form_data)
