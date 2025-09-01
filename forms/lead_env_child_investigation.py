@@ -29,7 +29,8 @@ def render():
         form_data['สมาชิกเด็ก<7ปี'] = col2.number_input("เด็ก < 7 ปี (คน)", min_value=0, step=1)
 
         st.subheader("ประวัติเด็ก")
-        
+        st.info("ส่วนนี้สามารถนำข้อมูลจากแบบซักประวัติ (PbC01) มาใช้ได้")
+
         # 1. การศึกษาของเด็ก
         education_status = st.radio("1) การศึกษาของเด็ก:", ["ยังไม่ได้เข้าเรียน", "เข้าเรียน"])
         if education_status == "เข้าเรียน":
@@ -217,6 +218,7 @@ def render():
             form_data[symptom] = cols[1].radio(symptom, ["ไม่มี", "นานๆครั้ง", "เป็นประจำ/แทบทุกวัน"], horizontal=True, label_visibility="collapsed")
 
         st.subheader("4.2 การตรวจร่างกายตามระบบ")
+        st.info("ส่วนการตรวจร่างกายโดยแพทย์ สามารถใช้ข้อมูลจากแบบบันทึกตรวจร่างกาย (แพทย์) ได้")
         col1, col2, col3, col4 = st.columns(4)
         form_data['BP'] = col1.text_input("BP (mmHg)")
         form_data['PR'] = col2.text_input("PR (/min)")
@@ -272,13 +274,15 @@ def render():
             with pf_col3:
                 r_input_col, r_text_col = st.columns([3, 1])
                 with r_input_col:
-                    form_data[f'{key_prefix}_prox_flex_r'] = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed")
+                    r_flex_prox_val = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_prox_flex_r'] = r_flex_prox_val
                 with r_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
             with pf_col4:
                 l_input_col, l_text_col = st.columns([3, 1])
                 with l_input_col:
-                    form_data[f'{key_prefix}_prox_flex_l'] = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed")
+                    l_flex_prox_val = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_prox_flex_l'] = l_flex_prox_val
                 with l_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
 
@@ -289,13 +293,15 @@ def render():
             with pe_col3:
                 r_input_col, r_text_col = st.columns([3, 1])
                 with r_input_col:
-                    form_data[f'{key_prefix}_prox_ext_r'] = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed")
+                    r_ext_prox_val = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_prox_ext_r'] = r_ext_prox_val
                 with r_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
             with pe_col4:
                 l_input_col, l_text_col = st.columns([3, 1])
                 with l_input_col:
-                    form_data[f'{key_prefix}_prox_ext_l'] = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed")
+                    l_ext_prox_val = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_prox_ext_l'] = l_ext_prox_val
                 with l_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
 
@@ -309,13 +315,15 @@ def render():
             with df_col3:
                 r_input_col, r_text_col = st.columns([3, 1])
                 with r_input_col:
-                    form_data[f'{key_prefix}_dist_flex_r'] = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed")
+                    r_flex_dist_val = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_dist_flex_r'] = r_flex_dist_val
                 with r_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
             with df_col4:
                 l_input_col, l_text_col = st.columns([3, 1])
                 with l_input_col:
-                    form_data[f'{key_prefix}_dist_flex_l'] = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed")
+                    l_flex_dist_val = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_dist_flex_l'] = l_flex_dist_val
                 with l_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
 
@@ -326,13 +334,15 @@ def render():
             with de_col3:
                 r_input_col, r_text_col = st.columns([3, 1])
                 with r_input_col:
-                    form_data[f'{key_prefix}_dist_ext_r'] = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed")
+                    r_ext_dist_val = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_dist_ext_r'] = r_ext_dist_val
                 with r_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
             with de_col4:
                 l_input_col, l_text_col = st.columns([3, 1])
                 with l_input_col:
-                    form_data[f'{key_prefix}_dist_ext_l'] = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed")
+                    l_ext_dist_val = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed")
+                    form_data[f'{key_prefix}_dist_ext_l'] = l_ext_dist_val
                 with l_text_col:
                     st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
 
