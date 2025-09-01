@@ -72,7 +72,48 @@ def render():
         """)
         form_data['แผนผังที่อยู่อาศัย'] = st.file_uploader("อัปโหลดรูปภาพแผนผัง", type=["png", "jpg", "jpeg"])
 
-        st.subheader("2.3 ปัจจัยเกี่ยวข้องกับการสัมผัสสารตะกั่วของเด็ก")
+        st.subheader("2.3 ประวัติเด็ก")
+        child_history_data = {}
+        child_history_data['ประวัติการเจ็บป่วย (โรคประจำตัว)'] = st.text_input("ประวัติการเจ็บป่วยในอดีต (โรคประจำตัว):")
+        
+        st.markdown("**ประวัติการคลอด**")
+        col1, col2, col3, col4 = st.columns(4)
+        child_history_data['การคลอด'] = col1.radio("การคลอด:", ["ครบกำหนด", "ก่อนกำหนด"])
+        child_history_data['น้ำหนักแรกคลอด'] = col2.number_input("น้ำหนักแรกคลอด (กรัม):", min_value=0)
+        child_history_data['วิธีคลอด'] = col3.radio("วิธีคลอด:", ["ปกติ", "ผ่าตัด"])
+        child_history_data['ภาวะแทรกซ้อน'] = col4.radio("ภาวะแทรกซ้อน:", ["ไม่มี", "มี"])
+        
+        st.markdown("**ประวัติพัฒนาการ** (อายุที่เริ่มทำได้)")
+        dev_col1, dev_col2, dev_col3, dev_col4 = st.columns(4)
+        child_history_data['ชันคอ'] = dev_col1.text_input("ชันคอ:")
+        child_history_data['นั่ง'] = dev_col2.text_input("นั่ง:")
+        child_history_data['คลาน'] = dev_col3.text_input("คลาน:")
+        child_history_data['ยืน'] = dev_col4.text_input("ยืน:")
+        child_history_data['เดิน'] = dev_col1.text_input("เดิน:")
+        child_history_data['พูดคำแรก'] = dev_col2.text_input("พูดคำแรก:")
+        child_history_data['พูดเป็นประโยค'] = dev_col3.text_input("พูดเป็นประโยค:")
+        
+        child_history_data['ประวัติวัคซีน'] = st.radio("ประวัติการได้รับวัคซีน:", ["ครบตามเกณฑ์", "ไม่ครบ/ไม่แน่ใจ"])
+        
+        st.markdown("**พฤติกรรมของเด็ก**")
+        behavior_cols = st.columns(2)
+        child_history_data['ดูดนิ้ว'] = behavior_cols[0].checkbox("ดูดนิ้ว")
+        child_history_data['เอาของเข้าปาก'] = behavior_cols[1].checkbox("เอาของเล่น/สิ่งแปลกปลอมเข้าปาก")
+        child_history_data['ไม่ล้างมือก่อนกินข้าว'] = behavior_cols[0].checkbox("ไม่ล้างมือก่อนรับประทานอาหาร")
+        child_history_data['กินอาหาร/น้ำจากภาชนะเสี่ยง'] = behavior_cols[1].checkbox("กินอาหาร/น้ำจากภาชนะที่มีสีสัน หรือหม้อที่ไม่ได้มาตรฐาน")
+        child_history_data['เล่นนอกบ้าน'] = behavior_cols[0].checkbox("ชอบเล่นนอกบ้าน")
+        child_history_data['เล่นดินทราย'] = behavior_cols[1].checkbox("ชอบเล่นคลุกคลีกับดิน ทราย")
+        child_history_data['พฤติกรรมอื่นๆ'] = st.text_input("พฤติกรรมอื่นๆ:")
+
+        st.markdown("**ประวัติการใช้ยา/อาหารเสริม**")
+        med_cols = st.columns(3)
+        child_history_data['ยาหม้อ/ยาลูกกลอน'] = med_cols[0].checkbox("ยาหม้อ/ยาลูกกลอน")
+        child_history_data['แคลเซียม'] = med_cols[1].checkbox("แคลเซียม")
+        child_history_data['วิตามิน'] = med_cols[2].checkbox("วิตามิน")
+        
+        form_data['ประวัติเด็ก'] = child_history_data
+
+        st.subheader("2.4 ปัจจัยเกี่ยวข้องกับการสัมผัสสารตะกั่วของเด็ก")
         risk_factors_data = {}
         
         st.markdown("**เกี่ยวกับที่พักอาศัย**")
@@ -160,3 +201,4 @@ def render():
     if st.button("บันทึกข้อมูล", use_container_width=True, type="primary", key="submit_child_pb"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
