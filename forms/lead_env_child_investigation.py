@@ -264,18 +264,21 @@ def render():
         physical_exam_data['RR'] = col3.number_input("RR (/min):", min_value=0, step=1)
         physical_exam_data['BT'] = col4.number_input("BT (°C):", min_value=0.0, format="%.1f")
         
-        exam_items = [
-            ("General appearance", "exam_general"),
-            ("HEENT: conjunctive", "exam_heent"),
-            ("Lung", "exam_lung"),
-            ("Abdomen", "exam_abdomen"),
-            ("Skin", "exam_skin"),
-            ("Hand writing", "exam_handwriting"),
-            ("Gait", "exam_gait"),
-            ("Sensation", "exam_sensation"),
-            ("Cognition", "exam_cognition"),
-            ("Mood", "exam_mood"),
-            ("IQ หรือ Mentality", "exam_iq")
+        exam_items_before_neuro = [
+            ("1) General appearance", "exam_general"),
+            ("2) HEENT: conjunctive", "exam_heent"),
+            ("3) Lung", "exam_lung"),
+            ("4) Abdomen", "exam_abdomen"),
+            ("5) Skin", "exam_skin"),
+            ("6) Hand writing", "exam_handwriting"),
+        ]
+        
+        exam_items_after_neuro = [
+            ("8) Gait", "exam_gait"),
+            ("9) Sensation", "exam_sensation"),
+            ("10) Cognition", "exam_cognition"),
+            ("11) Mood", "exam_mood"),
+            ("12) IQ หรือ Mentality", "exam_iq")
         ]
 
         def create_exam_row(label, key):
@@ -289,7 +292,7 @@ def render():
                     detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail", label_visibility="collapsed")
                 physical_exam_data[label] = f"{status}{f' ({detail})' if detail else ''}"
 
-        for label, key in exam_items:
+        for label, key in exam_items_before_neuro:
             create_exam_row(label, key)
         
         st.divider()
@@ -382,6 +385,8 @@ def render():
         create_motor_power_row("(1) Upper extremities", "upper")
         create_motor_power_row("(2) Lower extremities", "lower")
 
+        for label, key in exam_items_after_neuro:
+            create_exam_row(label, key)
 
         form_data['การตรวจร่างกาย'] = physical_exam_data
 
