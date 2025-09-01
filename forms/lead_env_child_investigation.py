@@ -198,8 +198,6 @@ def render():
     with st.expander("ส่วนที่ 3: การตรวจวัดสภาพแวดล้อมในบ้าน", expanded=True):
         st.markdown("##### ผลการตรวจวัดระดับฝุ่นตะกั่วในบ้าน (Wipe technique)")
         
-        # This layout is more responsive. Labels will appear above the input boxes on all screen sizes.
-        # The reference value is included in the label for clarity.
         form_data['พื้น (Floors)'] = st.number_input(
             "พื้น (Floors) | ค่าอ้างอิง EPA: 10 µg/ft²", 
             min_value=0.0, 
@@ -243,14 +241,18 @@ def render():
             ("หงุดหงิดง่าย", "pb_symp_หงุดหงิดง่าย")
         ]
         
-        # Displaying symptoms using st.radio's native label for responsiveness
         for symptom_label, symptom_key in symptoms_list_child:
-            symptoms_data_child[symptom_label] = st.radio(
-                symptom_label, 
-                ["เป็นประจำ/แทบทุกวัน", "นานๆครั้ง", "ไม่มี"], 
-                horizontal=True, 
-                key=symptom_key
-            )
+            col1, col2 = st.columns([2, 3])
+            with col1:
+                st.write(symptom_label)
+            with col2:
+                symptoms_data_child[symptom_label] = st.radio(
+                    symptom_label, 
+                    ["เป็นประจำ/แทบทุกวัน", "นานๆครั้ง", "ไม่มี"], 
+                    horizontal=True, 
+                    key=symptom_key,
+                    label_visibility="collapsed"
+                )
 
         form_data['อาการเด็ก'] = symptoms_data_child
 
