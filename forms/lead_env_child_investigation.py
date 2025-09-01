@@ -257,10 +257,76 @@ def render():
         form_data['อาการเด็ก'] = symptoms_data_child
 
         st.subheader("4.2 การตรวจร่างกายตามระบบ")
-        st.info("ส่วนการตรวจร่างกายโดยแพทย์ สามารถใช้ข้อมูลจากแบบบันทึกการตรวจร่างกาย (แบบ Pb-2) ได้")
+        physical_exam_data = {}
+        col1, col2, col3, col4 = st.columns(4)
+        physical_exam_data['BP'] = col1.text_input("BP (mmHg):")
+        physical_exam_data['PR'] = col2.number_input("PR (/min):", min_value=0, step=1)
+        physical_exam_data['RR'] = col3.number_input("RR (/min):", min_value=0, step=1)
+        physical_exam_data['BT'] = col4.number_input("BT (°C):", min_value=0.0, format="%.1f")
         
+        exam_items = [
+            ("General appearance", "exam_general"),
+            ("HEENT: conjunctive", "exam_heent"),
+            ("Lung", "exam_lung"),
+            ("Abdomen", "exam_abdomen"),
+            ("Skin", "exam_skin"),
+            ("Hand writing", "exam_handwriting"),
+            ("Gait", "exam_gait"),
+            ("Sensation", "exam_sensation"),
+            ("Cognition", "exam_cognition"),
+            ("Mood", "exam_mood"),
+            ("IQ หรือ Mentality", "exam_iq")
+        ]
+
+        def create_exam_row(label, key):
+            col1, col2 = st.columns([1,2])
+            with col1:
+                st.write(label)
+            with col2:
+                status = st.radio(label, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "Abnormal":
+                    detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail", label_visibility="collapsed")
+                physical_exam_data[label] = f"{status}{f' ({detail})' if detail else ''}"
+
+        for label, key in exam_items:
+            create_exam_row(label, key)
+        
+        st.write("CNS: motor power grade")
+        # You can add more detailed inputs for motor power if needed, this is a simplified version.
+        physical_exam_data['Upper extremities'] = st.text_input("Upper extremities (R/L):")
+        physical_exam_data['Lower extremities'] = st.text_input("Lower extremities (R/L):")
+
+        form_data['การตรวจร่างกาย'] = physical_exam_data
+
         st.subheader("4.3 ข้อมูลผลตรวจทางห้องปฏิบัติการ")
-        st.info("ส่วนผลการตรวจทางห้องปฏิบัติการ สามารถใช้ข้อมูลจากแบบบันทึกการตรวจร่างกาย (แบบ Pb-2) ได้")
+        lab_results_data = {}
+        lab_results_data['ระดับตะกั่วในเลือด'] = st.number_input("ระดับตะกั่วในเลือด (µg/dL)", min_value=0.0, format="%.2f", key="lab_lead")
+
+        other_lab_tests = ["CBC", "BUN/Cr", "SGPT/SGOT", "TB/DB", "Uric acid", "UA"]
+        
+        def create_lab_row(label, key):
+            col1, col2 = st.columns([1,2])
+            with col1:
+                st.write(label)
+            with col2:
+                status = st.radio(label, ["ปกติ", "ผิดปกติ"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "ผิดปกติ":
+                    detail = st.text_input("ระบุผล", key=f"{key}_detail", label_visibility="collapsed")
+                lab_results_data[label] = f"{status}{f' ({detail})' if detail else ''}"
+
+        for test in other_lab_tests:
+            create_lab_row(test, f"lab_{test.lower()}")
+            
+        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
+
+        st.markdown("---")
+        st.write("**ข้อมูลแพทย์ผู้ตรวจ**")
+        col1, col2 = st.columns(2)
+        form_data['แพทย์ผู้ตรวจ'] = col1.text_input("ชื่อ-นามสกุล แพทย์ผู้ตรวจร่างกาย", key="doc_name")
+        form_data['เบอร์โทรแพทย์'] = col2.text_input("เบอร์โทรศัพท์", key="doc_phone")
+
 
     st.markdown("---")
     if st.button("บันทึกข้อมูล", use_container_width=True, type="primary", key="pb_submit_child_pb"):
