@@ -29,6 +29,52 @@ def render():
         form_data['สมาชิกทั้งหมด'] = col1.number_input("รวม (คน)", min_value=0, step=1, key="pb_total_fam")
         form_data['สมาชิกเด็ก<7ปี'] = col2.number_input("เด็ก < 7 ปี (คน)", min_value=0, step=1, key="pb_u7_fam")
 
+        # --- Section 1.4: Child History ---
+        st.subheader("1.4 ประวัติเด็ก")
+        child_history_data = {}
+
+        edu_status = st.radio("1) การศึกษาของเด็ก", ["ยังไม่ได้เข้าเรียน", "เข้าเรียน"], key="pb_edu_status")
+        if edu_status == "เข้าเรียน":
+            edu_level = st.radio("ระดับ", ["ก่อนอนุบาล", "อนุบาล", "ประถม"], horizontal=True, key="pb_edu_level")
+            col1, col2 = st.columns(2)
+            edu_years = col1.number_input("เด็กเรียนอยู่ในโรงเรียนปัจจุบันเป็นระยะเวลา (ปี)", min_value=0, step=1, key="pb_edu_years")
+            edu_months = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="pb_edu_months")
+            child_history_data['การศึกษา'] = f"{edu_level}, ระยะเวลา {edu_years} ปี {edu_months} เดือน"
+        else:
+            child_history_data['การศึกษา'] = edu_status
+
+        col1, col2 = st.columns(2)
+        res_years = col1.number_input("2) เด็กอาศัยอยู่ที่ปัจจุบันประมาณ (ปี)", min_value=0, step=1, key="pb_res_years")
+        res_months = col2.number_input("เดือน", min_value=0, max_value=11, step=1, key="pb_res_months")
+        child_history_data['ระยะเวลาอาศัย'] = f"{res_years} ปี {res_months} เดือน"
+        
+        comorbidity = st.radio("3) เด็กมีโรคประจำตัวหรือไม่", ["ไม่มี", "มี"], key="pb_comorbidity")
+        if comorbidity == "มี":
+            comorbidity_detail = st.text_input("ระบุ:", key="pb_comorbidity_detail")
+            child_history_data['โรคประจำตัว'] = f"มี ({comorbidity_detail})"
+        else:
+            child_history_data['โรคประจำตัว'] = "ไม่มี"
+
+        medication = st.radio("4) เด็กรับประทานยาประจำ", ["ไม่ได้รับประทาน", "รับประทาน", "รับประทานยาสมุนไพร", "ยากวาดลิ้น"], key="pb_medication")
+        if medication == "รับประทาน":
+            med_detail = st.text_input("ระบุยา:", key="pb_med_detail")
+            child_history_data['ยาประจำ'] = f"รับประทาน ({med_detail})"
+        else:
+            child_history_data['ยาประจำ'] = medication
+
+        child_history_data['อาบน้ำ'] = st.number_input("5) เด็กอาบน้ำวันละกี่ครั้ง", min_value=0, step=1, key="pb_bathing")
+        child_history_data['ดื่มนม'] = st.radio("6) เด็กดื่มนมอะไร", ["นมแม่อย่างเดียว", "นมกระป๋อง/นมกล่องอย่างเดียว", "ทั้งนมแม่และนมกระป๋อง/นมกล่อง"], key="pb_milk")
+
+        visit_workplace = st.radio("7) เด็กเคยไปบริเวณที่ทำงานเกี่ยวกับตะกั่วบ้างหรือไม่", ["ไม่ไป", "ไป"], key="pb_visit_work")
+        child_history_data['เคยไปที่ทำงาน'] = visit_workplace
+        
+        if visit_workplace == "ไป":
+            child_history_data['ความถี่ไปที่ทำงาน'] = st.radio("8) เด็กไปที่บริเวณงานเกี่ยวกับตะกั่วบ่อยแค่ไหน", ["นานๆ ไปครั้ง", "บ่อยมาก"], key="pb_visit_freq")
+            child_history_data['ระยะเวลาที่ทำงาน'] = st.radio("9) ระยะเวลาเฉลี่ยในแต่ละวันที่เด็กอยู่บริเวณงานเกี่ยวกับตะกั่ว", ["น้อยกว่า 2 ชม.", "2 - 4 ชม.", "5 - 8 ชม.", "8 ชม. ขึ้นไป"], key="pb_visit_duration")
+
+        form_data['ประวัติเด็ก'] = child_history_data
+
+
     # --- Section 2: Risk Factors ---
     with st.expander("ส่วนที่ 2: ปัจจัยเสี่ยงต่อการสัมผัสสารตะกั่วของเด็ก", expanded=True):
         st.subheader("2.1 อาชีพผู้ปกครอง ผู้ดูแล หรือคนที่อยู่อาศัยบ้านเดียวกับเด็ก")
@@ -128,18 +174,18 @@ def render():
         # Table Header
         st.markdown("""
         <style>
-        .header-grid {{
+        .header-grid {
             display: grid;
             grid-template-columns: 2fr 3fr;
             font-weight: bold;
             margin-bottom: 8px;
-        }}
-        .symptom-grid {{
+        }
+        .symptom-grid {
             display: grid;
             grid-template-columns: 2fr 3fr;
             align-items: center;
             margin-bottom: -15px;
-        }}
+        }
         </style>
         <div class="header-grid">
             <div>อาการ</div>
@@ -176,3 +222,4 @@ def render():
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         # For debugging, you can uncomment the line below to see the collected data
         # st.write(form_data)
+
