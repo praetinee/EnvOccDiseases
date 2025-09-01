@@ -239,10 +239,13 @@ def render():
 
         for item, key in exam_items_normal_abnormal.items():
             col1, col2, col3 = st.columns([2, 2, 2])
-            col1.write(item)
-            status = col2.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+            with col1:
+                 st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
+            with col2:
+                status = st.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
             if status == "Abnormal":
-                detail = col3.text_input("ระบุ", key=f"{key}_detail", label_visibility="collapsed")
+                with col3:
+                    detail = st.text_input("ระบุ", key=f"{key}_detail", label_visibility="collapsed")
                 form_data[item] = f"Abnormal: {detail}"
             else:
                 form_data[item] = "Normal"
@@ -251,27 +254,53 @@ def render():
         
         def render_motor_power(extremity_name, key_prefix):
             st.markdown(f"**({extremity_name})**")
-            # Proximal
-            st.markdown("Proximal:")
-            col1, col2, col3, col4 = st.columns(4)
-            with col1: st.write("Flexor")
-            with col2: form_data[f'{key_prefix}_prox_flex_r'] = st.text_input("R", key=f"{key_prefix}_pfr") + "/5"
-            with col3: form_data[f'{key_prefix}_prox_flex_l'] = st.text_input("L", key=f"{key_prefix}_pfl") + "/5"
-            with col1: st.write("Extensor")
-            with col2: form_data[f'{key_prefix}_prox_ext_r'] = st.text_input("R", key=f"{key_prefix}_per") + "/5"
-            with col3: form_data[f'{key_prefix}_prox_ext_l'] = st.text_input("L", key=f"{key_prefix}_pel") + "/5"
-            # Distal
-            st.markdown("Distal:")
-            col1, col2, col3, col4 = st.columns(4)
-            with col1: st.write("Flexor")
-            with col2: form_data[f'{key_prefix}_dist_flex_r'] = st.text_input("R", key=f"{key_prefix}_dfr") + "/5"
-            with col3: form_data[f'{key_prefix}_dist_flex_l'] = st.text_input("L", key=f"{key_prefix}_dfl") + "/5"
-            with col1: st.write("Extensor")
-            with col2: form_data[f'{key_prefix}_dist_ext_r'] = st.text_input("R", key=f"{key_prefix}_der") + "/5"
-            with col3: form_data[f'{key_prefix}_dist_ext_l'] = st.text_input("L", key=f"{key_prefix}_del") + "/5"
             
-        render_motor_power("1 Upper extremities", "upper")
-        render_motor_power("2 Lower extremities", "lower")
+            # --- Proximal ---
+            st.markdown("Proximal:")
+            col_header1, col_header2, col_header3 = st.columns([1, 1, 1])
+            with col_header2: st.markdown("<div style='text-align: center;'>R</div>", unsafe_allow_html=True)
+            with col_header3: st.markdown("<div style='text-align: center;'>L</div>", unsafe_allow_html=True)
+
+            col_flex1, col_flex2, col_flex3 = st.columns([1, 1, 1])
+            with col_flex1:
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Flexor</div>", unsafe_allow_html=True)
+            with col_flex2:
+                form_data[f'{key_prefix}_prox_flex_r'] = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed") + "/5"
+            with col_flex3:
+                form_data[f'{key_prefix}_prox_flex_l'] = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed") + "/5"
+            
+            col_ext1, col_ext2, col_ext3 = st.columns([1, 1, 1])
+            with col_ext1:
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Extensor</div>", unsafe_allow_html=True)
+            with col_ext2:
+                form_data[f'{key_prefix}_prox_ext_r'] = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed") + "/5"
+            with col_ext3:
+                form_data[f'{key_prefix}_prox_ext_l'] = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed") + "/5"
+            
+            # --- Distal ---
+            st.markdown("Distal:")
+            col_d_header1, col_d_header2, col_d_header3 = st.columns([1, 1, 1])
+            with col_d_header2: st.markdown("<div style='text-align: center;'>R</div>", unsafe_allow_html=True)
+            with col_d_header3: st.markdown("<div style='text-align: center;'>L</div>", unsafe_allow_html=True)
+
+            col_d_flex1, col_d_flex2, col_d_flex3 = st.columns([1, 1, 1])
+            with col_d_flex1:
+                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Flexor</div>", unsafe_allow_html=True)
+            with col_d_flex2:
+                form_data[f'{key_prefix}_dist_flex_r'] = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed") + "/5"
+            with col_d_flex3:
+                form_data[f'{key_prefix}_dist_flex_l'] = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed") + "/5"
+
+            col_d_ext1, col_d_ext2, col_d_ext3 = st.columns([1, 1, 1])
+            with col_d_ext1:
+                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Extensor</div>", unsafe_allow_html=True)
+            with col_d_ext2:
+                form_data[f'{key_prefix}_dist_ext_r'] = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed") + "/5"
+            with col_d_ext3:
+                form_data[f'{key_prefix}_dist_ext_l'] = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed") + "/5"
+
+        render_motor_power("1) Upper extremities", "upper")
+        render_motor_power("2) Lower extremities", "lower")
 
 
         st.subheader("4.3 ข้อมูลผลตรวจทางห้องปฏิบัติการ")
