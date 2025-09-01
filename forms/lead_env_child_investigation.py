@@ -299,51 +299,83 @@ def render():
             st.markdown(f"**{label}**")
             
             # Header Row
-            h_col1, h_col2, h_col3, h_col4 = st.columns([2, 1, 2, 2])
-            with h_col2:
+            h_spacer, h_r, h_l = st.columns([2, 2, 2])
+            with h_r:
                 st.markdown("<p style='text-align: center;'><b>R</b></p>", unsafe_allow_html=True)
-            with h_col3:
+            with h_l:
                 st.markdown("<p style='text-align: center;'><b>L</b></p>", unsafe_allow_html=True)
         
             # Proximal Flexor
-            cols = st.columns([1, 1, 2, 2])
-            with cols[0]:
+            cols1 = st.columns([1, 1, 2, 2])
+            with cols1[0]:
                 st.markdown("**Proximal:**")
-            with cols[1]:
+            with cols1[1]:
                 st.markdown("Flexor")
-            with cols[2]:
-                physical_exam_data[f'{key_prefix}_prox_flex_R'] = st.text_input(f"{key_prefix}_prox_flex_R", placeholder="/5", key=f"{key_prefix}_prox_flex_R", label_visibility="collapsed")
-            with cols[3]:
-                physical_exam_data[f'{key_prefix}_prox_flex_L'] = st.text_input(f"{key_prefix}_prox_flex_L", placeholder="/5", key=f"{key_prefix}_prox_flex_L", label_visibility="collapsed")
+            with cols1[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_flex_R'] = st.text_input(f"{key_prefix}_prox_flex_R", key=f"{key_prefix}_prox_flex_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols1[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_flex_L'] = st.text_input(f"{key_prefix}_prox_flex_L", key=f"{key_prefix}_prox_flex_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
         
             # Proximal Extensor
-            cols = st.columns([1, 1, 2, 2])
-            with cols[1]:
+            cols2 = st.columns([1, 1, 2, 2])
+            with cols2[1]:
                 st.markdown("extensor")
-            with cols[2]:
-                physical_exam_data[f'{key_prefix}_prox_ext_R'] = st.text_input(f"{key_prefix}_prox_ext_R", placeholder="/5", key=f"{key_prefix}_prox_ext_R", label_visibility="collapsed")
-            with cols[3]:
-                physical_exam_data[f'{key_prefix}_prox_ext_L'] = st.text_input(f"{key_prefix}_prox_ext_L", placeholder="/5", key=f"{key_prefix}_prox_ext_L", label_visibility="collapsed")
+            with cols2[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_ext_R'] = st.text_input(f"{key_prefix}_prox_ext_R", key=f"{key_prefix}_prox_ext_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols2[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_ext_L'] = st.text_input(f"{key_prefix}_prox_ext_L", key=f"{key_prefix}_prox_ext_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
                 
             # Distal Flexor
-            cols = st.columns([1, 1, 2, 2])
-            with cols[0]:
+            cols3 = st.columns([1, 1, 2, 2])
+            with cols3[0]:
                 st.markdown("**Distal:**")
-            with cols[1]:
+            with cols3[1]:
                 st.markdown("Flexor")
-            with cols[2]:
-                physical_exam_data[f'{key_prefix}_dist_flex_R'] = st.text_input(f"{key_prefix}_dist_flex_R", placeholder="/5", key=f"{key_prefix}_dist_flex_R", label_visibility="collapsed")
-            with cols[3]:
-                physical_exam_data[f'{key_prefix}_dist_flex_L'] = st.text_input(f"{key_prefix}_dist_flex_L", placeholder="/5", key=f"{key_prefix}_dist_flex_L", label_visibility="collapsed")
+            with cols3[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_flex_R'] = st.text_input(f"{key_prefix}_dist_flex_R", key=f"{key_prefix}_dist_flex_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols3[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_flex_L'] = st.text_input(f"{key_prefix}_dist_flex_L", key=f"{key_prefix}_dist_flex_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
                 
             # Distal Extensor
-            cols = st.columns([1, 1, 2, 2])
-            with cols[1]:
+            cols4 = st.columns([1, 1, 2, 2])
+            with cols4[1]:
                 st.markdown("extensor")
-            with cols[2]:
-                physical_exam_data[f'{key_prefix}_dist_ext_R'] = st.text_input(f"{key_prefix}_dist_ext_R", placeholder="/5", key=f"{key_prefix}_dist_ext_R", label_visibility="collapsed")
-            with cols[3]:
-                physical_exam_data[f'{key_prefix}_dist_ext_L'] = st.text_input(f"{key_prefix}_dist_ext_L", placeholder="/5", key=f"{key_prefix}_dist_ext_L", label_visibility="collapsed")
+            with cols4[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_ext_R'] = st.text_input(f"{key_prefix}_dist_ext_R", key=f"{key_prefix}_dist_ext_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols4[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_ext_L'] = st.text_input(f"{key_prefix}_dist_ext_L", key=f"{key_prefix}_dist_ext_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
             
             st.divider()
 
