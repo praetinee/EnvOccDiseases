@@ -25,8 +25,8 @@ def render():
         
         st.write("จำนวนสมาชิกในครอบครัว:")
         col1, col2 = st.columns(2)
-        form_data['สมาชิกทั้งหมด'] = col1.number_input("รวม (คน)", min_value=0, step=1)
-        form_data['สมาชิกเด็ก<7ปี'] = col2.number_input("เด็ก < 7 ปี (คน)", min_value=0, step=1)
+        form_data['สมาชิกทั้งหมด'] = col1.number_input("รวม (คน)", min_value=0, step=1, key="child_total_fam")
+        form_data['สมาชิกเด็ก<7ปี'] = col2.number_input("เด็ก < 7 ปี (คน)", min_value=0, step=1, key="child_u7_fam")
 
     # --- Section 2: Risk Factors ---
     with st.expander("ส่วนที่ 2: ปัจจัยเสี่ยงต่อการสัมผัสสารตะกั่วของเด็ก", expanded=True):
@@ -40,63 +40,64 @@ def render():
             "งานโรงพิมพ์/งานหล่อตัวพิมพ์", "งานเกี่ยวกับสี", "ทำเครื่องประดับ"
         ]
 
-        work_outside = st.radio("1) ทำงานเกี่ยวข้องกับตะกั่ว โดยสถานที่ทำงานอยู่นอกบ้าน", ["ไม่ใช่", "ใช่"])
+        work_outside = st.radio("1) ทำงานเกี่ยวข้องกับตะกั่ว โดยสถานที่ทำงานอยู่นอกบ้าน", ["ไม่ใช่", "ใช่"], key="work_outside_radio")
         if work_outside == "ใช่":
-            form_data['อาชีพนอกบ้าน'] = st.multiselect("ระบุอาชีพ (นอกบ้าน):", risk_jobs_list + ["อื่นๆ"])
-            form_data['ความเกี่ยวข้อง_นอกบ้าน'] = st.multiselect("ความเกี่ยวข้องกับเด็ก:", ["บิดา", "มารดา", "พี่", "ญาติคนอื่นๆ"])
+            selected_jobs_outside = st.multiselect("ระบุอาชีพ (นอกบ้าน):", risk_jobs_list, key="jobs_outside_select")
+            other_job_outside = st.text_input("อื่นๆ (นอกบ้าน):", key="other_job_outside_text")
+            if other_job_outside: selected_jobs_outside.append(other_job_outside)
+            form_data['อาชีพนอกบ้าน'] = ", ".join(selected_jobs_outside)
+            
+            form_data['ความเกี่ยวข้อง_นอกบ้าน'] = st.multiselect("ความเกี่ยวข้องกับเด็ก:", ["บิดา", "มารดา", "พี่", "ญาติคนอื่นๆ"], key="rel_outside_select")
 
-        work_inside = st.radio("2) ทำงานที่เกี่ยวข้องกับตะกั่วในบ้าน/บริเวณบ้าน", ["ไม่ใช่", "ใช่"])
+        work_inside = st.radio("2) ทำงานที่เกี่ยวข้องกับตะกั่วในบ้าน/บริเวณบ้าน", ["ไม่ใช่", "ใช่"], key="work_inside_radio")
         if work_inside == "ใช่":
-            form_data['อาชีพในบ้าน'] = st.multiselect("ระบุอาชีพ (ในบ้าน):", risk_jobs_list + ["อื่นๆ"])
-            form_data['ความเกี่ยวข้อง_ในบ้าน'] = st.multiselect("ความเกี่ยวข้องกับเด็ก (ในบ้าน):", ["บิดา", "มารดา", "พี่", "ญาติคนอื่นๆ"])
+            selected_jobs_inside = st.multiselect("ระบุอาชีพ (ในบ้าน):", risk_jobs_list, key="jobs_inside_select")
+            other_job_inside = st.text_input("อื่นๆ (ในบ้าน):", key="other_job_inside_text")
+            if other_job_inside: selected_jobs_inside.append(other_job_inside)
+            form_data['อาชีพในบ้าน'] = ", ".join(selected_jobs_inside)
+            
+            form_data['ความเกี่ยวข้อง_ในบ้าน'] = st.multiselect("ความเกี่ยวข้องกับเด็ก (ในบ้าน):", ["บิดา", "มารดา", "พี่", "ญาติคนอื่นๆ"], key="rel_inside_select")
 
-        store_nearby = st.radio("3) กิจการร้านค้าที่เกี่ยวข้องกับตะกั่ว (ระยะไม่เกิน 30 เมตรจากที่อยู่อาศัย)", ["ไม่มี", "มี"])
+        store_nearby = st.radio("3) กิจการร้านค้าที่เกี่ยวข้องกับตะกั่ว (ระยะไม่เกิน 30 เมตรจากที่อยู่อาศัย)", ["ไม่มี", "มี"], key="store_nearby_radio")
         if store_nearby == "มี":
-            form_data['ร้านค้าใกล้บ้าน'] = st.multiselect("ระบุกิจการ:", risk_jobs_list + ["อื่นๆ"])
+            selected_stores = st.multiselect("ระบุกิจการ:", risk_jobs_list, key="stores_select")
+            other_store = st.text_input("อื่นๆ (ร้านค้า):", key="other_store_text")
+            if other_store: selected_stores.append(other_store)
+            form_data['ร้านค้าใกล้บ้าน'] = ", ".join(selected_stores)
 
         st.subheader("2.2 แผนผังลักษณะที่อยู่อาศัย")
         st.markdown("""
-        **แนวทางการวาดแผนผัง:**
-        - แผนผังลักษณะที่อยู่อาศัย บริเวณที่อยู่อาศัย
-        - รวมทั้งวัสดุ บ้านเก่า ทาสี ลักษณะการเก็บข้าวของเครื่องใช้ในบ้าน
-        - **ให้ใส่ดาว (⭐) บริเวณที่ทำงานเกี่ยวกับตะกั่วในบ้าน**
-        - ระบุบริเวณที่นอน, ที่รับประทานอาหาร
-        - ระบุสถานที่จัดเก็บอุปกรณ์ที่เกี่ยวข้องกับตะกั่ว (โดยการเดินสำรวจ)
+        วาดแผนผังลักษณะที่อยู่อาศัย, บริเวณที่อยู่อาศัย, วัสดุ, บ้านเก่า, ทาสี, ลักษณะการเก็บข้าวของเครื่องใช้ในบ้าน 
+        และให้ใส่ **ดาว (⭐)** บริเวณที่ทำงานเกี่ยวกับตะกั่วในบ้าน, บริเวณที่นอน, ที่รับประทานอาหาร, สถานที่จัดเก็บอุปกรณ์ที่เกี่ยวข้องกับตะกั่ว (โดยการเดินสำรวจ)
         """)
-        st.warning("กรุณาวาดแผนผังในโปรแกรมอื่น แล้วอัปโหลดเป็นไฟล์รูปภาพ")
-        form_data['แผนผังที่อยู่อาศัย'] = st.file_uploader("อัปโหลดรูปภาพแผนผัง", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
+        form_data['แผนผังที่อยู่อาศัย'] = st.file_uploader("อัปโหลดรูปภาพแผนผัง", type=["png", "jpg", "jpeg"])
 
         st.subheader("2.3 ปัจจัยเกี่ยวข้องกับการสัมผัสสารตะกั่วของเด็ก")
-        risk_factors = {
-            "เกี่ยวกับที่พักอาศัย": [
-                "บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา",
-                "โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น",
-                "มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน",
-                "สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)"
-            ],
-            "เกี่ยวกับพฤติกรรมเสี่ยงของผู้ปกครอง/ผู้ดูแล": [
-                "ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป",
-                "บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน",
-                "หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที",
-                "ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก",
-                "ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว",
-                "อุ้มหรือกอดเด็กระหว่างทำงาน"
-            ],
-            "พฤติกรรมของเด็ก": [
-                "เด็กชอบอมหรือดูดนิ้วหรือไม่",
-                "เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่",
-                "ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร",
-                "เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว",
-                "บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว",
-                "ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก"
-            ]
-        }
-        for category, factors in risk_factors.items():
-            st.markdown(f"**{category}**")
-            for i, factor in enumerate(factors):
-                cols = st.columns([3, 2])
-                cols[0].write(factor)
-                form_data[factor] = cols[1].radio(f"select_{category}_{i}", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, label_visibility="collapsed")
+        risk_factors_data = {}
+        
+        st.markdown("**เกี่ยวกับที่พักอาศัย**")
+        risk_factors_data['บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา'] = st.radio("บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_paint")
+        risk_factors_data['โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น'] = st.radio("โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_floor")
+        risk_factors_data['มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน'] = st.radio("มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_tools")
+        risk_factors_data['สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)'] = st.radio("สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_clean")
+
+        st.markdown("**เกี่ยวกับพฤติกรรมเสี่ยงของผู้ปกครอง/ผู้ดูแล**")
+        risk_factors_data['ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป'] = st.radio("ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_work_freq")
+        risk_factors_data['บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน'] = st.radio("บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_work_loc")
+        risk_factors_data['หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที'] = st.radio("หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_shower")
+        risk_factors_data['ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก'] = st.radio("ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_contamination")
+        risk_factors_data['ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว'] = st.radio("ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_feed")
+        risk_factors_data['อุ้มหรือกอดเด็กระหว่างทำงาน'] = st.radio("อุ้มหรือกอดเด็กระหว่างทำงาน", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_hold")
+
+        st.markdown("**พฤติกรรมของเด็ก**")
+        risk_factors_data['เด็กชอบอมหรือดูดนิ้วหรือไม่'] = st.radio("เด็กชอบอมหรือดูดนิ้วหรือไม่", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_suck")
+        risk_factors_data['เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่'] = st.radio("เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_mouth")
+        risk_factors_data['ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร'] = st.radio("ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_handwash")
+        risk_factors_data['เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว'] = st.radio("เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_sleep")
+        risk_factors_data['บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว'] = st.radio("บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_play")
+        risk_factors_data['ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก'] = st.radio("ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก", ["ใช่/มี", "ไม่ใช่/ไม่มี"], horizontal=True, key="rf_toys")
+        
+        form_data['ปัจจัยเกี่ยวข้อง'] = risk_factors_data
 
 
     # --- Section 3: Environmental Measurement ---
@@ -109,202 +110,53 @@ def render():
         col3.markdown("**ค่าอ้างอิง EPA (µg/ft²)**")
 
         with col1:
-            st.markdown("<div style='height: 38px; display: flex; align-items: center;'>พื้น (Floors)</div>", unsafe_allow_html=True)
+            st.markdown("พื้น (Floors)")
         with col2:
-            form_data['พื้น (Floors)'] = st.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", label_visibility="collapsed")
+            form_data['พื้น (Floors)'] = st.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", label_visibility="collapsed", key="wipe_floor")
         with col3:
-            st.markdown("<div style='height: 38px; display: flex; align-items: center; justify-content: center;'>5</div>", unsafe_allow_html=True)
+            st.markdown("5")
 
         with col1:
-            st.markdown("<div style='height: 38px; display: flex; align-items: center;'>ขอบหน้าต่าง (Window Sills)</div>", unsafe_allow_html=True)
+            st.markdown("ขอบหน้าต่าง (Window Sills)")
         with col2:
-            form_data['ขอบหน้าต่าง (Window Sills)'] = st.number_input("ขอบหน้าต่าง (Window Sills)", min_value=0.0, format="%.2f", label_visibility="collapsed")
+            form_data['ขอบหน้าต่าง (Window Sills)'] = st.number_input("ขอบหน้าต่าง (Window Sills)", min_value=0.0, format="%.2f", label_visibility="collapsed", key="wipe_sill")
         with col3:
-            st.markdown("<div style='height: 38px; display: flex; align-items: center; justify-content: center;'>40</div>", unsafe_allow_html=True)
+            st.markdown("40")
 
         with col1:
-            st.markdown("<div style='height: 38px; display: flex; align-items: center;'>รางหน้าต่าง (window troughs)</div>", unsafe_allow_html=True)
+            st.markdown("รางหน้าต่าง (window troughs)")
         with col2:
-            form_data['รางหน้าต่าง (window troughs)'] = st.number_input("รางหน้าต่าง (window troughs)", min_value=0.0, format="%.2f", label_visibility="collapsed")
+            form_data['รางหน้าต่าง (window troughs)'] = st.number_input("รางหน้าต่าง (window troughs)", min_value=0.0, format="%.2f", label_visibility="collapsed", key="wipe_trough")
         with col3:
-            st.markdown("<div style='height: 38px; display: flex; align-items: center; justify-content: center;'>100</div>", unsafe_allow_html=True)
+            st.markdown("100")
         
-        st.markdown("---")
-        form_data['ข้อมูลเพิ่มเติม_สิ่งแวดล้อม'] = st.text_area("ข้อมูลเพิ่มเติมอื่นๆ:")
-        form_data['ผู้สำรวจ'] = st.text_input("ผู้ทำการสำรวจ (ชื่อ-สกุล):")
-        form_data['เบอร์โทรผู้สำรวจ'] = st.text_input("เบอร์โทรหรือ ID Line:")
+        st.text_area("ข้อมูลเพิ่มเติมอื่นๆ:", key="env_other_info")
+        form_data['ผู้สำรวจ'] = st.text_input("ผู้ทำการสำรวจ (ชื่อ-สกุล):", key="surveyor_name")
+        form_data['เบอร์โทรผู้สำรวจ'] = st.text_input("เบอร์โทรหรือ ID Line:", key="surveyor_contact")
 
 
     # --- Section 4: Symptoms and Physical Exam ---
     with st.expander("ส่วนที่ 4: ข้อมูลอาการและการตรวจร่างกาย", expanded=True):
         st.subheader("4.1 การซักประวัติ อาการและอาการแสดงของเด็กในรอบ 3 เดือนที่ผ่านมา")
-        symptoms = [
+        symptoms_data_child = {}
+        symptoms_list_child = [
             "ปวดท้อง", "อาเจียน", "อ่อนเพลีย", "ท้องเสีย", "โลหิตจาง", "ชัก", "หมดสติ",
             "การเจริญเติบโตและพัฒนาการล่าช้ากว่าเกณฑ์", "ระดับสติปัญญาต่ำกว่าเกณฑ์",
             "ท้องผูก", "เบื่ออาหาร", "กระวนกระวาย/ไม่มีสมาธิ", "หงุดหงิดง่าย"
         ]
-        for symptom in symptoms:
-            cols = st.columns([2, 3])
-            cols[0].write(symptom)
-            form_data[symptom] = cols[1].radio(symptom, ["ไม่มี", "นานๆครั้ง", "เป็นประจำ/แทบทุกวัน"], horizontal=True, label_visibility="collapsed")
+        for symptom in symptoms_list_child:
+            symptoms_data_child[symptom] = st.radio(symptom, ["เป็นประจำหรือแทบทุกวัน", "นาน ๆ ครั้ง", "ไม่มี"], horizontal=True, key=f"symp_child_{symptom}")
+        form_data['อาการเด็ก'] = symptoms_data_child
 
         st.subheader("4.2 การตรวจร่างกายตามระบบ")
+        # Reuse structure from lead_occupational_medical form
+        # This part can be refactored into a shared function if needed
         st.info("ส่วนการตรวจร่างกายโดยแพทย์ สามารถใช้ข้อมูลจากแบบบันทึกตรวจร่างกาย (แพทย์) ได้")
-        col1, col2, col3, col4 = st.columns(4)
-        form_data['BP'] = col1.text_input("BP (mmHg)")
-        form_data['PR'] = col2.text_input("PR (/min)")
-        form_data['RR'] = col3.text_input("RR (/min)")
-        form_data['BT'] = col4.text_input("BT (°C)")
-
-        exam_items_normal_abnormal = {
-            "1) General appearance": "exam_general",
-            "2) HEENT: conjunctivae": "exam_heent",
-            "3) Lung": "exam_lung",
-            "4) Abdomen": "exam_abdomen",
-            "5) Skin": "exam_skin",
-            "6) Hand writing": "exam_handwriting",
-            "8) Gait": "exam_gait",
-            "9) Sensation": "exam_sensation",
-            "10) Cognition": "exam_cognition",
-            "11) Mood": "exam_mood",
-            "12) IQ หรือ Mentality": "exam_iq"
-        }
-
-        for item, key in exam_items_normal_abnormal.items():
-            col1, col2, col3 = st.columns([2, 2, 2])
-            with col1:
-                 st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{item}</div>", unsafe_allow_html=True)
-            with col2:
-                status = st.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
-            if status == "Abnormal":
-                with col3:
-                    detail = st.text_input("ระบุ", key=f"{key}_detail", label_visibility="collapsed")
-                form_data[item] = f"Abnormal: {detail}"
-            else:
-                form_data[item] = "Normal"
         
-        st.markdown("**7) Neuro sign: motor power grade**")
-        
-        def render_motor_power(extremity_name, key_prefix):
-            st.markdown(f"**({extremity_name})**")
-
-            # Header Row
-            h_col1, h_col2, h_col3, h_col4 = st.columns([1.5, 1.5, 2, 2])
-            with h_col3:
-                st.markdown("<div style='text-align:center;'><b>R</b></div>", unsafe_allow_html=True)
-            with h_col4:
-                st.markdown("<div style='text-align:center;'><b>L</b></div>", unsafe_allow_html=True)
-
-            # --- Proximal Section ---
-            # Proximal Flexor Row
-            pf_col1, pf_col2, pf_col3, pf_col4 = st.columns([1.5, 1.5, 2, 2])
-            with pf_col1:
-                st.markdown("<div style='height: 38px; display:flex; align-items:center; justify-content:flex-end; padding-right:10px;'>Proximal:</div>", unsafe_allow_html=True)
-            with pf_col2:
-                st.markdown("<div style='height: 38px; display:flex; align-items:center;'>Flexor</div>", unsafe_allow_html=True)
-            with pf_col3:
-                r_input_col, r_text_col = st.columns([3, 1])
-                with r_input_col:
-                    r_flex_prox_val = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_prox_flex_r'] = r_flex_prox_val
-                with r_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-            with pf_col4:
-                l_input_col, l_text_col = st.columns([3, 1])
-                with l_input_col:
-                    l_flex_prox_val = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_prox_flex_l'] = l_flex_prox_val
-                with l_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-
-            # Proximal Extensor Row
-            pe_col1, pe_col2, pe_col3, pe_col4 = st.columns([1.5, 1.5, 2, 2])
-            with pe_col2:
-                st.markdown("<div style='height: 38px; display:flex; align-items:center;'>Extensor</div>", unsafe_allow_html=True)
-            with pe_col3:
-                r_input_col, r_text_col = st.columns([3, 1])
-                with r_input_col:
-                    r_ext_prox_val = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_prox_ext_r'] = r_ext_prox_val
-                with r_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-            with pe_col4:
-                l_input_col, l_text_col = st.columns([3, 1])
-                with l_input_col:
-                    l_ext_prox_val = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_prox_ext_l'] = l_ext_prox_val
-                with l_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-
-            # --- Distal Section ---
-            # Distal Flexor Row
-            df_col1, df_col2, df_col3, df_col4 = st.columns([1.5, 1.5, 2, 2])
-            with df_col1:
-                st.markdown("<div style='height: 38px; display:flex; align-items:center; justify-content:flex-end; padding-right:10px;'>Distal:</div>", unsafe_allow_html=True)
-            with df_col2:
-                st.markdown("<div style='height: 38px; display:flex; align-items:center;'>Flexor</div>", unsafe_allow_html=True)
-            with df_col3:
-                r_input_col, r_text_col = st.columns([3, 1])
-                with r_input_col:
-                    r_flex_dist_val = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_dist_flex_r'] = r_flex_dist_val
-                with r_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-            with df_col4:
-                l_input_col, l_text_col = st.columns([3, 1])
-                with l_input_col:
-                    l_flex_dist_val = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_dist_flex_l'] = l_flex_dist_val
-                with l_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-
-            # Distal Extensor Row
-            de_col1, de_col2, de_col3, de_col4 = st.columns([1.5, 1.5, 2, 2])
-            with de_col2:
-                st.markdown("<div style='height: 38px; display:flex; align-items:center;'>Extensor</div>", unsafe_allow_html=True)
-            with de_col3:
-                r_input_col, r_text_col = st.columns([3, 1])
-                with r_input_col:
-                    r_ext_dist_val = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_dist_ext_r'] = r_ext_dist_val
-                with r_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-            with de_col4:
-                l_input_col, l_text_col = st.columns([3, 1])
-                with l_input_col:
-                    l_ext_dist_val = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed")
-                    form_data[f'{key_prefix}_dist_ext_l'] = l_ext_dist_val
-                with l_text_col:
-                    st.markdown("<div style='height: 38px; display:flex; align-items:center;'>/5</div>", unsafe_allow_html=True)
-
-        render_motor_power("1) Upper extremities", "upper")
-        render_motor_power("2) Lower extremities", "lower")
-
-
         st.subheader("4.3 ข้อมูลผลตรวจทางห้องปฏิบัติการ")
-        st.markdown("**การตรวจสารบ่งชี้ทางชีวภาพ**")
-        col1, col2, col3 = st.columns([2,2,2])
-        col1.markdown("ระดับตะกั่วในเลือด")
-        form_data['BLL_result'] = col2.text_input("ผลการตรวจ (µg/dL)", key="bll_res")
-        form_data['BLL_date'] = col3.date_input("วันที่ตรวจ", key="bll_date")
-
-        st.markdown("**การตรวจทางห้องปฏิบัติการอื่นๆ**")
-        lab_tests = ["CBC", "BUN/Cr", "SGPT/SGOT", "TB/DB", "Uric acid", "UA"]
-        for test in lab_tests:
-            col1, col2, col3 = st.columns([2,2,2])
-            col1.markdown(test)
-            form_data[f'{test}_result'] = col2.text_input("ผลการตรวจ", key=f"{test}_res")
-            form_data[f'{test}_date'] = col3.date_input("วันที่ตรวจ", key=f"{test}_date")
-        
-        st.subheader("ข้อมูลแพทย์ผู้ตรวจ")
-        form_data['แพทย์ผู้ตรวจ'] = st.text_input("ชื่อ-นามสกุล แพทย์ผู้ตรวจร่างกาย")
-        form_data['เบอร์โทรแพทย์'] = st.text_input("เบอร์โทรติดต่อ")
-        form_data['ID line แพทย์'] = st.text_input("ID line")
-        form_data['วันที่ตรวจ'] = st.date_input("วันที่ตรวจร่างกาย")
-
+        st.info("ส่วนผลการตรวจทางห้องปฏิบัติการ สามารถใช้ข้อมูลจากแบบบันทึกตรวจร่างกาย (แพทย์) ได้")
 
     st.markdown("---")
-    if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
+    if st.button("บันทึกข้อมูล", use_container_width=True, type="primary", key="submit_child_pb"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
-
