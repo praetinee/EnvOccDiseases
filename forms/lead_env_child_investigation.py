@@ -255,38 +255,53 @@ def render():
         def render_motor_power(extremity_name, key_prefix):
             st.markdown(f"**({extremity_name})**")
             
-            # Headers
-            col_h1, col_h2, col_h3, col_h4 = st.columns([2, 2, 1, 1])
-            with col_h3: st.markdown("<div style='text-align: center;'>R</div>", unsafe_allow_html=True)
-            with col_h4: st.markdown("<div style='text-align: center;'>L</div>", unsafe_allow_html=True)
-
-            # Proximal
-            col_p1, col_p2, col_p3, col_p4 = st.columns([1, 1, 1, 1])
+            # --- Proximal ---
+            col_p1, col_p2, col_p3, col_p4, col_p5 = st.columns([2, 2, 1, 1, 1])
             with col_p1: 
                 st.markdown("<div style='height: 76px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;'>Proximal:</div>", unsafe_allow_html=True)
             with col_p2:
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Flexor</div>", unsafe_allow_html=True)
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Extensor</div>", unsafe_allow_html=True)
             with col_p3:
-                form_data[f'{key_prefix}_prox_flex_r'] = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed") + "/5"
-                form_data[f'{key_prefix}_prox_ext_r'] = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed") + "/5"
+                 st.markdown("<div style='height: 38px; text-align: center;'>R</div>", unsafe_allow_html=True)
+                 form_data[f'{key_prefix}_prox_flex_r'] = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed") 
+                 st.markdown("<div style='height: 38px; text-align: center;'>R</div>", unsafe_allow_html=True)
+                 form_data[f'{key_prefix}_prox_ext_r'] = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed") 
             with col_p4:
-                form_data[f'{key_prefix}_prox_flex_l'] = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed") + "/5"
-                form_data[f'{key_prefix}_prox_ext_l'] = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed") + "/5"
+                st.markdown("<div style='height: 38px; text-align: center;'>L</div>", unsafe_allow_html=True)
+                form_data[f'{key_prefix}_prox_flex_l'] = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed") 
+                st.markdown("<div style='height: 38px; text-align: center;'>L</div>", unsafe_allow_html=True)
+                form_data[f'{key_prefix}_prox_ext_l'] = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed") 
+            with col_p5:
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
 
-            # Distal
-            col_d1, col_d2, col_d3, col_d4 = st.columns([1, 1, 1, 1])
+
+            # --- Distal ---
+            col_d1, col_d2, col_d3, col_d4, col_d5 = st.columns([2, 2, 1, 1, 1])
             with col_d1:
                 st.markdown("<div style='height: 76px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;'>Distal:</div>", unsafe_allow_html=True)
             with col_d2:
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Flexor</div>", unsafe_allow_html=True)
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Extensor</div>", unsafe_allow_html=True)
             with col_d3:
-                form_data[f'{key_prefix}_dist_flex_r'] = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed") + "/5"
-                form_data[f'{key_prefix}_dist_ext_r'] = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed") + "/5"
+                st.markdown("<div style='height: 38px; text-align: center;'>R</div>", unsafe_allow_html=True)
+                form_data[f'{key_prefix}_dist_flex_r'] = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed") 
+                st.markdown("<div style='height: 38px; text-align: center;'>R</div>", unsafe_allow_html=True)
+                form_data[f'{key_prefix}_dist_ext_r'] = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed") 
             with col_d4:
-                form_data[f'{key_prefix}_dist_flex_l'] = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed") + "/5"
-                form_data[f'{key_prefix}_dist_ext_l'] = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed") + "/5"
+                st.markdown("<div style='height: 38px; text-align: center;'>L</div>", unsafe_allow_html=True)
+                form_data[f'{key_prefix}_dist_flex_l'] = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed") 
+                st.markdown("<div style='height: 38px; text-align: center;'>L</div>", unsafe_allow_html=True)
+                form_data[f'{key_prefix}_dist_ext_l'] = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed") 
+            with col_d5:
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+                st.markdown("<div style='height: 38px; display: flex; align-items: center;'>/5</div>", unsafe_allow_html=True)
+
 
         render_motor_power("1) Upper extremities", "upper")
         render_motor_power("2) Lower extremities", "lower")
