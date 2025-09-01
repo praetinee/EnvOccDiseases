@@ -256,6 +256,39 @@ def render():
             st.markdown(f"**({extremity_name})**")
             
             # --- Proximal ---
+            st.markdown(
+                """
+                <style>
+                .motor-power-grid {
+                    display: grid;
+                    grid-template-columns: 2fr 2fr 1fr 1fr;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .grid-item {
+                    display: flex;
+                    align-items: center;
+                }
+                .grid-item-label {
+                    justify-content: flex-end;
+                    padding-right: 10px;
+                }
+                .input-container {
+                    display: flex;
+                    align-items: center;
+                }
+                </style>
+                """, unsafe_allow_html=True
+            )
+            
+            st.markdown('<div class="motor-power-grid">', unsafe_allow_html=True)
+            st.markdown('<div class="grid-item"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="grid-item"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="grid-item" style="justify-content: center;"><b>R</b></div>', unsafe_allow_html=True)
+            st.markdown('<div class="grid-item" style="justify-content: center;"><b>L</b></div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            # Proximal
             col_p1, col_p2, col_p3, col_p4 = st.columns([2, 2, 1, 1])
             with col_p1: 
                 st.markdown("<div style='height: 76px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;'>Proximal:</div>", unsafe_allow_html=True)
@@ -263,19 +296,17 @@ def render():
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Flexor</div>", unsafe_allow_html=True)
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Extensor</div>", unsafe_allow_html=True)
             with col_p3:
-                st.markdown("<div style='text-align: center;'>R</div>", unsafe_allow_html=True)
-                r_flex_prox = st.text_input("R", key=f"{key_prefix}_pfr", label_visibility="collapsed")
+                r_flex_prox = st.text_input("R_p_f", key=f"{key_prefix}_pfr", label_visibility="collapsed")
                 form_data[f'{key_prefix}_prox_flex_r'] = f"{r_flex_prox}/5"
-                r_ext_prox = st.text_input("R", key=f"{key_prefix}_per", label_visibility="collapsed")
+                r_ext_prox = st.text_input("R_p_e", key=f"{key_prefix}_per", label_visibility="collapsed")
                 form_data[f'{key_prefix}_prox_ext_r'] = f"{r_ext_prox}/5"
             with col_p4:
-                st.markdown("<div style='text-align: center;'>L</div>", unsafe_allow_html=True)
-                l_flex_prox = st.text_input("L", key=f"{key_prefix}_pfl", label_visibility="collapsed")
+                l_flex_prox = st.text_input("L_p_f", key=f"{key_prefix}_pfl", label_visibility="collapsed")
                 form_data[f'{key_prefix}_prox_flex_l'] = f"{l_flex_prox}/5"
-                l_ext_prox = st.text_input("L", key=f"{key_prefix}_pel", label_visibility="collapsed")
+                l_ext_prox = st.text_input("L_p_e", key=f"{key_prefix}_pel", label_visibility="collapsed")
                 form_data[f'{key_prefix}_prox_ext_l'] = f"{l_ext_prox}/5"
 
-            # --- Distal ---
+            # Distal
             col_d1, col_d2, col_d3, col_d4 = st.columns([2, 2, 1, 1])
             with col_d1:
                 st.markdown("<div style='height: 76px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;'>Distal:</div>", unsafe_allow_html=True)
@@ -283,16 +314,14 @@ def render():
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Flexor</div>", unsafe_allow_html=True)
                 st.markdown("<div style='height: 38px; display: flex; align-items: center;'>Extensor</div>", unsafe_allow_html=True)
             with col_d3:
-                st.markdown("<div style='text-align: center;'>R</div>", unsafe_allow_html=True)
-                r_flex_dist = st.text_input("R", key=f"{key_prefix}_dfr", label_visibility="collapsed")
+                r_flex_dist = st.text_input("R_d_f", key=f"{key_prefix}_dfr", label_visibility="collapsed")
                 form_data[f'{key_prefix}_dist_flex_r'] = f"{r_flex_dist}/5"
-                r_ext_dist = st.text_input("R", key=f"{key_prefix}_der", label_visibility="collapsed")
+                r_ext_dist = st.text_input("R_d_e", key=f"{key_prefix}_der", label_visibility="collapsed")
                 form_data[f'{key_prefix}_dist_ext_r'] = f"{r_ext_dist}/5"
             with col_d4:
-                st.markdown("<div style='text-align: center;'>L</div>", unsafe_allow_html=True)
-                l_flex_dist = st.text_input("L", key=f"{key_prefix}_dfl", label_visibility="collapsed")
+                l_flex_dist = st.text_input("L_d_f", key=f"{key_prefix}_dfl", label_visibility="collapsed")
                 form_data[f'{key_prefix}_dist_flex_l'] = f"{l_flex_dist}/5"
-                l_ext_dist = st.text_input("L", key=f"{key_prefix}_del", label_visibility="collapsed")
+                l_ext_dist = st.text_input("L_d_e", key=f"{key_prefix}_del", label_visibility="collapsed")
                 form_data[f'{key_prefix}_dist_ext_l'] = f"{l_ext_dist}/5"
 
         render_motor_power("1) Upper extremities", "upper")
