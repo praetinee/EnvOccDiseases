@@ -26,9 +26,33 @@ def render():
     # --- Section 2: Exposure Opportunity Assessment ---
     with st.expander("ส่วนที่ 2: ประเมินโอกาสการสัมผัสสารตะกั่ว", expanded=True):
         exposure_data = {}
+
+        # --- Callback Functions for Exclusive Selection ---
+        def not_related_callback():
+            """If the 'not related' checkbox is checked, reset all previous radio buttons to 'ไม่ใช่'."""
+            if st.session_state.get('pbc03_is_not_related'):
+                st.session_state.work_outside_radio = "ไม่ใช่"
+                st.session_state.work_inside_radio = "ไม่ใช่"
+                st.session_state.near_source_radio = "ไม่ใช่"
+                st.session_state.paint_peeling_radio = "ไม่ใช่"
+
+        def questions_1_to_4_callback():
+            """If any of the 'yes' options are selected, uncheck the 'not related' checkbox."""
+            if (st.session_state.get('work_outside_radio') == 'ใช่' or
+                st.session_state.get('work_inside_radio') == 'ใช่' or
+                st.session_state.get('near_source_radio') == 'ใช่' or
+                st.session_state.get('paint_peeling_radio') == 'ใช่'):
+                st.session_state.pbc03_is_not_related = False
         
+        # --- Question 1 ---
         st.write("1. ทำงานเกี่ยวข้องกับตะกั่ว โดยสถานที่ทำงานอยู่นอกบ้าน")
-        is_work_outside = st.radio(" ", ["ไม่ใช่", "ใช่"], key="work_outside_radio", label_visibility="collapsed", horizontal=True)
+        is_work_outside = st.radio(
+            " ", ["ไม่ใช่", "ใช่"], 
+            key="work_outside_radio", 
+            label_visibility="collapsed", 
+            horizontal=True,
+            on_change=questions_1_to_4_callback
+        )
         if is_work_outside == 'ใช่':
             work_outside_options = st.multiselect(
                 "ระบุอาชีพ:",
@@ -43,8 +67,15 @@ def render():
         else:
             exposure_data['work_outside'] = "ไม่ใช่"
 
+        # --- Question 2 ---
         st.write("2. ทำงานที่เกี่ยวข้องกับตะกั่วในบ้าน/บริเวณบ้าน")
-        is_work_inside = st.radio(" ", ["ไม่ใช่", "ใช่"], key="work_inside_radio", label_visibility="collapsed", horizontal=True)
+        is_work_inside = st.radio(
+            " ", ["ไม่ใช่", "ใช่"], 
+            key="work_inside_radio", 
+            label_visibility="collapsed", 
+            horizontal=True,
+            on_change=questions_1_to_4_callback
+        )
         if is_work_inside == 'ใช่':
             work_inside_options = st.multiselect(
                 "ระบุอาชีพ:",
@@ -59,8 +90,15 @@ def render():
         else:
              exposure_data['work_inside'] = "ไม่ใช่"
 
+        # --- Question 3 ---
         st.write("3. บ้านอยู่ใกล้แหล่งอุตสาหกรรม หรือกิจการ ร้านค้าที่เกี่ยวข้องกับตะกั่ว (ระยะไม่เกิน 30 เมตร)")
-        is_near_source = st.radio(" ", ["ไม่ใช่", "ใช่"], key="near_source_radio", label_visibility="collapsed", horizontal=True)
+        is_near_source = st.radio(
+            " ", ["ไม่ใช่", "ใช่"], 
+            key="near_source_radio", 
+            label_visibility="collapsed", 
+            horizontal=True,
+            on_change=questions_1_to_4_callback
+        )
         if is_near_source == 'ใช่':
              source_options = st.multiselect(
                 "ระบุ:",
@@ -74,14 +112,26 @@ def render():
         else:
             exposure_data['near_source'] = "ไม่ใช่"
             
-        exposure_data['paint_peeling'] = st.radio("4. อาศัยอยู่ในบ้านที่มีสีทาบ้านหลุดลอก", ["ไม่ใช่", "ใช่"], horizontal=True)
+        # --- Question 4 ---
+        exposure_data['paint_peeling'] = st.radio(
+            "4. อาศัยอยู่ในบ้านที่มีสีทาบ้านหลุดลอก", 
+            ["ไม่ใช่", "ใช่"], 
+            horizontal=True,
+            key="paint_peeling_radio",
+            on_change=questions_1_to_4_callback
+        )
         
-        is_not_related = st.checkbox("5. ไม่เกี่ยวข้องกับ ข้อ 1 - 4 ดังกล่าวข้างต้น (จัดเป็นกลุ่มที่ไม่ได้สัมผัส จบข้อคำถาม)")
+        # --- Question 5 (Exclusive Checkbox) ---
+        is_not_related = st.checkbox(
+            "5. ไม่เกี่ยวข้องกับ ข้อ 1 - 4 ดังกล่าวข้างต้น (จัดเป็นกลุ่มที่ไม่ได้สัมผัส จบข้อคำถาม)",
+            key="pbc03_is_not_related",
+            on_change=not_related_callback
+        )
         form_data['exposure_assessment'] = exposure_data
         
         if is_not_related:
             st.info("จากข้อมูลข้างต้น จัดเป็นกลุ่มที่ไม่ได้สัมผัส")
-            return # Stop rendering the rest of the form
+            st.stop() # Stop rendering the rest of the form
 
     # --- Section 3: Risk Assessment ---
     with st.expander("ส่วนที่ 3: การประเมินความเสี่ยงของเด็กในการสัมผัสสารตะกั่ว", expanded=True):
@@ -117,15 +167,16 @@ def render():
             st.markdown("**ใช่ (1 คะแนน)**")
             
         for question, weight in risk_questions.items():
-            col1, col2, col3 = st.columns([4, 1, 1])
+            col1, col2 = st.columns([4, 2])
             with col1:
                 st.write(question)
             
-            # Use unique keys for radio buttons
-            key = f"risk_{question.replace(' ', '_')}"
-            
-            # The radio button returns the index (0 or 1), which is the score.
-            score = st.radio("", [0, 1], key=key, horizontal=True, label_visibility="collapsed", index=0)
+            with col2:
+                # Use unique keys for radio buttons
+                key = f"risk_{question.replace(' ', '_')}"
+                
+                # The radio button returns the index (0 or 1), which is the score.
+                score = st.radio("", [0, 1], key=key, horizontal=True, label_visibility="collapsed", index=0)
             
             scores[question] = {
                 'answer': score,
@@ -192,3 +243,4 @@ def render():
     if st.button("บันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         # st.write(form_data)
+
