@@ -242,25 +242,42 @@ def render():
     if form_data.get('risk_level') in ["ปานกลาง", "สูง"]:
         with st.expander("ส่วนที่ 5: ระดับฝุ่นตะกั่วในบ้าน (เก็บด้วย Wipe technique)", expanded=True):
             env_data = {}
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.write("**จุดเก็บตัวอย่าง**")
-            with col2:
-                st.write("**ระดับตะกั่วบนพื้นผิว (µg/ft²)**")
-            with col3:
-                st.write("**ค่าอ้างอิง EPA (µg/ft²)**")
-
-            env_data['floor'] = col2.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", key="env_floor", label_visibility="collapsed")
-            col1.write("พื้น (Floors)")
-            col3.write("5")
-
-            env_data['window_sills'] = col2.number_input("ขอบหน้าต่าง (Window Sills)", min_value=0.0, format="%.2f", key="env_sills", label_visibility="collapsed")
-            col1.write("ขอบหน้าต่าง (Window Sills)")
-            col3.write("40")
             
-            env_data['window_troughs'] = col2.number_input("รางหน้าต่าง (window troughs)", min_value=0.0, format="%.2f", key="env_troughs", label_visibility="collapsed")
-            col1.write("รางหน้าต่าง (window troughs)")
-            col3.write("100")
+            # Header Row
+            header_col1, header_col2, header_col3 = st.columns(3)
+            with header_col1:
+                st.markdown("**จุดเก็บตัวอย่าง**")
+            with header_col2:
+                st.markdown("**ระดับตะกั่วบนพื้นผิว (µg/ft²)**")
+            with header_col3:
+                st.markdown("**ค่าอ้างอิง EPA (µg/ft²)**")
+
+            # Data Row 1: Floor
+            row1_col1, row1_col2, row1_col3 = st.columns(3)
+            with row1_col1:
+                st.write("พื้น (Floors)")
+            with row1_col2:
+                env_data['floor'] = st.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", key="env_floor", label_visibility="collapsed")
+            with row1_col3:
+                st.markdown("<div style='padding-top: 8px;'>5</div>", unsafe_allow_html=True)
+            
+            # Data Row 2: Window Sills
+            row2_col1, row2_col2, row2_col3 = st.columns(3)
+            with row2_col1:
+                st.write("ขอบหน้าต่าง (Window Sills)")
+            with row2_col2:
+                env_data['window_sills'] = st.number_input("ขอบหน้าต่าง (Window Sills)", min_value=0.0, format="%.2f", key="env_sills", label_visibility="collapsed")
+            with row2_col3:
+                st.markdown("<div style='padding-top: 8px;'>40</div>", unsafe_allow_html=True)
+
+            # Data Row 3: Window Troughs
+            row3_col1, row3_col2, row3_col3 = st.columns(3)
+            with row3_col1:
+                st.write("รางหน้าต่าง (window troughs)")
+            with row3_col2:
+                env_data['window_troughs'] = st.number_input("รางหน้าต่าง (window troughs)", min_value=0.0, format="%.2f", key="env_troughs", label_visibility="collapsed")
+            with row3_col3:
+                st.markdown("<div style='padding-top: 8px;'>100</div>", unsafe_allow_html=True)
             
             form_data['environmental_dust'] = env_data
 
