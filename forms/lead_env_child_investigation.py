@@ -293,9 +293,39 @@ def render():
             create_exam_row(label, key)
         
         st.write("CNS: motor power grade")
-        # You can add more detailed inputs for motor power if needed, this is a simplified version.
-        physical_exam_data['Upper extremities'] = st.text_input("Upper extremities (R/L):")
-        physical_exam_data['Lower extremities'] = st.text_input("Lower extremities (R/L):")
+        
+        def create_motor_power_row(label, key_prefix):
+            st.markdown(f"**{label}**")
+            # Header
+            col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 2])
+            with col2: st.markdown("**R**")
+            with col3: st.markdown("**L**")
+
+            # Proximal
+            with col1: st.markdown("Proximal:")
+            with col2:
+                physical_exam_data[f'{key_prefix}_prox_flex_R'] = st.text_input("Flexor", key=f"{key_prefix}_prox_flex_R", label_visibility="collapsed")
+            with col3:
+                physical_exam_data[f'{key_prefix}_prox_flex_L'] = st.text_input("Flexor", key=f"{key_prefix}_prox_flex_L", label_visibility="collapsed")
+            with col2:
+                 physical_exam_data[f'{key_prefix}_prox_ext_R'] = st.text_input("extensor", key=f"{key_prefix}_prox_ext_R", label_visibility="collapsed")
+            with col3:
+                 physical_exam_data[f'{key_prefix}_prox_ext_L'] = st.text_input("extensor", key=f"{key_prefix}_prox_ext_L", label_visibility="collapsed")
+
+            # Distal
+            with col1: st.markdown("Distal:")
+            with col2:
+                physical_exam_data[f'{key_prefix}_dist_flex_R'] = st.text_input("Flexor", key=f"{key_prefix}_dist_flex_R", label_visibility="collapsed")
+            with col3:
+                physical_exam_data[f'{key_prefix}_dist_flex_L'] = st.text_input("Flexor", key=f"{key_prefix}_dist_flex_L", label_visibility="collapsed")
+            with col2:
+                physical_exam_data[f'{key_prefix}_dist_ext_R'] = st.text_input("extensor", key=f"{key_prefix}_dist_ext_R", label_visibility="collapsed")
+            with col3:
+                physical_exam_data[f'{key_prefix}_dist_ext_L'] = st.text_input("extensor", key=f"{key_prefix}_dist_ext_L", label_visibility="collapsed")
+
+        create_motor_power_row("(1) Upper extremities", "upper")
+        create_motor_power_row("(2) Lower extremities", "lower")
+
 
         form_data['การตรวจร่างกาย'] = physical_exam_data
 
