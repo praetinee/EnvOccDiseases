@@ -55,12 +55,50 @@ def render():
         else:
             child_history_data['โรคประจำตัว'] = "ไม่มี"
 
-        medication = st.radio("4) เด็กรับประทานยาประจำ", ["ไม่ได้รับประทาน", "รับประทาน", "รับประทานยาสมุนไพร", "ยากวาดลิ้น"], key="pb_medication")
-        if medication == "รับประทาน":
-            med_detail = st.text_input("ระบุยา:", key="pb_med_detail")
-            child_history_data['ยาประจำ'] = f"รับประทาน ({med_detail})"
+        st.write("4) เด็กรับประทานยาประจำ")
+
+        # Define callback functions to handle the exclusive logic
+        def med_none_callback():
+            # If "None" is checked, uncheck all others
+            if st.session_state.get("pb_med_none"):
+                st.session_state.pb_med_regular = False
+                st.session_state.pb_med_herbal = False
+                st.session_state.pb_med_gwaad = False
+
+        def med_others_callback():
+            # If any other option is checked, uncheck "None"
+            if st.session_state.get("pb_med_regular") or st.session_state.get("pb_med_herbal") or st.session_state.get("pb_med_gwaad"):
+                st.session_state.pb_med_none = False
+        
+        # Using columns for a cleaner layout
+        col_med1, col_med2 = st.columns(2)
+        with col_med1:
+            st.checkbox("ไม่ได้รับประทาน", key="pb_med_none", on_change=med_none_callback)
+            st.checkbox("รับประทาน", key="pb_med_regular", on_change=med_others_callback)
+        with col_med2:
+            st.checkbox("รับประทานยาสมุนไพร", key="pb_med_herbal", on_change=med_others_callback)
+            st.checkbox("ยากวาดลิ้น", key="pb_med_gwaad", on_change=med_others_callback)
+        
+        # Collect data based on the current state from session_state
+        med_details_list = []
+        
+        # Use .get() to avoid errors if the key doesn't exist yet
+        if st.session_state.get("pb_med_regular"):
+            med_detail_regular = st.text_input("ระบุ (รับประทาน):", key="pb_med_detail_regular")
+            med_details_list.append(f"รับประทาน ({med_detail_regular})" if med_detail_regular else "รับประทาน")
+
+        if st.session_state.get("pb_med_herbal"):
+            med_detail_herbal = st.text_input("ระบุ (รับประทานยาสมุนไพร):", key="pb_med_detail_herbal")
+            med_details_list.append(f"รับประทานยาสมุนไพร ({med_detail_herbal})" if med_detail_herbal else "รับประทานยาสมุนไพร")
+        
+        if st.session_state.get("pb_med_gwaad"):
+            med_details_list.append("ยากวาดลิ้น")
+
+        # Final data assignment
+        if st.session_state.get("pb_med_none"):
+            child_history_data['ยาประจำ'] = "ไม่ได้รับประทาน"
         else:
-            child_history_data['ยาประจำ'] = medication
+            child_history_data['ยาประจำ'] = ", ".join(med_details_list) if med_details_list else ""
 
         child_history_data['อาบน้ำ'] = st.number_input("5) เด็กอาบน้ำวันละกี่ครั้ง", min_value=0, step=1, key="pb_bathing")
         child_history_data['ดื่มนม'] = st.radio("6) เด็กดื่มนมอะไร", ["นมแม่อย่างเดียว", "นมกระป๋อง/นมกล่องอย่างเดียว", "ทั้งนมแม่และนมกระป๋อง/นมกล่อง"], key="pb_milk")
@@ -222,4 +260,5 @@ def render():
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         # For debugging, you can uncomment the line below to see the collected data
         # st.write(form_data)
+
 
