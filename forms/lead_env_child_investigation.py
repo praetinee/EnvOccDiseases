@@ -169,12 +169,36 @@ def render():
 
     # --- Section 3: Environmental Measurement ---
     with st.expander("ส่วนที่ 3: การตรวจวัดสภาพแวดล้อมในบ้าน", expanded=True):
-        st.write("ผลการตรวจวัดระดับฝุ่นตะกั่วในบ้าน (Wipe technique)")
-        col1, col2 = st.columns(2)
-        form_data['พื้น (Floors)'] = col1.number_input("พื้น (Floors) (µg/ft²)", min_value=0.0, format="%.2f")
-        form_data['ขอบหน้าต่าง (Window Sills)'] = col2.number_input("ขอบหน้าต่าง (Window Sills) (µg/ft²)", min_value=0.0, format="%.2f")
-        form_data['รางหน้าต่าง (window troughs)'] = col1.number_input("รางหน้าต่าง (window troughs) (µg/ft²)", min_value=0.0, format="%.2f")
+        st.markdown("##### ผลการตรวจวัดระดับฝุ่นตะกั่วในบ้าน (Wipe technique)")
         
+        # Create a layout with 3 columns for data entry
+        col1, col2, col3 = st.columns([2,2,1])
+        col1.markdown("**จุดเก็บตัวอย่าง**")
+        col2.markdown("**ระดับตะกั่วบนพื้นผิว (µg/ft²)**")
+        col3.markdown("**ค่าอ้างอิง EPA (µg/ft²)**")
+
+        with col1:
+            st.markdown("<div style='height: 38px; display: flex; align-items: center;'>พื้น (Floors)</div>", unsafe_allow_html=True)
+        with col2:
+            form_data['พื้น (Floors)'] = st.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", label_visibility="collapsed")
+        with col3:
+            st.markdown("<div style='height: 38px; display: flex; align-items: center; justify-content: center;'>5</div>", unsafe_allow_html=True)
+
+        with col1:
+            st.markdown("<div style='height: 38px; display: flex; align-items: center;'>ขอบหน้าต่าง (Window Sills)</div>", unsafe_allow_html=True)
+        with col2:
+            form_data['ขอบหน้าต่าง (Window Sills)'] = st.number_input("ขอบหน้าต่าง (Window Sills)", min_value=0.0, format="%.2f", label_visibility="collapsed")
+        with col3:
+            st.markdown("<div style='height: 38px; display: flex; align-items: center; justify-content: center;'>40</div>", unsafe_allow_html=True)
+
+        with col1:
+            st.markdown("<div style='height: 38px; display: flex; align-items: center;'>รางหน้าต่าง (window troughs)</div>", unsafe_allow_html=True)
+        with col2:
+            form_data['รางหน้าต่าง (window troughs)'] = st.number_input("รางหน้าต่าง (window troughs)", min_value=0.0, format="%.2f", label_visibility="collapsed")
+        with col3:
+            st.markdown("<div style='height: 38px; display: flex; align-items: center; justify-content: center;'>100</div>", unsafe_allow_html=True)
+        
+        st.markdown("---")
         form_data['ข้อมูลเพิ่มเติม_สิ่งแวดล้อม'] = st.text_area("ข้อมูลเพิ่มเติมอื่นๆ:")
         form_data['ผู้สำรวจ'] = st.text_input("ผู้ทำการสำรวจ (ชื่อ-สกุล):")
         form_data['เบอร์โทรผู้สำรวจ'] = st.text_input("เบอร์โทรหรือ ID Line:")
@@ -206,6 +230,7 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
 
 
 
