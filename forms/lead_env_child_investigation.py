@@ -408,7 +408,7 @@ def render():
                 lab_results_data[label] = f"{status}{f' ({detail})' if detail else ''}"
 
         for test in other_lab_tests:
-            create_lab_row(test, f"lab_{test.lower()}")
+            create_lab_row(test, f"lab_{test.lower().replace('/', '')}")
             
         form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
 
@@ -416,7 +416,9 @@ def render():
         st.write("**ข้อมูลแพทย์ผู้ตรวจ**")
         col1, col2 = st.columns(2)
         form_data['แพทย์ผู้ตรวจ'] = col1.text_input("ชื่อ-นามสกุล แพทย์ผู้ตรวจร่างกาย", key="doc_name")
-        form_data['เบอร์โทรแพทย์'] = col2.text_input("เบอร์โทรศัพท์", key="doc_phone")
+        form_data['เบอร์โทรแพทย์'] = col2.text_input("เบอร์โทรติดต่อ", key="doc_phone")
+        form_data['ID line'] = col1.text_input("ID line", key="doc_line")
+        form_data['วันที่ตรวจร่างกาย'] = col2.date_input("วันที่ตรวจร่างกาย", datetime.date.today(), key="doc_exam_date")
 
 
     st.markdown("---")
