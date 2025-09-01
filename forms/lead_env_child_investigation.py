@@ -152,67 +152,65 @@ def render():
         
         st.subheader("2.3 ปัจจัยเกี่ยวข้องกับการสัมผัสสารตะกั่วของเด็ก")
         risk_factors_data = {}
-        risk_factor_questions_by_category = {
-            "**เกี่ยวกับที่พักอาศัย**": [
-                ("1. บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา", "บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา", "pb_rf_paint"),
-                ("2. โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น", "โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น", "pb_rf_floor"),
-                ("3. มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน", "มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน", "pb_rf_tools"),
-                ("4. สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)", "สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)", "pb_rf_clean"),
-            ],
-            "**เกี่ยวกับพฤติกรรมเสี่ยงของผู้ปกครอง/ผู้ดูแล**": [
-                ("5. ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป", "ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป", "pb_rf_work_freq"),
-                ("6. บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน", "บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน", "pb_rf_work_loc"),
-                ("7. หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที", "หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที", "pb_rf_shower"),
-                ("8. ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก", "ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก", "pb_rf_contamination"),
-                ("9. ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว", "ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว", "pb_rf_feed"),
-                ("10. อุ้มหรือกอดเด็กระหว่างทำงาน", "อุ้มหรือกอดเด็กระหว่างทำงาน", "pb_rf_hold"),
-            ],
-            "**พฤติกรรมของเด็ก**": [
-                ("11. เด็กชอบอมหรือดูดนิ้วหรือไม่", "เด็กชอบอมหรือดูดนิ้วหรือไม่", "pb_rf_suck"),
-                ("12. เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่", "เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่", "pb_rf_mouth"),
-                ("13. ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร", "ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร", "pb_rf_handwash"),
-                ("14. เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว", "เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว", "pb_rf_sleep"),
-                ("15. บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว", "บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว", "pb_rf_play"),
-                ("16. ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก", "ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก", "pb_rf_toys"),
-            ]
-        }
 
-        for category, questions in risk_factor_questions_by_category.items():
-            st.markdown(category)
-            for q_label, q_dict_key, st_key in questions:
-                col1, col2 = st.columns([2, 1])
-                with col1:
-                    st.markdown(f"<div style='height: 38px; display: flex; align-items: center;'>{q_label}</div>", unsafe_allow_html=True)
-                with col2:
-                    risk_factors_data[q_dict_key] = st.radio(
-                        q_label,
-                        ["ใช่/มี", "ไม่ใช่/ไม่มี"],
-                        horizontal=True,
-                        key=st_key,
-                        label_visibility="collapsed"
-                    )
+        # Helper function to create radio buttons consistently.
+        # This uses the built-in label of st.radio for better responsiveness.
+        def create_risk_factor_radio(label, key, data_dict, data_key):
+            data_dict[data_key] = st.radio(
+                label,
+                ["ใช่/มี", "ไม่ใช่/ไม่มี"],
+                horizontal=True,
+                key=key
+            )
+
+        st.markdown("**เกี่ยวกับที่พักอาศัย**")
+        create_risk_factor_radio("1. บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา", "pb_rf_paint", risk_factors_data, "บ้านใช้สีน้ำมันทาภายใน และ/หรือมีการหลุดลอกของสีทา")
+        create_risk_factor_radio("2. โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น", "pb_rf_floor", risk_factors_data, "โดยส่วนใหญ่สมาชิกครอบครัวนอนบนพื้น")
+        create_risk_factor_radio("3. มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน", "pb_rf_tools", risk_factors_data, "มีการเก็บอุปกรณ์ทำความสะอาดบ้านไว้ในบ้าน")
+        create_risk_factor_radio("4. สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)", "pb_rf_clean", risk_factors_data, "สภาพภายในบ้านไม่ค่อยได้ทำความสะอาด (จากการสังเกต)")
+
+        st.markdown("**เกี่ยวกับพฤติกรรมเสี่ยงของผู้ปกครอง/ผู้ดูแล**")
+        create_risk_factor_radio("5. ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป", "pb_rf_work_freq", risk_factors_data, "ทำงานเกี่ยวข้องกับตะกั่วทุกวัน หรือสัปดาห์ละ 2-3 วันขึ้นไป")
+        create_risk_factor_radio("6. บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน", "pb_rf_work_loc", risk_factors_data, "บริเวณที่ทำงานเกี่ยวข้องกับตะกั่วอยู่ในบ้าน หรือบริเวณบ้าน")
+        create_risk_factor_radio("7. หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที", "pb_rf_shower", risk_factors_data, "หลังเลิกงาน ส่วนใหญ่ไม่ได้อาบน้ำและเปลี่ยนเสื้อผ้าทันที")
+        create_risk_factor_radio("8. ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก", "pb_rf_contamination", risk_factors_data, "ในแต่ละวันท่านปนเปื้อน ฝุ่น หรือสีเป็นปริมาณมาก")
+        create_risk_factor_radio("9. ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว", "pb_rf_feed", risk_factors_data, "ป้อนอาหารเด็กขณะทำงานเกี่ยวกับตะกั่ว")
+        create_risk_factor_radio("10. อุ้มหรือกอดเด็กระหว่างทำงาน", "pb_rf_hold", risk_factors_data, "อุ้มหรือกอดเด็กระหว่างทำงาน")
+
+        st.markdown("**พฤติกรรมของเด็ก**")
+        create_risk_factor_radio("11. เด็กชอบอมหรือดูดนิ้วหรือไม่", "pb_rf_suck", risk_factors_data, "เด็กชอบอมหรือดูดนิ้วหรือไม่")
+        create_risk_factor_radio("12. เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่", "pb_rf_mouth", risk_factors_data, "เด็กชอบเอาสิ่งแปลกปลอม/ของเล่นเข้าปากหรือไม่")
+        create_risk_factor_radio("13. ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร", "pb_rf_handwash", risk_factors_data, "ส่วนใหญ่เด็กไม่ได้ล้างมือก่อนรับประทานอาหาร")
+        create_risk_factor_radio("14. เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว", "pb_rf_sleep", risk_factors_data, "เด็กนอนกับผู้ปกครองที่ทำงานสัมผัสสารตะกั่ว")
+        create_risk_factor_radio("15. บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว", "pb_rf_play", risk_factors_data, "บ่อยครั้งที่เด็กอยู่บริเวณที่ทำงานเกี่ยวกับตะกั่ว")
+        create_risk_factor_radio("16. ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก", "pb_rf_toys", risk_factors_data, "ของเล่นของเด็กเป็นวัสดุที่สีหลุดลอก")
         
         form_data['ปัจจัยเกี่ยวข้อง'] = risk_factors_data
 
     # --- Section 3: Environmental Measurement ---
     with st.expander("ส่วนที่ 3: การตรวจวัดสภาพแวดล้อมในบ้าน", expanded=True):
         st.markdown("##### ผลการตรวจวัดระดับฝุ่นตะกั่วในบ้าน (Wipe technique)")
-        col1, col2, col3 = st.columns([2,2,1])
-        col1.markdown("**จุดเก็บตัวอย่าง**")
-        col2.markdown("**ระดับตะกั่วบนพื้นผิว (µg/ft²)**")
-        col3.markdown("**ค่าอ้างอิง EPA (µg/ft²)**")
-
-        with col1: st.markdown("พื้น (Floors)")
-        with col2: form_data['พื้น (Floors)'] = st.number_input("พื้น (Floors)", min_value=0.0, format="%.2f", label_visibility="collapsed", key="pb_wipe_floor")
-        with col3: st.markdown("10")
-
-        with col1: st.markdown("ขอบหน้าต่าง (Window Sills)")
-        with col2: form_data['ขอบหน้าต่าง'] = st.number_input("ขอบหน้าต่าง", min_value=0.0, format="%.2f", label_visibility="collapsed", key="pb_wipe_sill")
-        with col3: st.markdown("100")
-
-        with col1: st.markdown("รางหน้าต่าง (window troughs)")
-        with col2: form_data['รางหน้าต่าง'] = st.number_input("รางหน้าต่าง", min_value=0.0, format="%.2f", label_visibility="collapsed", key="pb_wipe_trough")
-        with col3: st.markdown("100")
+        
+        # This layout is more responsive. Labels will appear above the input boxes on all screen sizes.
+        # The reference value is included in the label for clarity.
+        form_data['พื้น (Floors)'] = st.number_input(
+            "พื้น (Floors) | ค่าอ้างอิง EPA: 10 µg/ft²", 
+            min_value=0.0, 
+            format="%.2f", 
+            key="pb_wipe_floor"
+        )
+        form_data['ขอบหน้าต่าง'] = st.number_input(
+            "ขอบหน้าต่าง (Window Sills) | ค่าอ้างอิง EPA: 100 µg/ft²", 
+            min_value=0.0, 
+            format="%.2f", 
+            key="pb_wipe_sill"
+        )
+        form_data['รางหน้าต่าง'] = st.number_input(
+            "รางหน้าต่าง (window troughs) | ค่าอ้างอิง EPA: 100 µg/ft²", 
+            min_value=0.0, 
+            format="%.2f", 
+            key="pb_wipe_trough"
+        )
         
         form_data['ข้อมูลเพิ่มเติม_สิ่งแวดล้อม'] = st.text_area("ข้อมูลเพิ่มเติมอื่นๆ:", key="pb_env_other_info")
         form_data['ผู้สำรวจ'] = st.text_input("ผู้ทำการสำรวจ (ชื่อ-สกุล):", key="pb_surveyor_name")
@@ -223,48 +221,29 @@ def render():
         st.subheader("4.1 การซักประวัติ อาการและอาการแสดงของเด็กในรอบ 3 เดือนที่ผ่านมา")
         symptoms_data_child = {}
         symptoms_list_child = [
-            "ปวดท้อง", "อาเจียน", "อ่อนเพลีย", "ท้องเสีย", "โลหิตจาง", "ชัก", "หมดสติ",
-            "การเจริญเติบโตและพัฒนาการล่าช้ากว่าเกณฑ์", "ระดับสติปัญญาต่ำกว่าเกณฑ์",
-            "ท้องผูก", "เบื่ออาหาร", "กระวนกระวาย/ไม่มีสมาธิ", "หงุดหงิดง่าย"
+            ("ปวดท้อง", "pb_symp_ปวดท้อง"),
+            ("อาเจียน", "pb_symp_อาเจียน"),
+            ("อ่อนเพลีย", "pb_symp_อ่อนเพลีย"),
+            ("ท้องเสีย", "pb_symp_ท้องเสีย"),
+            ("โลหิตจาง", "pb_symp_โลหิตจาง"),
+            ("ชัก", "pb_symp_ชัก"),
+            ("หมดสติ", "pb_symp_หมดสติ"),
+            ("การเจริญเติบโตและพัฒนาการล่าช้ากว่าเกณฑ์", "pb_symp_การเจริญเติบโตและพัฒนาการล่าช้ากว่าเกณฑ์"),
+            ("ระดับสติปัญญาต่ำกว่าเกณฑ์", "pb_symp_ระดับสติปัญญาต่ำกว่าเกณฑ์"),
+            ("ท้องผูก", "pb_symp_ท้องผูก"),
+            ("เบื่ออาหาร", "pb_symp_เบื่ออาหาร"),
+            ("กระวนกระวาย/ไม่มีสมาธิ", "pb_symp_กระวนกระวายไม่มีสมาธิ"),
+            ("หงุดหงิดง่าย", "pb_symp_หงุดหงิดง่าย")
         ]
         
-        # Table Header
-        st.markdown("""
-        <style>
-        .header-grid {
-            display: grid;
-            grid-template-columns: 2fr 3fr;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .symptom-grid {
-            display: grid;
-            grid-template-columns: 2fr 3fr;
-            align-items: center;
-            margin-bottom: -15px;
-        }
-        </style>
-        <div class="header-grid">
-            <div>อาการ</div>
-            <div style="text-align: center;">ความถี่ของอาการดังกล่าว</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-
-        # Displaying symptoms in a more compact way
-        for symptom in symptoms_list_child:
-            with st.container():
-                cols = st.columns([2,3])
-                with cols[0]:
-                    st.write(symptom)
-                with cols[1]:
-                    symptoms_data_child[symptom] = st.radio(
-                        symptom, 
-                        ["เป็นประจำ/แทบทุกวัน", "นานๆครั้ง", "ไม่มี"], 
-                        horizontal=True, 
-                        label_visibility="collapsed", 
-                        key=f"pb_symp_{symptom.replace('/','')}"
-                    )
+        # Displaying symptoms using st.radio's native label for responsiveness
+        for symptom_label, symptom_key in symptoms_list_child:
+            symptoms_data_child[symptom_label] = st.radio(
+                symptom_label, 
+                ["เป็นประจำ/แทบทุกวัน", "นานๆครั้ง", "ไม่มี"], 
+                horizontal=True, 
+                key=symptom_key
+            )
 
         form_data['อาการเด็ก'] = symptoms_data_child
 
@@ -279,4 +258,3 @@ def render():
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         # For debugging, you can uncomment the line below to see the collected data
         # st.write(form_data)
-
