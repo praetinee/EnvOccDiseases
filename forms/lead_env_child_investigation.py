@@ -171,7 +171,6 @@ def render():
     with st.expander("ส่วนที่ 3: การตรวจวัดสภาพแวดล้อมในบ้าน", expanded=True):
         st.markdown("##### ผลการตรวจวัดระดับฝุ่นตะกั่วในบ้าน (Wipe technique)")
         
-        # Create a layout with 3 columns for data entry
         col1, col2, col3 = st.columns([2,2,1])
         col1.markdown("**จุดเก็บตัวอย่าง**")
         col2.markdown("**ระดับตะกั่วบนพื้นผิว (µg/ft²)**")
@@ -218,19 +217,85 @@ def render():
             form_data[symptom] = cols[1].radio(symptom, ["ไม่มี", "นานๆครั้ง", "เป็นประจำ/แทบทุกวัน"], horizontal=True, label_visibility="collapsed")
 
         st.subheader("4.2 การตรวจร่างกายตามระบบ")
-        # ... (Physical exam section can be added here, similar to lead_occupational_medical.py) ...
-        st.info("ส่วนการตรวจร่างกายโดยแพทย์ สามารถใช้ข้อมูลจากแบบบันทึกตรวจร่างกาย (แพทย์) ได้")
+        col1, col2, col3, col4 = st.columns(4)
+        form_data['BP'] = col1.text_input("BP (mmHg)")
+        form_data['PR'] = col2.text_input("PR (/min)")
+        form_data['RR'] = col3.text_input("RR (/min)")
+        form_data['BT'] = col4.text_input("BT (°C)")
+
+        exam_items_normal_abnormal = {
+            "1) General appearance": "exam_general",
+            "2) HEENT: conjunctivae": "exam_heent",
+            "3) Lung": "exam_lung",
+            "4) Abdomen": "exam_abdomen",
+            "5) Skin": "exam_skin",
+            "6) Hand writing": "exam_handwriting",
+            "8) Gait": "exam_gait",
+            "9) Sensation": "exam_sensation",
+            "10) Cognition": "exam_cognition",
+            "11) Mood": "exam_mood",
+            "12) IQ หรือ Mentality": "exam_iq"
+        }
+
+        for item, key in exam_items_normal_abnormal.items():
+            status = st.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True)
+            if status == "Abnormal":
+                detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail")
+                form_data[item] = f"Abnormal: {detail}"
+            else:
+                form_data[item] = "Normal"
+        
+        st.markdown("**7) Neuro sign: motor power grade**")
+        
+        def render_motor_power(extremity_name, key_prefix):
+            st.markdown(f"**({extremity_name})**")
+            # Proximal
+            st.markdown("Proximal:")
+            col1, col2, col3, col4 = st.columns(4)
+            with col1: st.write("Flexor")
+            with col2: form_data[f'{key_prefix}_prox_flex_r'] = st.text_input("R", key=f"{key_prefix}_pfr") + "/5"
+            with col3: form_data[f'{key_prefix}_prox_flex_l'] = st.text_input("L", key=f"{key_prefix}_pfl") + "/5"
+            with col1: st.write("Extensor")
+            with col2: form_data[f'{key_prefix}_prox_ext_r'] = st.text_input("R", key=f"{key_prefix}_per") + "/5"
+            with col3: form_data[f'{key_prefix}_prox_ext_l'] = st.text_input("L", key=f"{key_prefix}_pel") + "/5"
+            # Distal
+            st.markdown("Distal:")
+            col1, col2, col3, col4 = st.columns(4)
+            with col1: st.write("Flexor")
+            with col2: form_data[f'{key_prefix}_dist_flex_r'] = st.text_input("R", key=f"{key_prefix}_dfr") + "/5"
+            with col3: form_data[f'{key_prefix}_dist_flex_l'] = st.text_input("L", key=f"{key_prefix}_dfl") + "/5"
+            with col1: st.write("Extensor")
+            with col2: form_data[f'{key_prefix}_dist_ext_r'] = st.text_input("R", key=f"{key_prefix}_der") + "/5"
+            with col3: form_data[f'{key_prefix}_dist_ext_l'] = st.text_input("L", key=f"{key_prefix}_del") + "/5"
+            
+        render_motor_power("1 Upper extremities", "upper")
+        render_motor_power("2 Lower extremities", "lower")
+
 
         st.subheader("4.3 ข้อมูลผลตรวจทางห้องปฏิบัติการ")
-        # ... (Lab results section can be added here, similar to lead_occupational_medical.py) ...
-        st.info("ส่วนผลการตรวจทางห้องปฏิบัติการ สามารถใช้ข้อมูลจากแบบบันทึกตรวจร่างกาย (แพทย์) ได้")
+        st.markdown("**การตรวจสารบ่งชี้ทางชีวภาพ**")
+        col1, col2, col3 = st.columns([2,2,2])
+        col1.markdown("ระดับตะกั่วในเลือด")
+        form_data['BLL_result'] = col2.text_input("ผลการตรวจ (µg/dL)", key="bll_res")
+        form_data['BLL_date'] = col3.date_input("วันที่ตรวจ", key="bll_date")
+
+        st.markdown("**การตรวจทางห้องปฏิบัติการอื่นๆ**")
+        lab_tests = ["CBC", "BUN/Cr", "SGPT/SGOT", "TB/DB", "Uric acid", "UA"]
+        for test in lab_tests:
+            col1, col2, col3 = st.columns([2,2,2])
+            col1.markdown(test)
+            form_data[f'{test}_result'] = col2.text_input("ผลการตรวจ", key=f"{test}_res")
+            form_data[f'{test}_date'] = col3.date_input("วันที่ตรวจ", key=f"{test}_date")
+        
+        st.subheader("ข้อมูลแพทย์ผู้ตรวจ")
+        form_data['แพทย์ผู้ตรวจ'] = st.text_input("ชื่อ-นามสกุล แพทย์ผู้ตรวจร่างกาย")
+        form_data['เบอร์โทรแพทย์'] = st.text_input("เบอร์โทรติดต่อ")
+        form_data['ID line แพทย์'] = st.text_input("ID line")
+        form_data['วันที่ตรวจ'] = st.date_input("วันที่ตรวจร่างกาย")
 
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
-
-
-
 
