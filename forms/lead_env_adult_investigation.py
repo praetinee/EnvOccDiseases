@@ -356,11 +356,15 @@ def render():
         lab_results_data = {}
 
         st.write("**การตรวจสารบ่งชี้ทางชีวภาพ**")
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns([2, 3, 2])
         with col1:
             st.write("ระดับตะกั่วในเลือด")
         with col2:
-            lab_results_data['ระดับตะกั่วในเลือด'] = st.text_input("ผลการตรวจ (µg/dL)", key="lab_lead_level", label_visibility="collapsed")
+            input_col, unit_col = st.columns([3, 2])
+            with input_col:
+                lab_results_data['ระดับตะกั่วในเลือด'] = st.text_input("ผลการตรวจ", key="lab_lead_level", label_visibility="collapsed")
+            with unit_col:
+                st.markdown("<div style='padding-top: 8px;'>µg/dL</div>", unsafe_allow_html=True)
         with col3:
             lab_results_data['วันที่ตรวจ_ระดับตะกั่วในเลือด'] = st.date_input("วันที่ตรวจ", key="lab_lead_date", label_visibility="collapsed")
 
@@ -388,6 +392,28 @@ def render():
                 lab_results_data[f"วันที่ตรวจ_{test}"] = st.date_input("date", key=f"lab_{test}_date", label_visibility="collapsed")
         
         form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
+
+    # --- Section 7 & 8: Diagnosis and Recommendations ---
+    with st.expander("ส่วนที่ 7 และ 8: การวินิจฉัยและการรักษา", expanded=True):
+        st.subheader("ส่วนที่ 7: การวินิจฉัยโรค")
+        diagnosis_options = st.multiselect(
+            "การวินิจฉัย:",
+            ["สงสัยโรคจากตะกั่ว", "โรคจากตะกั่ว", "โรคอื่นๆ"]
+        )
+        if "โรคอื่นๆ" in diagnosis_options:
+            other_diagnosis = st.text_input("ระบุโรคอื่นๆ:")
+            form_data['การวินิจฉัย'] = ", ".join(diagnosis_options) + f" ({other_diagnosis})"
+        else:
+            form_data['การวินิจฉัย'] = ", ".join(diagnosis_options)
+
+        st.subheader("ส่วนที่ 8: การรักษาพยาบาล หรือข้อเสนอแนะอื่นๆ")
+        form_data['การรักษาและข้อเสนอแนะ'] = st.text_area("รายละเอียด:", height=200)
+
+        st.subheader("ข้อมูลแพทย์ผู้ตรวจ")
+        form_data['แพทย์ผู้ตรวจ'] = st.text_input("ชื่อ - นามสกุล แพทย์ผู้ตรวจร่างกาย")
+        form_data['เบอร์โทรแพทย์'] = st.text_input("เบอร์โทร")
+        form_data['ID Line แพทย์'] = st.text_input("ID Line")
+        form_data['วันที่ตรวจ'] = st.date_input("วัน/เดือน/ปี")
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
