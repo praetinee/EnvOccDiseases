@@ -68,8 +68,8 @@ def render():
         if source_other: source_opts.append(source_other)
         form_data['แหล่งที่มาของสารเคมี'] = ", ".join(source_opts)
 
-        chem_knowledge_opt = st.radio("2.5 ในวันดังกล่าว ก่อนการใช้สารเคมีท่านทราบหรือไม่ว่าสารเคมีนี้ คืออะไร:", ["ไม่ทราบ", "ทราบ"])
-        if chem_knowledge_opt == "ทราบ":
+        chem_knowledge_opt = st.radio("2.5 ในวันดังกล่าว ก่อนการใช้สารเคมีท่านทราบหรือไม่ว่าสารเคมีนี้ คืออะไร:", ["ไม่ทราบ", "ทราบ (ระบุชื่อสาร)"])
+        if chem_knowledge_opt == "ทราบ (ระบุชื่อสาร)":
             chem_name = st.text_input("ระบุชื่อสาร:", label_visibility="collapsed")
             form_data['ทราบชนิดสารเคมี'] = f"ทราบ (ชื่อ: {chem_name})"
         else:
