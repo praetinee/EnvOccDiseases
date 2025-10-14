@@ -150,9 +150,9 @@ def render():
     with st.expander("ส่วนที่ 4: ข้อมูลอื่นๆ เพิ่มเติม", expanded=True):
         clinic_opt = st.radio(
             "4.1 ท่านรู้จักคลินิกเกษตรกรหรือไม่:",
-            ["ไม่รู้จัก", "รู้จัก และเคยไปใช้บริการ", "รู้จัก แต่ไม่เคยไปรับบริการ", "อื่นๆ"]
+            ["ไม่รู้จัก", "รู้จัก และเคยไปใช้บริการ", "รู้จัก แต่ไม่เคยไปรับบริการ", "อื่นๆ ระบุ"]
         )
-        if clinic_opt == "อื่นๆ":
+        if clinic_opt == "อื่นๆ ระบุ":
             clinic_other = st.text_input("อื่นๆ (เกี่ยวกับคลินิกเกษตรกร):", label_visibility="collapsed")
             form_data['รู้จักคลินิกเกษตรกร'] = clinic_other
         else:
@@ -170,3 +170,4 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
