@@ -147,9 +147,89 @@ def render():
 
     # --- Section 4: Risk Factors ---
     with st.expander("ส่วนที่ 4: ปัจจัยเสี่ยงต่อการสัมผัสสารตะกั่ว", expanded=True):
-        # This section is identical to lead_occupational.py Section 4
-        st.info("ส่วนนี้เหมือนกับฟอร์มโรคจากตะกั่ว (อาชีพ)")
-        # ... (You can copy the code from lead_occupational.py Section 4 here) ...
+        risk_jobs_list = [
+            "งานเกี่ยวกับแบตเตอรี่", "ถลุงตะกั่ว หลอมตะกั่ว", "งานเชื่อมหรือบัดกรี", "หลอมตะกั่ว/กระสุน",
+            "ทาหรือพ่นสี", "ซ่อมยานยนต์", "ซ่อมแห อวน (ที่มีตะกั่วถ่วงน้ำหนัก)", "ซ่อมเรือประมง (ที่มีการใช้เสน)",
+            "ซ่อมเครื่องใช้ไฟฟ้า", "คัดแยกขยะอิเล็กทรอนิกส์", "เครื่องเคลือบ เครื่องปั้นดินเผา",
+            "งานโรงพิมพ์/งานหล่อตัวพิมพ์", "งานเกี่ยวกับสี", "ทำเครื่องประดับ", "อื่นๆ"
+        ]
+        
+        risk_jobs_household = st.multiselect("4.1 ปัจจุบันท่านหรือสมาชิกในบ้านมีผู้ใดประกอบอาชีพหรือทำงานในโรงงาน/สถานประกอบการ ต่อไปนี้หรือไม่ (ตอบได้มากกว่า 1 ข้อ):", risk_jobs_list)
+        if "อื่นๆ" in risk_jobs_household:
+            risk_jobs_household_other = st.text_input("ระบุอาชีพเสี่ยงอื่นๆ:")
+            form_data['อาชีพเสี่ยงในครัวเรือน'] = ", ".join(risk_jobs_household) + f" ({risk_jobs_household_other})"
+        else:
+            form_data['อาชีพเสี่ยงในครัวเรือน'] = ", ".join(risk_jobs_household)
+
+        risk_places_nearby = st.multiselect("4.2 โรงงาน/สถานประกอบการ/ร้านค้าที่เกี่ยวข้องกับตะกั่ว (ระยะไม่เกิน 30 เมตรจากที่อยู่อาศัย):", risk_jobs_list, key="risk_places")
+        if "อื่นๆ" in risk_places_nearby:
+            risk_places_nearby_other = st.text_input("ระบุสถานประกอบการเสี่ยงอื่นๆ:")
+            form_data['สถานประกอบการเสี่ยงใกล้ที่พัก'] = ", ".join(risk_places_nearby) + f" ({risk_places_nearby_other})"
+        else:
+            form_data['สถานประกอบการเสี่ยงใกล้ที่พัก'] = ", ".join(risk_places_nearby)
+
+        st.subheader("4.3 ท่านใช้อุปกรณ์คุ้มครองความปลอดภัยส่วนบุคคลระหว่างการทำงานหรือไม่ เพื่อป้องกันอันตรายจากการทำงาน")
+        
+        # Table Header
+        header_cols = st.columns([2, 1, 1, 1])
+        header_cols[0].markdown("**การใช้อุปกรณ์**")
+        header_cols[1].markdown("<div style='text-align: center;'><b>ใช้ทุกครั้ง</b></div>", unsafe_allow_html=True)
+        header_cols[2].markdown("<div style='text-align: center;'><b>ใช้บางครั้ง</b></div>", unsafe_allow_html=True)
+        header_cols[3].markdown("<div style='text-align: center;'><b>ไม่ใช้</b></div>", unsafe_allow_html=True)
+        st.divider()
+
+        ppe_items = ["ถุงมือยาง/หนัง", "หมวก/ผ้าคลุมผม", "หน้ากากป้องกันฝุ่น/ผ้าปิดจมูก", "แว่นตา", "รองเท้าบูธ/ผ้าใบ", "เสื้อแขนยาว", "กางเกงขายาว", "อื่นๆ"]
+        for item in ppe_items:
+            row_cols = st.columns([2, 1, 1, 1])
+            if item == "อื่นๆ":
+                item_label = row_cols[0].text_input("ระบุอุปกรณ์อื่นๆ", label_visibility="collapsed")
+            else:
+                item_label = item
+                row_cols[0].write(item_label)
+            
+            with row_cols[1]:
+                st.checkbox(" ", key=f"ppe_{item_label}_everytime")
+            with row_cols[2]:
+                st.checkbox(" ", key=f"ppe_{item_label}_sometimes")
+            with row_cols[3]:
+                st.checkbox(" ", key=f"ppe_{item_label}_never")
+                
+        ppe_source_opts = st.multiselect("4.4 อุปกรณ์คุ้มครองความปลอดภัยส่วนบุคคลที่ท่านใช้ ได้มาจากอะไร (ตอบได้มากกว่า 1 ข้อ)", ["ซื้อเอง", "ได้รับจากโรงงาน/บริษัท", "แหล่งอื่นๆ"])
+        if "แหล่งอื่นๆ" in ppe_source_opts:
+            ppe_source_other = st.text_input("ระบุแหล่งอื่นๆ:")
+            form_data['แหล่งที่มาอุปกรณ์'] = ", ".join(ppe_source_opts) + f" ({ppe_source_other})"
+        else:
+            form_data['แหล่งที่มาอุปกรณ์'] = ", ".join(ppe_source_opts)
+
+        form_data['ที่เก็บอุปกรณ์'] = st.radio("4.5 ท่านเก็บอุปกรณ์คุ้มครองความปลอดภัยส่วนบุคคลไว้ที่ใด", ["บ้าน", "ที่ทำงาน"])
+        
+        storage_opts = st.multiselect("4.6 ท่านมีการจัดเก็บรักษาอุปกรณ์คุ้มครองความปลอดภัยส่วนบุคคลหลังจาการใช้งานอย่างไร", ["ตามพื้น/ผนังห้องภายในบ้าน", "ล็อกเกอร์หรือตู้เก็บเฉพาะ", "อื่นๆ"])
+        if "อื่นๆ" in storage_opts:
+            storage_other = st.text_input("ระบุวิธีจัดเก็บอื่นๆ:")
+            form_data['วิธีจัดเก็บอุปกรณ์'] = ", ".join(storage_opts) + f" ({storage_other})"
+        else:
+            form_data['วิธีจัดเก็บอุปกรณ์'] = ", ".join(storage_opts)
+
+        st.subheader("4.7 พฤติกรรมด้านสุขลักษณะและความปลอดภัยในการทำงาน")
+        hygiene_items = ["ล้างมือก่อนรับประทานอาหาร", "อาบน้ำก่อนออกจากสถานที่ทำงาน", "เปลี่ยนเสื้อผ้าก่อนออกจากที่ปฏิบัติงาน", "เปลี่ยนรองเท้าก่อนออกจากสถานที่ทำงาน", "นำหรือสวมเสื้อผ้าที่ปนเปื้อนกลับบ้าน"]
+        
+        # Hygiene Table Header
+        h_cols = st.columns([2, 1, 1, 1])
+        h_cols[0].markdown("**พฤติกรรม/สุขลักษณะ**")
+        h_cols[1].markdown("<div style='text-align: center;'><b>ทุกครั้ง/ประจำ</b></div>", unsafe_allow_html=True)
+        h_cols[2].markdown("<div style='text-align: center;'><b>บางครั้ง</b></div>", unsafe_allow_html=True)
+        h_cols[3].markdown("<div style='text-align: center;'><b>ไม่ได้ปฏิบัติ/ไม่ใช่</b></div>", unsafe_allow_html=True)
+        st.divider()
+
+        for item in hygiene_items:
+            r_cols = st.columns([2, 1, 1, 1])
+            r_cols[0].write(item)
+            with r_cols[1]:
+                st.checkbox(" ", key=f"hygiene_{item}_everytime")
+            with r_cols[2]:
+                st.checkbox(" ", key=f"hygiene_{item}_sometimes")
+            with r_cols[3]:
+                st.checkbox(" ", key=f"hygiene_{item}_never")
     
     # --- Section 5: Symptoms ---
     with st.expander("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ", expanded=True):
