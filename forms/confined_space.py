@@ -126,6 +126,8 @@ def render():
         # --- Section 4: Treatment Information ---
         with st.expander("ส่วนที่ 4: ข้อมูลการรักษา", expanded=True):
             st.write("4.1 ท่านเข้ารับการรักษาในโรงพยาบาล:")
+            hospital_name = st.text_input("ชื่อโรงพยาบาล:", key="cs_hospital_name")
+            
             col1, col2, col3, col4 = st.columns(4)
             treat_date = col1.date_input("วันที่เข้ารับการรักษา", datetime.date.today())
             treat_time = col2.time_input("เวลา", datetime.datetime.now().time())
@@ -135,9 +137,11 @@ def render():
             if patient_type == "ผู้ป่วยใน":
                 ipd_days = col4.number_input("จำนวนวัน (ผู้ป่วยใน)", min_value=0, step=1)
             
-            form_data['ข้อมูลการรักษา'] = f"วันที่ {treat_date} เวลา {treat_time}, ประเภท: {patient_type}"
+            treatment_info = f"โรงพยาบาล: {hospital_name}, วันที่ {treat_date} เวลา {treat_time}, ประเภท: {patient_type}"
             if patient_type == "ผู้ป่วยใน":
-                form_data['ข้อมูลการรักษา'] += f", จำนวน {ipd_days} วัน"
+                treatment_info += f", จำนวน {ipd_days} วัน"
+            form_data['ข้อมูลการรักษา'] = treatment_info
+
 
         # --- Recorder Info ---
         with st.expander("ข้อมูลผู้บันทึก", expanded=True):
@@ -151,4 +155,3 @@ def render():
             st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
             # In a real app, you would save the 'form_data' dictionary here.
             st.write(form_data)
-
