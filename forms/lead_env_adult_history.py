@@ -92,10 +92,31 @@ def render():
         if food_source_other: food_sources.append(food_source_other)
         form_data['แหล่งที่มาอาหาร'] = ", ".join(food_sources)
 
-        water_use = st.multiselect("แหล่งน้ำใช้:", ["น้ำประปา", "น้ำบาดาล", "แหล่งน้ำธรรมชาติ"])
-        water_use_other = st.text_input("แหล่งน้ำใช้อื่นๆ (ระบุพิกัดถ้ามี):")
-        if water_use_other: water_use.append(water_use_other)
-        form_data['แหล่งน้ำใช้'] = ", ".join(water_use)
+        water_use_selection = st.multiselect("แหล่งน้ำใช้:", ["น้ำประปา", "น้ำบาดาล", "แหล่งน้ำธรรมชาติ", "อื่นๆ"])
+        
+        processed_water_use = list(water_use_selection)
+        
+        if "แหล่งน้ำธรรมชาติ" in processed_water_use:
+            coords = st.text_input("ระบุพิกัดของแหล่งน้ำธรรมชาติ:")
+            if coords:
+                try:
+                    idx = processed_water_use.index("แหล่งน้ำธรรมชาติ")
+                    processed_water_use[idx] = f"แหล่งน้ำธรรมชาติ (พิกัด: {coords})"
+                except ValueError:
+                    pass
+        
+        if "อื่นๆ" in processed_water_use:
+            other_text = st.text_input("ระบุแหล่งน้ำใช้อื่นๆ:")
+            try:
+                idx = processed_water_use.index("อื่นๆ")
+                if other_text:
+                    processed_water_use[idx] = f"อื่นๆ ({other_text})"
+                else:
+                    processed_water_use.pop(idx)
+            except ValueError:
+                pass
+
+        form_data['แหล่งน้ำใช้'] = ", ".join(processed_water_use)
 
         water_drink = st.multiselect("แหล่งน้ำดื่ม:", ["น้ำประปา", "น้ำบาดาล", "น้ำซื้อ"])
         water_drink_other = st.text_input("แหล่งน้ำดื่มอื่นๆ:")
