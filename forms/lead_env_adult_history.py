@@ -124,8 +124,17 @@ def render():
         form_data['แหล่งน้ำดื่ม'] = ", ".join(water_drink)
         
         diseases = st.multiselect("ประวัติโรคประจำตัว:", ["ความดันโลหิตสูง", "เบาหวาน", "โลหิตจาง"])
-        disease_other = st.checkbox("อื่นๆ")
-        form_data['โรคประจำตัว'] = ", ".join(diseases) if not disease_other else ", ".join(diseases) + ", อื่นๆ"
+        disease_other_check = st.checkbox("อื่นๆ")
+        
+        other_disease_input = ""
+        if disease_other_check:
+            other_disease_input = st.text_input("ระบุ:", key="disease_other_input")
+
+        final_disease_list = diseases
+        if other_disease_input:
+            final_disease_list.append(other_disease_input)
+
+        form_data['โรคประจำตัว'] = ", ".join(final_disease_list)
 
         other_history = st.multiselect("ประวัติอื่นๆ:", ["การใช้แป้งทาหน้างิ้ว", "ประวัติการรับกระสุนปืน"])
         herbal_med = st.text_input("ใช้ยาสมุนไพร (ระบุ):")
