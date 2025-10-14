@@ -144,8 +144,135 @@ def render():
     # --- Section 3: Exam Results ---
     with st.expander("ส่วนที่ 3: ผลการตรวจต่างๆ ที่เกี่ยวข้อง", expanded=True):
         st.subheader("การตรวจร่างกายตามระบบโดยแพทย์")
-        # ... (Physical exam section can be added here, similar to lead_occupational_medical.py) ...
-        st.info("ส่วนการตรวจร่างกายโดยแพทย์จะถูกเพิ่มในภายหลัง")
+        physical_exam_data = {}
+        
+        col1, col2, col3, col4 = st.columns(4)
+        physical_exam_data['BP'] = col1.text_input("BP (mmHg):")
+        physical_exam_data['PR'] = col2.number_input("PR (/min):", min_value=0, step=1)
+        physical_exam_data['RR'] = col3.number_input("RR (/min):", min_value=0, step=1)
+        physical_exam_data['BT'] = col4.number_input("BT (°C):", min_value=0.0, format="%.1f")
+
+        exam_items_before_neuro = [
+            ("1) General appearance", "exam_general"),
+            ("2) HEENT: conjunctivae", "exam_heent"),
+            ("3) Lung", "exam_lung"),
+            ("4) Abdomen", "exam_abdomen"),
+            ("5) Skin", "exam_skin"),
+            ("6) Hand writing", "exam_handwriting"),
+        ]
+        
+        exam_items_after_neuro = [
+            ("8) Gait", "exam_gait"),
+            ("9) Sensation", "exam_sensation"),
+            ("10) Cognition", "exam_cognition"),
+            ("11) Mood", "exam_mood"),
+            ("12) IQ หรือ Mentality", "exam_iq")
+        ]
+
+        def create_exam_row(label, key):
+            col1, col2 = st.columns([1,2])
+            with col1:
+                st.write(label)
+            with col2:
+                status = st.radio(label, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "Abnormal":
+                    detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail", label_visibility="collapsed")
+                physical_exam_data[label] = f"{status}{f' ({detail})' if detail else ''}"
+
+        for label, key in exam_items_before_neuro:
+            create_exam_row(label, key)
+        
+        st.divider()
+        st.write("7) Neuro sign: motor power grade")
+        
+        def create_motor_power_row(label, key_prefix):
+            st.markdown(f"**{label}**")
+            
+            h_spacer, h_r, h_l = st.columns([2, 2, 2])
+            with h_r:
+                st.markdown("<p style='text-align: center;'><b>R</b></p>", unsafe_allow_html=True)
+            with h_l:
+                st.markdown("<p style='text-align: center;'><b>L</b></p>", unsafe_allow_html=True)
+        
+            # Proximal
+            cols1 = st.columns([1, 1, 2, 2])
+            with cols1[0]:
+                st.markdown("**Proximal:**")
+            with cols1[1]:
+                st.markdown("Flexor")
+            with cols1[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_flex_R'] = st.text_input(f"{key_prefix}_prox_flex_R", key=f"pbc04_{key_prefix}_prox_flex_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols1[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_flex_L'] = st.text_input(f"{key_prefix}_prox_flex_L", key=f"pbc04_{key_prefix}_prox_flex_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+        
+            cols2 = st.columns([1, 1, 2, 2])
+            with cols2[1]:
+                st.markdown("extensor")
+            with cols2[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_ext_R'] = st.text_input(f"{key_prefix}_prox_ext_R", key=f"pbc04_{key_prefix}_prox_ext_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols2[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_ext_L'] = st.text_input(f"{key_prefix}_prox_ext_L", key=f"pbc04_{key_prefix}_prox_ext_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+                
+            # Distal
+            cols3 = st.columns([1, 1, 2, 2])
+            with cols3[0]:
+                st.markdown("**Distal:**")
+            with cols3[1]:
+                st.markdown("Flexor")
+            with cols3[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_flex_R'] = st.text_input(f"{key_prefix}_dist_flex_R", key=f"pbc04_{key_prefix}_dist_flex_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols3[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_flex_L'] = st.text_input(f"{key_prefix}_dist_flex_L", key=f"pbc04_{key_prefix}_dist_flex_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+                
+            cols4 = st.columns([1, 1, 2, 2])
+            with cols4[1]:
+                st.markdown("extensor")
+            with cols4[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_ext_R'] = st.text_input(f"{key_prefix}_dist_ext_R", key=f"pbc04_{key_prefix}_dist_ext_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols4[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_ext_L'] = st.text_input(f"{key_prefix}_dist_ext_L", key=f"pbc04_{key_prefix}_dist_ext_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            st.divider()
+
+        create_motor_power_row("(1) Upper extremities", "upper")
+        create_motor_power_row("(2) Lower extremities", "lower")
+
+        for label, key in exam_items_after_neuro:
+            create_exam_row(label, key)
+
+        form_data['การตรวจร่างกาย'] = physical_exam_data
 
         st.subheader("ข้อมูลผลการตรวจทางห้องปฏิบัติการ")
         # ... (Lab results section can be added here, similar to lead_occupational_medical.py) ...
