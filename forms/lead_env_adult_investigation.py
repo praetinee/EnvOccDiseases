@@ -34,7 +34,12 @@ def render():
         form_data['เพศ'] = col2.radio("1.5 เพศ", ["ชาย", "หญิง"], horizontal=True)
         
         col1, col2 = st.columns(2)
-        form_data['สถานภาพสมรส'] = col1.selectbox("1.6 สถานภาพสมรส", ["โสด", "คู่", "หย่าร้าง/แยกกันอยู่/หม้าย", "อื่นๆ"])
+        marital_status = col1.selectbox("1.6 สถานภาพสมรส", ["โสด", "คู่", "หย่าร้าง/แยกกันอยู่/หม้าย", "อื่นๆ"])
+        if marital_status == "อื่นๆ":
+            other_marital_status = col1.text_input("ระบุ:", key="pb1_marital_other", label_visibility="collapsed")
+            form_data['สถานภาพสมรส'] = other_marital_status
+        else:
+            form_data['สถานภาพสมรส'] = marital_status
         form_data['ระดับการศึกษา'] = col2.selectbox("1.7 ระดับการศึกษาสูงสุด", ["ไม่ได้ศึกษา", "ประถมศึกษา", "มัธยมศึกษา/ปวช.", "อนุปริญญา/ปวส.", "ปริญญาตรี", "สูงกว่าปริญญาตรี"])
 
         col1, col2 = st.columns(2)
