@@ -170,29 +170,40 @@ def render():
 
         st.subheader("4.3 ท่านใช้อุปกรณ์คุ้มครองความปลอดภัยส่วนบุคคลระหว่างการทำงานหรือไม่ เพื่อป้องกันอันตรายจากการทำงาน")
         
-        # Table Header
-        header_cols = st.columns([2, 1, 1, 1])
-        header_cols[0].markdown("**การใช้อุปกรณ์**")
-        header_cols[1].markdown("<div style='text-align: center;'><b>ใช้ทุกครั้ง</b></div>", unsafe_allow_html=True)
-        header_cols[2].markdown("<div style='text-align: center;'><b>ใช้บางครั้ง</b></div>", unsafe_allow_html=True)
-        header_cols[3].markdown("<div style='text-align: center;'><b>ไม่ใช้</b></div>", unsafe_allow_html=True)
-        st.divider()
+        ppe_items = [
+            "ถุงมือยาง/หนัง", "หมวก/ผ้าคลุมผม", "หน้ากากป้องกันฝุ่น/ผ้าปิดจมูก",
+            "แว่นตา", "รองเท้าบูธ/ผ้าใบ", "เสื้อแขนยาว", "กางเกงขายาว"
+        ]
+        ppe_options = ["ใช้ทุกครั้ง", "ใช้บางครั้ง", "ไม่ใช้"]
 
-        ppe_items = ["ถุงมือยาง/หนัง", "หมวก/ผ้าคลุมผม", "หน้ากากป้องกันฝุ่น/ผ้าปิดจมูก", "แว่นตา", "รองเท้าบูธ/ผ้าใบ", "เสื้อแขนยาว", "กางเกงขายาว", "อื่นๆ"]
         for item in ppe_items:
-            row_cols = st.columns([2, 1, 1, 1])
-            if item == "อื่นๆ":
-                item_label = row_cols[0].text_input("ระบุอุปกรณ์อื่นๆ", label_visibility="collapsed")
-            else:
-                item_label = item
-                row_cols[0].write(item_label)
-            
-            with row_cols[1]:
-                st.checkbox(" ", key=f"ppe_{item_label}_everytime")
-            with row_cols[2]:
-                st.checkbox(" ", key=f"ppe_{item_label}_sometimes")
-            with row_cols[3]:
-                st.checkbox(" ", key=f"ppe_{item_label}_never")
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                st.write(item)
+            with col2:
+                selection = st.radio(
+                    item, 
+                    options=ppe_options,
+                    key=f"ppe_{item.replace('/', '_')}",
+                    horizontal=True,
+                    label_visibility="collapsed"
+                )
+                form_data[f"PPE: {item}"] = selection
+
+        # Handle "Other" item separately
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col1:
+             other_ppe_name = st.text_input("อื่นๆ:", placeholder="ระบุอุปกรณ์...")
+        with col2:
+            if other_ppe_name:
+                other_ppe_selection = st.radio(
+                    other_ppe_name,
+                    options=ppe_options,
+                    key=f"ppe_{other_ppe_name}",
+                    horizontal=True,
+                    label_visibility="collapsed"
+                )
+                form_data[f"PPE: {other_ppe_name}"] = other_ppe_selection
                 
         ppe_source_opts = st.multiselect("4.4 อุปกรณ์คุ้มครองความปลอดภัยส่วนบุคคลที่ท่านใช้ ได้มาจากอะไร (ตอบได้มากกว่า 1 ข้อ)", ["ซื้อเอง", "ได้รับจากโรงงาน/บริษัท", "แหล่งอื่นๆ"])
         if "แหล่งอื่นๆ" in ppe_source_opts:
@@ -212,24 +223,21 @@ def render():
 
         st.subheader("4.7 พฤติกรรมด้านสุขลักษณะและความปลอดภัยในการทำงาน")
         hygiene_items = ["ล้างมือก่อนรับประทานอาหาร", "อาบน้ำก่อนออกจากสถานที่ทำงาน", "เปลี่ยนเสื้อผ้าก่อนออกจากที่ปฏิบัติงาน", "เปลี่ยนรองเท้าก่อนออกจากสถานที่ทำงาน", "นำหรือสวมเสื้อผ้าที่ปนเปื้อนกลับบ้าน"]
+        hygiene_options = ["ทุกครั้ง/ประจำ", "บางครั้ง", "ไม่ได้ปฏิบัติ/ไม่ใช่"]
         
-        # Hygiene Table Header
-        h_cols = st.columns([2, 1, 1, 1])
-        h_cols[0].markdown("**พฤติกรรม/สุขลักษณะ**")
-        h_cols[1].markdown("<div style='text-align: center;'><b>ทุกครั้ง/ประจำ</b></div>", unsafe_allow_html=True)
-        h_cols[2].markdown("<div style='text-align: center;'><b>บางครั้ง</b></div>", unsafe_allow_html=True)
-        h_cols[3].markdown("<div style='text-align: center;'><b>ไม่ได้ปฏิบัติ/ไม่ใช่</b></div>", unsafe_allow_html=True)
-        st.divider()
-
         for item in hygiene_items:
-            r_cols = st.columns([2, 1, 1, 1])
-            r_cols[0].write(item)
-            with r_cols[1]:
-                st.checkbox(" ", key=f"hygiene_{item}_everytime")
-            with r_cols[2]:
-                st.checkbox(" ", key=f"hygiene_{item}_sometimes")
-            with r_cols[3]:
-                st.checkbox(" ", key=f"hygiene_{item}_never")
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                st.write(item)
+            with col2:
+                selection = st.radio(
+                    item,
+                    options=hygiene_options,
+                    key=f"hygiene_{item.replace('/', '_')}",
+                    horizontal=True,
+                    label_visibility="collapsed"
+                )
+                form_data[f"สุขลักษณะ: {item}"] = selection
     
     # --- Section 5: Symptoms ---
     with st.expander("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ", expanded=True):
