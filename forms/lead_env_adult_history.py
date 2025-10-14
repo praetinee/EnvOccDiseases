@@ -53,7 +53,13 @@ def render():
         form_data['ระยะเวลาอาศัย'] = st.text_input("ระยะเวลาที่อาศัยในพื้นที่ (ปี/เดือน)", key="pbc04_residence_duration")
         
         col1, col2 = st.columns(2)
-        form_data['สถานภาพสมรส'] = col1.selectbox("สถานภาพสมรส", ["โสด", "คู่", "หย่าร้าง/แยกกันอยู่/หม้าย", "อื่นๆ"], key="pbc04_marital")
+        marital_status = col1.selectbox("สถานภาพสมรส", ["โสด", "คู่", "หย่าร้าง/แยกกันอยู่/หม้าย", "อื่นๆ"], key="pbc04_marital")
+        if marital_status == "อื่นๆ":
+            other_marital_status = col1.text_input("ระบุ:", key="pbc04_marital_other", label_visibility="collapsed")
+            form_data['สถานภาพสมรส'] = other_marital_status
+        else:
+            form_data['สถานภาพสมรส'] = marital_status
+            
         form_data['ระดับการศึกษา'] = col2.selectbox("ระดับการศึกษาสูงสุด", ["ไม่ได้ศึกษา", "ประถมศึกษา", "มัธยมศึกษา/ปวช.", "อนุปริญญา/ปวส.", "ปริญญาตรี", "สูงกว่าปริญญาตรี"], key="pbc04_education")
 
         st.subheader("กรณีเป็นหญิงตั้งครรภ์ (สอบถามเพิ่มเติม)")
