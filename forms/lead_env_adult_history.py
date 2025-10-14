@@ -275,8 +275,41 @@ def render():
         form_data['การตรวจร่างกาย'] = physical_exam_data
 
         st.subheader("ข้อมูลผลการตรวจทางห้องปฏิบัติการ")
-        # ... (Lab results section can be added here, similar to lead_occupational_medical.py) ...
-        st.info("ส่วนผลการตรวจทางห้องปฏิบัติการจะถูกเพิ่มในภายหลัง")
+        lab_results_data = {}
+
+        st.markdown("###### การตรวจสารบ่งชี้ทางชีวภาพ")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown("ระดับตะกั่วในเลือด")
+        with col2:
+            lab_results_data['ระดับตะกั่วในเลือด'] = st.number_input("µg/dL", min_value=0.0, format="%.2f", key="lab_lead_level", label_visibility="collapsed")
+        with col3:
+            lab_results_data['วันที่ตรวจ_ระดับตะกั่ว'] = st.date_input("วันที่ตรวจ (ตะกั่ว)", key="lab_lead_date", label_visibility="collapsed")
+
+        st.markdown("###### การตรวจทางห้องปฏิบัติการอื่นๆ")
+        
+        # Header
+        h_col1, h_col2, h_col3 = st.columns([1,2,1])
+        h_col1.markdown("**รายการตรวจ**")
+        h_col2.markdown("**ผลการตรวจ**")
+        h_col3.markdown("**วันที่ตรวจ**")
+
+        other_lab_tests = ["CBC", "BUN/Cr", "SGPT/SGOT", "TB/DB", "Uric acid", "UA"]
+        for test in other_lab_tests:
+            col1, col2, col3 = st.columns([1,2,1])
+            with col1:
+                st.write(test)
+            with col2:
+                status = st.radio(test, ["ปกติ", "ผิดปกติ"], key=f"lab_{test}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "ผิดปกติ":
+                    detail = st.text_input("ระบุ:", key=f"lab_{test}_detail", label_visibility="collapsed")
+                lab_results_data[test] = f"{status}{f' ({detail})' if detail else ''}"
+            with col3:
+                lab_results_data[f'วันที่ตรวจ_{test}'] = st.date_input(f"วันที่ตรวจ_{test}", key=f"lab_{test}_date", label_visibility="collapsed")
+        
+        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
+
 
     # --- Section 4 & 5: Diagnosis & Recommendations ---
     with st.expander("ส่วนที่ 4 และ 5: การวินิจฉัยและข้อเสนอแนะ", expanded=True):
