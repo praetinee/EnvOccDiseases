@@ -395,7 +395,7 @@ def render():
 
     # --- Section 7 & 8: Diagnosis and Recommendations ---
     with st.expander("ส่วนที่ 7 และ 8: การวินิจฉัยและการรักษา", expanded=True):
-        st.subheader("ส่วนที่ 7: การวินิจฉัยโรค")
+        st.write("#### ส่วนที่ 7: การวินิจฉัยโรค")
         diagnosis_options = st.multiselect(
             "การวินิจฉัย:",
             ["สงสัยโรคจากตะกั่ว", "โรคจากตะกั่ว", "โรคอื่นๆ"]
@@ -406,10 +406,10 @@ def render():
         else:
             form_data['การวินิจฉัย'] = ", ".join(diagnosis_options)
 
-        st.subheader("ส่วนที่ 8: การรักษาพยาบาล หรือข้อเสนอแนะอื่นๆ")
+        st.write("#### ส่วนที่ 8: การรักษาพยาบาล หรือข้อเสนอแนะอื่นๆ")
         form_data['การรักษาและข้อเสนอแนะ'] = st.text_area("รายละเอียด:", height=200)
 
-        st.subheader("ข้อมูลแพทย์ผู้ตรวจ")
+        st.write("#### ข้อมูลแพทย์ผู้ตรวจ")
         form_data['แพทย์ผู้ตรวจ'] = st.text_input("ชื่อ - นามสกุล แพทย์ผู้ตรวจร่างกาย", key="doc_name")
         form_data['เบอร์โทรแพทย์'] = st.text_input("เบอร์โทร", key="doc_phone")
         form_data['ID Line แพทย์'] = st.text_input("ID Line", key="doc_line")
