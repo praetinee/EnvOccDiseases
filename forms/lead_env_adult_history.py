@@ -45,7 +45,7 @@ def render():
 
         col1, col2 = st.columns([3,1])
         job_prev = col1.text_input("อาชีพเดิมก่อนมาทำงานปัจจุบัน คือ", key="pbc04_job_prev")
-        job_prev_duration = col2.number_input("ทำมาแล้วกี่ปี", min_value=0, step=1, key="pbc04_job_prev_duration", label_visibility="collapsed")
+        job_prev_duration = col2.number_input("ทำมาแล้วกี่ปี", min_value=0, step=1, key="pbc04_job_prev_duration")
         form_data['อาชีพเดิม'] = f"{job_prev} (ระยะเวลา: {job_prev_duration} ปี)"
 
 
@@ -131,3 +131,4 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
