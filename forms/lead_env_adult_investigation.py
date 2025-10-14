@@ -241,9 +241,29 @@ def render():
     
     # --- Section 5: Symptoms ---
     with st.expander("ส่วนที่ 5: ลักษณะอาการที่ส่งผลกระทบทางสุขภาพ", expanded=True):
-        # This section is identical to lead_occupational.py Section 5
-        st.info("ส่วนนี้เหมือนกับฟอร์มโรคจากตะกั่ว (อาชีพ)")
-        # ... (You can copy the code from lead_occupational.py Section 5 here) ...
+        st.write("ความถี่ของอาการดังกล่าว")
+        symptoms = [
+            "อ่อนเพลีย", "เบื่ออาหาร", "คลื่นไส้/อาเจียน", "ท้องผูก", 
+            "ปวดท้องรุนแรงเป็นพัก ๆ", "ปวดตามข้อ กล้ามเนื้อ", 
+            "อาการปวดเมื่อยตามร่างกาย", "ปวดศีรษะ", "ซีด", "ซึม", "ชัก",
+            "กระวนกระวาย/ไม่มีสมาธิ", "หงุดหงิดง่าย", 
+            "น้ำหนักลดโดยไม่ทราบสาเหตุ", "มือสั่น", "มือ เท้า อ่อนแรง", "ผื่น"
+        ]
+        symptom_options = ["เป็นประจำหรือแทบทุกวัน", "นาน ๆ ครั้ง", "ไม่มี"]
+
+        for symptom in symptoms:
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                st.write(symptom)
+            with col2:
+                value = st.radio(
+                    symptom,
+                    symptom_options,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key=f"symptom_{symptom.replace(' ', '_').replace('/', '_')}"
+                )
+                form_data[f'อาการ: {symptom}'] = value
 
     # --- Section 6, 7, 8: Medical Info ---
     with st.expander("ส่วนที่ 6, 7, 8: ผลการตรวจ, การวินิจฉัย และการรักษา", expanded=True):
