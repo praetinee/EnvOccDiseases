@@ -57,9 +57,74 @@ def render():
     # --- Section 2 & 3 (Combined for flow) ---
     with st.expander("ส่วนที่ 2 และ 3: ข้อมูลพฤติกรรมและอาชีพ", expanded=True):
         st.subheader("ส่วนที่ 2: ข้อมูลสุขภาวะและพฤติกรรมสุขภาพ")
-        # This section is identical to PbC04, so it can be copied or refactored into a shared function later.
-        st.info("ส่วนนี้เหมือนกับฟอร์ม PbC04 (ซักประวัติผู้ใหญ่)")
-        # ... (You can copy the code from lead_env_adult_history.py Section 2 here) ...
+        
+        smoking_hist = st.radio("2.1 ประวัติการสูบบุหรี่:", ["ไม่สูบ", "เคยสูบแต่เลิกแล้ว", "สูบ/ปัจจุบันยังสูบ"])
+        if smoking_hist == "เคยสูบแต่เลิกแล้ว":
+            quit_years = st.number_input("เลิกมาแล้วกี่ปี:", min_value=0, step=1)
+            form_data['ประวัติสูบบุหรี่'] = f"เคยสูบ (เลิกมาแล้ว {quit_years} ปี)"
+        elif smoking_hist == "สูบ/ปัจจุบันยังสูบ":
+            current_amount = st.number_input("วันละกี่มวน:", min_value=0, step=1)
+            form_data['ประวัติสูบบุหรี่'] = f"ปัจจุบันยังสูบ ({current_amount} มวน/วัน)"
+        else:
+            form_data['ประวัติสูบบุหรี่'] = "ไม่สูบ"
+
+        smoke_locs_opts = st.multiselect("2.2 สถานที่หรือบริเวณที่ท่านสูบบุหรี่:", ["ไม่สูบ", "บริเวณสถานที่ทำงาน/สูบพร้อมขณะทำงาน", "บริเวณที่จัดไว้เป็นสถานที่สูบบุหรี่", "บริเวณรับประทานอาหาร/โรงอาหาร", "อื่นๆ"])
+        if "อื่นๆ" in smoke_locs_opts:
+            smoke_loc_other = st.text_input("ระบุสถานที่สูบบุหรี่อื่นๆ:")
+            form_data['สถานที่สูบบุหรี่'] = ", ".join(smoke_locs_opts) + f" ({smoke_loc_other})"
+        else:
+            form_data['สถานที่สูบบุหรี่'] = ", ".join(smoke_locs_opts)
+
+        eating_loc_opts = st.multiselect("2.3 ท่านรับประทานอาหารในสถานที่ทำงานหรือไม่:", ["ไม่ได้รับประทาน", "รับประทานในโรงอาหาร", "รับประทานในบริเวณเดียวกับที่ปฏิบัติงาน", "อื่นๆ"])
+        if "อื่นๆ" in eating_loc_opts:
+            eating_loc_other = st.text_input("ระบุสถานที่รับประทานอาหารอื่นๆ:")
+            form_data['สถานที่รับประทานอาหาร'] = ", ".join(eating_loc_opts) + f" ({eating_loc_other})"
+        else:
+            form_data['สถานที่รับประทานอาหาร'] = ", ".join(eating_loc_opts)
+            
+        food_source_opts = st.multiselect("2.4 แหล่งที่มาของอาหาร (ตอบได้มากกว่า 1 ข้อ):", ["ปรุง/ทำอาหารเอง", "ซื้อจากผู้ประกอบการเป็นหลัก", "อื่นๆ"])
+        if "อื่นๆ" in food_source_opts:
+            food_source_other = st.text_input("ระบุแหล่งที่มาของอาหารอื่นๆ:")
+            form_data['แหล่งที่มาอาหาร'] = ", ".join(food_source_opts) + f" ({food_source_other})"
+        else:
+            form_data['แหล่งที่มาอาหาร'] = ", ".join(food_source_opts)
+
+        water_use_opts = st.multiselect("2.5 แหล่งน้ำใช้:", ["น้ำประปา", "น้ำบาดาล", "แหล่งน้ำธรรมชาติ", "อื่นๆ"])
+        processed_water_use = list(water_use_opts)
+        if "แหล่งน้ำธรรมชาติ" in processed_water_use:
+            coords = st.text_input("ระบุพิกัดของแหล่งน้ำธรรมชาติ:")
+            if coords:
+                idx = processed_water_use.index("แหล่งน้ำธรรมชาติ")
+                processed_water_use[idx] = f"แหล่งน้ำธรรมชาติ (พิกัด: {coords})"
+        if "อื่นๆ" in processed_water_use:
+            other_text = st.text_input("ระบุแหล่งน้ำใช้อื่นๆ:")
+            idx = processed_water_use.index("อื่นๆ")
+            if other_text:
+                processed_water_use[idx] = f"อื่นๆ ({other_text})"
+            else:
+                processed_water_use.pop(idx)
+        form_data['แหล่งน้ำใช้'] = ", ".join(processed_water_use)
+
+        water_drink_opts = st.multiselect("2.6 แหล่งน้ำดื่ม:", ["น้ำประปา", "น้ำซื้อ", "น้ำบาดาล", "อื่นๆ"])
+        if "อื่นๆ" in water_drink_opts:
+            water_drink_other = st.text_input("ระบุแหล่งน้ำดื่มอื่นๆ:")
+            form_data['แหล่งน้ำดื่ม'] = ", ".join(water_drink_opts) + f" ({water_drink_other})"
+        else:
+            form_data['แหล่งน้ำดื่ม'] = ", ".join(water_drink_opts)
+
+        disease_opts = st.multiselect("2.7 ประวัติโรคประจำตัว:", ["ความดันโลหิตสูง", "เบาหวาน", "โลหิตจาง", "อื่นๆ"])
+        if "อื่นๆ" in disease_opts:
+            disease_other = st.text_input("ระบุโรคประจำตัวอื่นๆ:")
+            form_data['โรคประจำตัว'] = ", ".join(disease_opts) + f" ({disease_other})"
+        else:
+            form_data['โรคประจำตัว'] = ", ".join(disease_opts)
+
+        other_history_opts = st.multiselect("2.8 ประวัติอื่นๆ:", ["ใช้ยาสมุนไพร", "การใช้แป้งทาหน้างิ้ว", "ประวัติการรับกระสุนปืน"])
+        if "ใช้ยาสมุนไพร" in other_history_opts:
+            herbal_med = st.text_input("ระบุยาสมุนไพร:")
+            idx = other_history_opts.index("ใช้ยาสมุนไพร")
+            other_history_opts[idx] = f"ใช้ยาสมุนไพร ({herbal_med})"
+        form_data['ประวัติอื่นๆ'] = ", ".join(other_history_opts)
 
         st.subheader("ส่วนที่ 3: ลักษณะงานและการประกอบอาชีพ")
         # ... (You can copy the code from lead_occupational.py Section 3 here) ...
@@ -87,3 +152,4 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
