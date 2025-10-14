@@ -149,17 +149,29 @@ def render():
         form_data['ผลตรวจระบบอื่นๆ'] = st.text_area("ระบบอื่นๆ:")
 
         st.write("18. ผลการตรวจทางห้องปฏิบัติการ")
-        col1, col2 = st.columns(2)
-        xray_date = col1.date_input("18.1 ภาพถ่ายรังสีทรวงอก เมื่อวันที่:")
-        xray_result = col2.text_area("ผลการตรวจ:", key="xray_result_detail")
+        
+        # 18.1 Chest X-ray
+        col1_xray, col2_xray = st.columns(2)
+        with col1_xray:
+            xray_date = st.date_input("18.1 ภาพถ่ายรังสีทรวงอก เมื่อวันที่:")
+        with col2_xray:
+            xray_result = st.text_area("ผลการตรวจ:", key="xray_result_detail")
         form_data['ผลภาพถ่ายรังสีทรวงอก'] = f"วันที่ {xray_date}: {xray_result}"
         
-        ct_date = col1.date_input("18.2 ภาพถ่ายรังสีคอมพิวเตอร์ทรวงอก (CT scan) เมื่อวันที่:")
-        ct_result = col2.text_area("ผลการตรวจ:", key="ct_result_detail")
+        # 18.2 CT Scan
+        col1_ct, col2_ct = st.columns(2)
+        with col1_ct:
+            ct_date = st.date_input("18.2 ภาพถ่ายรังสีคอมพิวเตอร์ทรวงอก (CT scan) เมื่อวันที่:")
+        with col2_ct:
+            ct_result = st.text_area("ผลการตรวจ:", key="ct_result_detail")
         form_data['ผล CT scan'] = f"วันที่ {ct_date}: {ct_result}"
         
-        pft_date = col1.date_input("18.3 การตรวจสมรรถภาพปอด เมื่อวันที่:")
-        pft_result = col2.text_area("ผลการตรวจ:", key="pft_result_detail")
+        # 18.3 Pulmonary Function Test
+        col1_pft, col2_pft = st.columns(2)
+        with col1_pft:
+            pft_date = st.date_input("18.3 การตรวจสมรรถภาพปอด เมื่อวันที่:")
+        with col2_pft:
+            pft_result = st.text_area("ผลการตรวจ:", key="pft_result_detail")
         form_data['ผลตรวจสมรรถภาพปอด (ละเอียด)'] = f"วันที่ {pft_date}: {pft_result}"
 
         form_data['การตรวจอื่นๆ'] = st.text_area("18.4 การตรวจอื่นๆ (ระบุชนิดและผลการตรวจ):")
@@ -180,3 +192,4 @@ def render():
     if st.button("ส่งข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกส่งเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
