@@ -191,7 +191,7 @@ def render():
                 form_data[f"PPE: {item}"] = selection
 
         # Handle "Other" item separately
-        col1, col2, col3 = st.columns([1, 1, 1])
+        col1, col2 = st.columns([1, 2])
         with col1:
              other_ppe_name = st.text_input("อื่นๆ:", placeholder="ระบุอุปกรณ์...")
         with col2:
@@ -199,7 +199,7 @@ def render():
                 other_ppe_selection = st.radio(
                     other_ppe_name,
                     options=ppe_options,
-                    key=f"ppe_{other_ppe_name}",
+                    key="ppe_other_item_radio",
                     horizontal=True,
                     label_visibility="collapsed"
                 )
@@ -255,3 +255,4 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
