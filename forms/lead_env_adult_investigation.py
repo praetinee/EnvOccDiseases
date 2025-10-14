@@ -265,13 +265,132 @@ def render():
                 )
                 form_data[f'อาการ: {symptom}'] = value
 
-    # --- Section 6, 7, 8: Medical Info ---
-    with st.expander("ส่วนที่ 6, 7, 8: ผลการตรวจ, การวินิจฉัย และการรักษา", expanded=True):
-        # These sections are identical to the medical form (lead_occupational_medical.py)
-        st.info("ส่วนนี้เหมือนกับแบบบันทึกการตรวจร่างกายโดยแพทย์")
-        # ... (You can copy the code from lead_occupational_medical.py here) ...
+    # --- Section 6: Medical Info ---
+    with st.expander("ส่วนที่ 6: ผลการตรวจร่างกายและการตรวจทางห้องปฏิบัติการ", expanded=True):
+        st.subheader("การตรวจร่างกายตามระบบโดยแพทย์")
+        
+        # Vitals
+        col1, col2, col3, col4 = st.columns(4)
+        form_data['BP'] = col1.text_input("BP (mmHg)")
+        form_data['PR'] = col2.text_input("PR (/min)")
+        form_data['RR'] = col3.text_input("RR (/min)")
+        form_data['BT'] = col4.text_input("BT (°C)")
+
+        physical_exam_data = {}
+        
+        exam_items_part1 = {
+            "1) General appearance": "exam_general",
+            "2) HEENT: conjunctivae": "exam_heent",
+            "3) Lung": "exam_lung",
+            "4) Abdomen": "exam_abdomen",
+            "5) Skin": "exam_skin",
+            "6) Hand writing (เขียนชื่อ-สกุลในช่องด้านล่าง)": "exam_handwriting",
+        }
+
+        for item, key in exam_items_part1.items():
+            col1, col2 = st.columns([2, 5])
+            with col1:
+                st.write(item)
+            with col2:
+                sub_col1, sub_col2 = st.columns([1, 2])
+                with sub_col1:
+                    status = st.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "Abnormal":
+                    with sub_col2:
+                        detail = st.text_input("โปรดระบุความผิดปกติที่ตรวจพบ", key=f"{key}_detail", label_visibility="collapsed")
+                physical_exam_data[item] = f"{status}{f' ({detail})' if detail else ''}"
+        
+        st.text_input(" ", key="handwriting_input", label_visibility="collapsed")
+
+        st.write("7) Neuro sign: motor power grade")
+
+        def create_motor_power_row(label, key_prefix):
+            st.markdown(f"**{label}**")
+            h_spacer, h_r, h_l = st.columns([2, 2, 2])
+            with h_r: st.markdown("<p style='text-align: center;'><b>R</b></p>", unsafe_allow_html=True)
+            with h_l: st.markdown("<p style='text-align: center;'><b>L</b></p>", unsafe_allow_html=True)
+            
+            for part in ["Proximal", "Distal"]:
+                for muscle_type in ["Flexor", "extensor"]:
+                    cols = st.columns([1, 1, 2, 2])
+                    with cols[0]: st.markdown(part if muscle_type=="Flexor" else "")
+                    with cols[1]: st.markdown(muscle_type)
+                    for i, side in enumerate(["R", "L"]):
+                        with cols[i+2]:
+                            input_col, text_col = st.columns([4, 1])
+                            with input_col:
+                                key = f"{key_prefix}_{part}_{muscle_type}_{side}"
+                                physical_exam_data[key] = st.text_input(key, key=key, label_visibility="collapsed")
+                            with text_col:
+                                st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+        
+        create_motor_power_row("(1) Upper extremities", "upper")
+        create_motor_power_row("(2) Lower extremities", "lower")
+        
+        exam_items_part2 = {
+            "8) Gait": "exam_gait",
+            "9) Sensation": "exam_sensation",
+            "10) Cognition": "exam_cognition",
+            "11) Mood": "exam_mood",
+            "12) IQ หรือ Mentality": "exam_iq",
+        }
+
+        for item, key in exam_items_part2.items():
+            col1, col2 = st.columns([2, 5])
+            with col1:
+                st.write(item)
+            with col2:
+                sub_col1, sub_col2 = st.columns([1, 2])
+                with sub_col1:
+                    status = st.radio(item, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "Abnormal":
+                    with sub_col2:
+                        detail = st.text_input("โปรดระบุความผิดปกติที่ตรวจพบ", key=f"{key}_detail", label_visibility="collapsed")
+                physical_exam_data[item] = f"{status}{f' ({detail})' if detail else ''}"
+
+        form_data['การตรวจร่างกาย'] = physical_exam_data
+
+        st.subheader("ข้อมูลผลการตรวจทางห้องปฏิบัติการ")
+        lab_results_data = {}
+
+        st.write("**การตรวจสารบ่งชี้ทางชีวภาพ**")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.write("ระดับตะกั่วในเลือด")
+        with col2:
+            lab_results_data['ระดับตะกั่วในเลือด'] = st.text_input("ผลการตรวจ (µg/dL)", key="lab_lead_level", label_visibility="collapsed")
+        with col3:
+            lab_results_data['วันที่ตรวจ_ระดับตะกั่วในเลือด'] = st.date_input("วันที่ตรวจ", key="lab_lead_date", label_visibility="collapsed")
+
+        st.write("**การตรวจทางห้องปฏิบัติการอื่นๆ**")
+        
+        other_lab_tests = ["CBC", "BUN/Cr", "SGPT/SGOT", "TB/DB", "Uric acid", "UA"]
+        
+        # Header
+        col_h1, col_h2, col_h3 = st.columns([1,2,1])
+        with col_h1: st.markdown("**รายการตรวจ**")
+        with col_h2: st.markdown("**ผลการตรวจ**")
+        with col_h3: st.markdown("**วันที่ตรวจ**")
+
+        for test in other_lab_tests:
+            col1, col2, col3 = st.columns([1,2,1])
+            with col1:
+                st.write(test)
+            with col2:
+                status = st.radio(test, ["ปกติ", "ผิดปกติ"], key=f"lab_{test}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "ผิดปกติ":
+                    detail = st.text_input("ระบุ", key=f"lab_{test}_detail", label_visibility="collapsed")
+                lab_results_data[test] = f"{status}{f' ({detail})' if detail else ''}"
+            with col3:
+                lab_results_data[f"วันที่ตรวจ_{test}"] = st.date_input("date", key=f"lab_{test}_date", label_visibility="collapsed")
+        
+        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
+
