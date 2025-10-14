@@ -410,10 +410,10 @@ def render():
         form_data['การรักษาและข้อเสนอแนะ'] = st.text_area("รายละเอียด:", height=200)
 
         st.subheader("ข้อมูลแพทย์ผู้ตรวจ")
-        form_data['แพทย์ผู้ตรวจ'] = st.text_input("ชื่อ - นามสกุล แพทย์ผู้ตรวจร่างกาย")
-        form_data['เบอร์โทรแพทย์'] = st.text_input("เบอร์โทร")
-        form_data['ID Line แพทย์'] = st.text_input("ID Line")
-        form_data['วันที่ตรวจ'] = st.date_input("วัน/เดือน/ปี")
+        form_data['แพทย์ผู้ตรวจ'] = st.text_input("ชื่อ - นามสกุล แพทย์ผู้ตรวจร่างกาย", key="doc_name")
+        form_data['เบอร์โทรแพทย์'] = st.text_input("เบอร์โทร", key="doc_phone")
+        form_data['ID Line แพทย์'] = st.text_input("ID Line", key="doc_line")
+        form_data['วันที่ตรวจ'] = st.date_input("วัน/เดือน/ปี", key="doc_date")
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
