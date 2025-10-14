@@ -179,7 +179,16 @@ def render():
         col1, col2 = st.columns(2)
         form_data['ผลการวินิจฉัย'] = col1.text_input("19. ผลการวินิจฉัยโดยแพทย์")
         form_data['การรักษา'] = col2.text_input("20. การรักษา")
-        form_data['ผลการรักษา'] = st.radio("21. ผลการรักษา", ["ดีขึ้น/พักที่บ้าน", "นอนโรงพยาบาล", "ส่งต่อ", "เสียชีวิต", "อื่นๆ"])
+        
+        treatment_result = st.radio("21. ผลการรักษา", ["ดีขึ้น/พักที่บ้าน", "นอนโรงพยาบาล", "ส่งต่อ", "เสียชีวิต", "อื่นๆ"])
+        if treatment_result == "ส่งต่อ":
+            hospital_name = st.text_input("โรงพยาบาลที่ส่งต่อ:")
+            form_data['ผลการรักษา'] = f"ส่งต่อ (รพ.: {hospital_name})"
+        elif treatment_result == "อื่นๆ":
+            other_details = st.text_input("ระบุรายละเอียดอื่นๆ:")
+            form_data['ผลการรักษา'] = f"อื่นๆ ({other_details})"
+        else:
+            form_data['ผลการรักษา'] = treatment_result
 
     # --- Recorder Information ---
     with st.expander("ผู้บันทึกข้อมูล", expanded=True):
