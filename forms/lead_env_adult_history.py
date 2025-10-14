@@ -26,21 +26,28 @@ def render():
         col1, col2 = st.columns(2)
         form_data['ชื่อ-สกุล'] = col1.text_input("ชื่อ - สกุล", key="pbc04_fullname")
         form_data['เพศ'] = col2.selectbox("เพศ", ["ชาย", "หญิง"], key="pbc04_gender")
+        
+        col1, col2 = st.columns(2)
         form_data['อายุ'] = col1.number_input("อายุ (ปี)", min_value=0, step=1, key="pbc04_age")
         form_data['น้ำหนัก'] = col2.number_input("น้ำหนัก (กก.)", min_value=0.0, format="%.2f", key="pbc04_weight")
+        
+        col1, col2 = st.columns(2)
         form_data['ส่วนสูง'] = col1.number_input("ส่วนสูง (ซม.)", min_value=0.0, format="%.2f", key="pbc04_height")
         form_data['อาชีพปัจจุบัน'] = col2.text_input("อาชีพปัจจุบัน", key="pbc04_job_current")
-        form_data['ระยะเวลาที่ทำ (ปี)'] = col1.number_input("ระยะเวลาที่ทำ (ปี)", min_value=0, step=1, key="pbc04_job_duration")
-        form_data['ลักษณะงาน'] = col2.text_input("ลักษณะงาน/ตำแหน่ง/แผนก", key="pbc04_job_desc")
         
-        st.write("ระยะเวลาที่ทำงาน:")
+        form_data['ลักษณะงาน'] = st.text_input("ลักษณะงาน/ตำแหน่งงาน/แผนกที่ทำงานปัจจุบัน", key="pbc04_job_desc")
+
+        st.write("ระยะเวลาที่ทำงานต่อวัน:")
         c1, c2 = st.columns(2)
         work_hours = c1.number_input("ชั่วโมง/วัน", min_value=0, step=1, key="pbc04_work_hours")
-        work_days = c2.number_input("วัน/สัปดาห์", min_value=0, step=1, key="pbc04_work_days")
+        work_days = c2.number_input("และกี่วันต่อสัปดาห์ (วัน/สัปดาห์)", min_value=0, step=1, key="pbc04_work_days")
         form_data['ระยะเวลาทำงาน'] = f"{work_hours} ชม./วัน, {work_days} วัน/สัปดาห์"
 
-        form_data['อาชีพเดิม'] = col1.text_input("อาชีพเดิม", key="pbc04_job_prev")
-        form_data['ระยะเวลาที่ทำอาชีพเดิม (ปี)'] = col2.number_input("ระยะเวลาที่ทำ (ปี)", min_value=0, step=1, key="pbc04_job_prev_duration")
+        col1, col2 = st.columns([3,1])
+        job_prev = col1.text_input("อาชีพเดิมก่อนมาทำงานปัจจุบัน คือ", key="pbc04_job_prev")
+        job_prev_duration = col2.number_input("ทำมาแล้วกี่ปี", min_value=0, step=1, key="pbc04_job_prev_duration", label_visibility="collapsed")
+        form_data['อาชีพเดิม'] = f"{job_prev} (ระยะเวลา: {job_prev_duration} ปี)"
+
 
         form_data['ที่อยู่ปัจจุบัน'] = st.text_area("ที่อยู่ปัจจุบัน", placeholder="บ้านเลขที่, หมู่, ตำบล, อำเภอ, จังหวัด", key="pbc04_address")
         form_data['ระยะเวลาอาศัย'] = st.text_input("ระยะเวลาที่อาศัยในพื้นที่ (ปี/เดือน)", key="pbc04_residence_duration")
@@ -115,7 +122,7 @@ def render():
         
         st.subheader("ข้อมูลแพทย์ผู้ตรวจ")
         col1, col2 = st.columns(2)
-        form_data['แพทย์ผู้ตรวจ'] = col1.text_input("ชื่อ - นามสกุล แพทย์ผู้ตรวจร่างกาย", key="pbc04_doc_name")
+        form_data['แพทย์ผู้ตรวจ'] = col1.text_input("ชื่อ - สกุล แพทย์ผู้ตรวจร่างกาย", key="pbc04_doc_name")
         form_data['เบอร์โทรแพทย์'] = col2.text_input("เบอร์โทร", key="pbc04_doc_phone")
         form_data['Line ID แพทย์'] = col1.text_input("ID Line", key="pbc04_doc_line")
         form_data['วันที่ตรวจ'] = col2.date_input("วัน/เดือน/ปี", datetime.date.today(), key="pbc04_doc_date")
