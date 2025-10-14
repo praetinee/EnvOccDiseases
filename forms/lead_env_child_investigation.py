@@ -199,13 +199,13 @@ def render():
         st.markdown("##### ผลการตรวจวัดระดับฝุ่นตะกั่วในบ้าน (Wipe technique)")
         
         form_data['พื้น (Floors)'] = st.number_input(
-            "พื้น (Floors) | ค่าอ้างอิง EPA: 10 µg/ft²", 
+            "พื้น (Floors) | ค่าอ้างอิง EPA: 5 µg/ft²", 
             min_value=0.0, 
             format="%.2f", 
             key="pb_wipe_floor"
         )
         form_data['ขอบหน้าต่าง'] = st.number_input(
-            "ขอบหน้าต่าง (Window Sills) | ค่าอ้างอิง EPA: 100 µg/ft²", 
+            "ขอบหน้าต่าง (Window Sills) | ค่าอ้างอิง EPA: 40 µg/ft²", 
             min_value=0.0, 
             format="%.2f", 
             key="pb_wipe_sill"
@@ -426,4 +426,3 @@ def render():
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         # For debugging, you can uncomment the line below to see the collected data
         # st.write(form_data)
-
