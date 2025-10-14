@@ -127,8 +127,23 @@ def render():
         form_data['ประวัติอื่นๆ'] = ", ".join(other_history_opts)
 
         st.subheader("ส่วนที่ 3: ลักษณะงานและการประกอบอาชีพ")
-        # ... (You can copy the code from lead_occupational.py Section 3 here) ...
-        st.info("ส่วนนี้เหมือนกับฟอร์มโรคจากตะกั่ว (อาชีพ)")
+        col1, col2 = st.columns([3, 1])
+        job_current = col1.text_input("3.1 อาชีพปัจจุบัน คือ")
+        job_current_years = col2.number_input("ทำมาแล้วกี่ปี", min_value=0, step=1, key="job_current_years")
+        form_data['อาชีพปัจจุบัน'] = f"{job_current} ({job_current_years} ปี)"
+
+        form_data['ลักษณะงานปัจจุบัน'] = st.text_input("3.2 ลักษณะงาน/ตำแหน่งงาน/แผนกที่ทำงานปัจจุบัน")
+
+        st.write("3.3 ระยะเวลาที่ทำงานต่อวัน")
+        col1, col2 = st.columns(2)
+        work_hours = col1.number_input("ชั่วโมง/วัน", min_value=0, step=1, key="work_hours")
+        work_days = col2.number_input("และกี่วันต่อสัปดาห์ (วัน/สัปดาห์)", min_value=0, step=1, key="work_days")
+        form_data['ระยะเวลาทำงาน'] = f"{work_hours} ชม./วัน, {work_days} วัน/สัปดาห์"
+
+        col1, col2 = st.columns([3, 1])
+        job_previous = col1.text_input("3.4 อาชีพเดิมก่อนมาทำงานปัจจุบัน คือ")
+        job_previous_years = col2.number_input("ทำมาแล้วกี่ปี", min_value=0, step=1, key="job_prev_years")
+        form_data['อาชีพเดิม'] = f"{job_previous} ({job_previous_years} ปี)"
 
     # --- Section 4: Risk Factors ---
     with st.expander("ส่วนที่ 4: ปัจจัยเสี่ยงต่อการสัมผัสสารตะกั่ว", expanded=True):
