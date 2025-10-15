@@ -41,9 +41,27 @@ def render():
         form_data['สถานที่สัมผัส 2'] = st.text_input("สถานที่ 2", placeholder="สถานที่, ระยะเวลา (ปี/เดือน/วัน/ชม.)")
         form_data['สถานที่สัมผัส 3'] = st.text_input("สถานที่ 3", placeholder="สถานที่, ระยะเวลา (ปี/เดือน/วัน/ชม.)")
 
-        occ_option = st.radio("12. อาชีพหลัก", ["ทำนา/ทำสวน/ทำไร่", "ว่างงาน/ไม่มีงานทำแน่นอน", "รับจ้างทั่วไป", "ค้าขายหรือธุรกิจส่วนตัว", "อื่นๆ"])
-        occ_detail = st.text_input("ระบุรายละเอียดอาชีพ:", label_visibility="collapsed")
-        form_data['อาชีพหลัก'] = f"{occ_option} ({occ_detail})" if occ_option in ["รับจ้างทั่วไป", "ค้าขายหรือธุรกิจส่วนตัว", "อื่นๆ"] else occ_option
+        # --- MODIFIED SECTION: Occupation ---
+        occ_option = st.radio(
+            "12. อาชีพหลัก",
+            ["ทำนา/ทำสวน/ทำไร่", "ว่างงาน/ไม่มีงานทำแน่นอน", "รับจ้างทั่วไป", "ค้าขายหรือธุรกิจส่วนตัว", "อื่นๆ"]
+        )
+        
+        occ_detail = ""
+        # Conditionally display the text input based on the selection
+        if occ_option == "รับจ้างทั่วไป":
+            occ_detail = st.text_input("โปรดระบุ (รับจ้างทั่วไป):")
+        elif occ_option == "ค้าขายหรือธุรกิจส่วนตัว":
+            occ_detail = st.text_input("โปรดระบุ (ค้าขายหรือธุรกิจส่วนตัว):")
+        elif occ_option == "อื่นๆ":
+            occ_detail = st.text_input("โปรดระบุ (อื่นๆ):")
+            
+        # Store the combined result
+        if occ_detail:
+            form_data['อาชีพหลัก'] = f"{occ_option} ({occ_detail})"
+        else:
+            form_data['อาชีพหลัก'] = occ_option
+        # --- END OF MODIFIED SECTION ---
 
         smoking_status = st.radio("13. ท่านสูบบุหรี่หรือไม่", ["ไม่สูบ", "สูบ"])
         if smoking_status == "สูบ":
@@ -106,4 +124,3 @@ def render():
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
-
