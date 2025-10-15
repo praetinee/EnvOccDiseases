@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the Lead Environmental Adult Investigation Form (Pb-1)"""
@@ -350,7 +351,7 @@ def render():
                         detail = st.text_input("โปรดระบุความผิดปกติที่ตรวจพบ", key=f"{key}_detail", label_visibility="collapsed")
                 physical_exam_data[item] = f"{status}{f' ({detail})' if detail else ''}"
 
-        form_data['การตรวจร่างกาย'] = physical_exam_data
+        form_data['การตรวจร่างกาย'] = str(physical_exam_data)
 
         st.subheader("ข้อมูลผลการตรวจทางห้องปฏิบัติการ")
         lab_results_data = {}
@@ -391,7 +392,7 @@ def render():
             with col3:
                 lab_results_data[f"วันที่ตรวจ_{test}"] = st.date_input("date", key=f"lab_{test}_date", label_visibility="collapsed")
         
-        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
+        form_data['ผลทางห้องปฏิบัติการ'] = str(lab_results_data)
 
     # --- Section 7 & 8: Diagnosis and Recommendations ---
     with st.expander("ส่วนที่ 7 และ 8: การวินิจฉัยและการรักษา", expanded=True):
@@ -417,6 +418,9 @@ def render():
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
-        st.write(form_data)
+        success = save_to_sheet("LeadEnvAdultInvestigation", form_data)
+        if success:
+            st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
+        else:
+            st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
 
