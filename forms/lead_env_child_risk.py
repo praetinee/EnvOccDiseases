@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
+from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the Lead Environmental Child Risk Assessment Form (PbC03)."""
@@ -12,19 +13,20 @@ def render():
     # --- Section 1: General Info ---
     with st.expander("ส่วนที่ 1: ข้อมูลทั่วไป", expanded=True):
         col1, col2 = st.columns(2)
-        form_data['name'] = col1.text_input("ชื่อ ด.ช./ด.ญ.:")
-        form_data['gender'] = col2.radio("เพศ:", ["ชาย", "หญิง"], horizontal=True)
+        form_data['ชื่อเด็ก'] = col1.text_input("ชื่อ ด.ช./ด.ญ.:")
+        form_data['เพศ'] = col2.radio("เพศ:", ["ชาย", "หญิง"], horizontal=True)
 
         col1, col2, col3 = st.columns(3)
-        form_data['birthdate'] = col1.date_input("วัน/เดือน/ปีเกิด:")
-        form_data['weight'] = col2.number_input("น้ำหนัก (กก.):", min_value=0.0, format="%.2f")
-        form_data['height'] = col3.number_input("ส่วนสูง (ซม.):", min_value=0.0, format="%.2f")
+        form_data['วัน/เดือน/ปีเกิด'] = col1.date_input("วัน/เดือน/ปีเกิด:")
+        form_data['น้ำหนัก (กก.)'] = col2.number_input("น้ำหนัก (กก.):", min_value=0.0, format="%.2f")
+        form_data['ส่วนสูง (ซม.)'] = col3.number_input("ส่วนสูง (ซม.):", min_value=0.0, format="%.2f")
 
-        form_data['parent_name'] = st.text_input("ชื่อผู้ปกครอง:")
-        form_data['address'] = st.text_area("ที่อยู่ปัจจุบัน:", placeholder="บ้านเลขที่, หมู่, ตำบล, อำเภอ, จังหวัด")
+        form_data['ชื่อผู้ปกครอง'] = st.text_input("ชื่อผู้ปกครอง:")
+        form_data['ที่อยู่ปัจจุบัน'] = st.text_area("ที่อยู่ปัจจุบัน:", placeholder="บ้านเลขที่, หมู่, ตำบล, อำเภอ, จังหวัด")
 
     # --- Section 2: Exposure Opportunity Assessment ---
     with st.expander("ส่วนที่ 2: ประเมินโอกาสการสัมผัสสารตะกั่ว", expanded=True):
+        
         exposure_data = {}
 
         # --- Callback Functions for Exclusive Selection ---
@@ -127,11 +129,13 @@ def render():
             key="pbc03_is_not_related",
             on_change=not_related_callback
         )
-        form_data['exposure_assessment'] = exposure_data
+        form_data['การประเมินโอกาสการสัมผัส'] = str(exposure_data)
         
         if is_not_related:
             st.info("จากข้อมูลข้างต้น จัดเป็นกลุ่มที่ไม่ได้สัมผัส")
-            st.stop() # Stop rendering the rest of the form
+            if st.button("บันทึกข้อมูล", use_container_width=True, type="primary"):
+                 save_to_sheet("LeadEnvChildRisk", form_data)
+            st.stop()
 
     # --- Section 3: Risk Assessment ---
     with st.expander("ส่วนที่ 3: การประเมินความเสี่ยงของเด็กในการสัมผัสสารตะกั่ว", expanded=True):
@@ -215,8 +219,8 @@ def render():
         col_total_label.markdown("**คะแนนรวม**")
         col_total_val.markdown(f"<div style='text-align: center;'><b>{total_score:.1f}</b></div>", unsafe_allow_html=True)
 
-        form_data['risk_scores'] = scores
-        form_data['total_risk_score'] = total_score
+        form_data['คะแนนความเสี่ยงรายข้อ'] = str(scores)
+        form_data['คะแนนความเสี่ยงรวม'] = total_score
         
     # --- Section 4: Summary ---
     with st.expander("ส่วนที่ 4: สรุปผลการประเมินความเสี่ยงเบื้องต้น", expanded=True):
@@ -233,13 +237,13 @@ def render():
             risk_level = "ต่ำ"
             st.success(f"**ระดับความเสี่ยง: {risk_level}**")
         
-        form_data['risk_level'] = risk_level
+        form_data['ระดับความเสี่ยง'] = risk_level
         
         if risk_level in ["ปานกลาง", "สูง"]:
             st.info("ควรประเมินระดับฝุ่นตะกั่วในบ้านเพิ่มเติม, ซักประวัติเด็กเพิ่มเติมตามแบบฟอร์ม PbC01 พร้อมเจาะเลือดหาระดับตะกั่วในเลือด หรือส่งเด็กไปยังหน่วยบริการสาธารณสุขในพื้นที่")
 
     # --- Section 5: Environmental Dust Levels (Conditional) ---
-    if form_data.get('risk_level') in ["ปานกลาง", "สูง"]:
+    if form_data.get('ระดับความเสี่ยง') in ["ปานกลาง", "สูง"]:
         with st.expander("ส่วนที่ 5: ระดับฝุ่นตะกั่วในบ้าน (เก็บด้วย Wipe technique)", expanded=True):
             env_data = {}
             
@@ -279,15 +283,18 @@ def render():
             with row3_col3:
                 st.markdown("<div style='padding-top: 8px;'>100</div>", unsafe_allow_html=True)
             
-            form_data['environmental_dust'] = env_data
+            form_data['ระดับฝุ่นตะกั่วในบ้าน'] = str(env_data)
 
     # --- Section 6: Recommendations ---
     with st.expander("ส่วนที่ 6: ข้อเสนอแนะในการควบคุมความเสี่ยงจากการสัมผัสสารตะกั่ว", expanded=True):
-        form_data['recommendations'] = st.text_area("", key="recommendations_text", label_visibility="collapsed")
+        form_data['ข้อเสนอแนะ'] = st.text_area("", key="recommendations_text", label_visibility="collapsed")
         
-    st.date_input("วันที่เก็บข้อมูล:", key="collection_date")
+    form_data['วันที่เก็บข้อมูล'] = st.date_input("วันที่เก็บข้อมูล:", key="collection_date")
 
     if st.button("บันทึกข้อมูล", use_container_width=True, type="primary"):
-        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
-        # st.write(form_data)
+        success = save_to_sheet("LeadEnvChildRisk", form_data)
+        if success:
+            st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
+        else:
+            st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
 
