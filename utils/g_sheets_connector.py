@@ -16,9 +16,14 @@ def connect_to_gsheet():
             ],
         )
         client = gspread.authorize(creds)
-        # IMPORTANT: Replace with your actual Google Sheet file name
-        spreadsheet = client.open("EnvOccDiseasesDB") 
+        # --- IMPORTANT CORRECTION ---
+        # The name inside client.open() MUST EXACTLY match your Google Sheet file name.
+        # Please double-check the name of your file in Google Drive.
+        spreadsheet = client.open("EnvOccDiseasesDB") # Example name, replace with your actual file name
         return spreadsheet
+    except gspread.exceptions.SpreadsheetNotFound:
+        st.error("ไม่พบไฟล์ Google Sheet: 'EnvOccDiseasesDB'. กรุณาตรวจสอบว่าชื่อไฟล์ถูกต้องและได้แชร์อีเมล Service Account ให้เป็น Editor แล้ว")
+        return None
     except Exception as e:
         st.error(f"เกิดข้อผิดพลาดในการเชื่อมต่อกับ Google Sheets: {e}")
         return None
@@ -55,7 +60,7 @@ def save_to_sheet(sheet_name, form_data):
         
         return True # Indicate success
     except gspread.exceptions.WorksheetNotFound:
-        st.error(f"ไม่พบแท็บชีตชื่อ '{sheet_name}' ใน Google Sheet ของคุณ")
+        st.error(f"ไม่พบแท็บชีตชื่อ '{sheet_name}' ใน Google Sheet ของคุณ กรุณาตรวจสอบว่าสร้างแท็บและตั้งชื่อตรงกันแล้ว")
     except Exception as e:
         st.error(f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {e}")
     
