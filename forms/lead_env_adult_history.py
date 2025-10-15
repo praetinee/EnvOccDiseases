@@ -273,7 +273,7 @@ def render():
         for label, key in exam_items_after_neuro:
             create_exam_row(label, key)
 
-        form_data['การตรวจร่างกาย'] = physical_exam_data
+        form_data['การตรวจร่างกาย'] = str(physical_exam_data) # Convert dict to string for saving
 
         st.subheader("ข้อมูลผลการตรวจทางห้องปฏิบัติการ")
         lab_results_data = {}
@@ -309,7 +309,7 @@ def render():
             with col3:
                 lab_results_data[f'วันที่ตรวจ_{test}'] = st.date_input(f"วันที่ตรวจ_{test}", key=f"lab_{test}_date", label_visibility="collapsed")
         
-        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
+        form_data['ผลทางห้องปฏิบัติการ'] = str(lab_results_data) # Convert dict to string for saving
 
 
     # --- Section 4 & 5: Diagnosis & Recommendations ---
