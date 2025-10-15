@@ -1,4 +1,6 @@
 import streamlit as st
+# Import the new connector function
+from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the PM2.5 Individual Questionnaire (PM1)."""
@@ -7,6 +9,7 @@ def render():
     st.caption("(แบบฟอร์ม PM1)")
 
     form_data = {}
+    SHEET_NAME = "PM25" # Define the target sheet name for this form
 
     # --- General Information Section ---
     with st.expander("ข้อมูลทั่วไป", expanded=True):
@@ -110,7 +113,15 @@ def render():
             other_activity = st.text_input("ระบุกิจกรรม:", key="other_activity")
             if exposures['กิจกรรมอื่นๆ']: exposures['กิจกรรมอื่นๆ'] = f"ใช่ (กิจกรรม: {other_activity})"
         
-        form_data['การสัมผัส'] = ", ".join([key for key, value in exposures.items() if value and value is not True])
+        # This part has an issue. Correcting it to save the text description.
+        active_exposures = []
+        for key, value in exposures.items():
+            if isinstance(value, str): # This means it's a checked box with text
+                active_exposures.append(f"{key}: {value.replace('ใช่ (', '').replace(')', '')}")
+            elif value is True:
+                active_exposures.append(key)
+
+        form_data['การสัมผัส'] = ", ".join(active_exposures)
 
 
     # --- Protection Section ---
@@ -121,6 +132,17 @@ def render():
         form_data['การป้องกัน'] = f"อื่นๆ ({protection_other})" if protection_opt == "อื่นๆ" else protection_opt
 
     st.markdown("---")
+    # --- MODIFIED SUBMISSION LOGIC ---
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
-        st.write(form_data)
+        # Attempt to save the data to Google Sheets
+        save_successful = save_to_sheet(SHEET_NAME, form_data)
+        
+        # Provide feedback to the user
+        if save_successful:
+            st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว!")
+            # Here we will later add the code to display the clean report
+            st.info("ขั้นตอนต่อไป: แสดงหน้ารายงานสรุปสำหรับพิมพ์")
+            st.write(form_data) # Display data for now
+        else:
+            st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
+
