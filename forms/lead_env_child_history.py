@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
+from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the Lead Environmental Child History Form (PbC01)"""
@@ -134,5 +135,9 @@ def render():
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
-        st.write(form_data)
+        success = save_to_sheet("LeadEnvChildHistory", form_data)
+        if success:
+            st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
+        else:
+            st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
+
