@@ -8,6 +8,7 @@ def render():
     st.caption("(แบบ PbC04)")
 
     form_data = {}
+    SHEET_NAME = "LeadEnvAdultHistory"
 
     # --- Section 1: General Information ---
     with st.expander("ส่วนที่ 1: ข้อมูลทั่วไป", expanded=True):
@@ -171,18 +172,104 @@ def render():
         ]
 
         def create_exam_row(label, key):
-            status = st.radio(label, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True)
-            detail = ""
-            if status == "Abnormal":
-                detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail")
-            physical_exam_data[label] = f"{status}{f' ({detail})' if detail else ''}"
+            col1, col2 = st.columns([1,2])
+            with col1:
+                st.write(label)
+            with col2:
+                status = st.radio(label, ["Normal", "Abnormal"], key=f"{key}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "Abnormal":
+                    detail = st.text_input("ระบุความผิดปกติ", key=f"{key}_detail", label_visibility="collapsed")
+                physical_exam_data[label] = f"{status}{f' ({detail})' if detail else ''}"
 
         for label, key in exam_items_before_neuro:
             create_exam_row(label, key)
         
         st.divider()
         st.write("7) Neuro sign: motor power grade")
-        physical_exam_data["Neuro sign: motor power grade"] = st.text_area("ผลการตรวจ Neuro sign")
+        
+        def create_motor_power_row(label, key_prefix):
+            st.markdown(f"**{label}**")
+            
+            h_spacer, h_r, h_l = st.columns([2, 2, 2])
+            with h_r:
+                st.markdown("<p style='text-align: center;'><b>R</b></p>", unsafe_allow_html=True)
+            with h_l:
+                st.markdown("<p style='text-align: center;'><b>L</b></p>", unsafe_allow_html=True)
+        
+            # Proximal
+            cols1 = st.columns([1, 1, 2, 2])
+            with cols1[0]:
+                st.markdown("**Proximal:**")
+            with cols1[1]:
+                st.markdown("Flexor")
+            with cols1[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_flex_R'] = st.text_input(f"{key_prefix}_prox_flex_R", key=f"pbc04_{key_prefix}_prox_flex_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols1[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_flex_L'] = st.text_input(f"{key_prefix}_prox_flex_L", key=f"pbc04_{key_prefix}_prox_flex_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+        
+            cols2 = st.columns([1, 1, 2, 2])
+            with cols2[1]:
+                st.markdown("extensor")
+            with cols2[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_ext_R'] = st.text_input(f"{key_prefix}_prox_ext_R", key=f"pbc04_{key_prefix}_prox_ext_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols2[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_prox_ext_L'] = st.text_input(f"{key_prefix}_prox_ext_L", key=f"pbc04_{key_prefix}_prox_ext_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+                
+            # Distal
+            cols3 = st.columns([1, 1, 2, 2])
+            with cols3[0]:
+                st.markdown("**Distal:**")
+            with cols3[1]:
+                st.markdown("Flexor")
+            with cols3[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_flex_R'] = st.text_input(f"{key_prefix}_dist_flex_R", key=f"pbc04_{key_prefix}_dist_flex_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols3[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_flex_L'] = st.text_input(f"{key_prefix}_dist_flex_L", key=f"pbc04_{key_prefix}_dist_flex_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+                
+            cols4 = st.columns([1, 1, 2, 2])
+            with cols4[1]:
+                st.markdown("extensor")
+            with cols4[2]:
+                r_input_col, r_text_col = st.columns([4, 1])
+                with r_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_ext_R'] = st.text_input(f"{key_prefix}_dist_ext_R", key=f"pbc04_{key_prefix}_dist_ext_R", label_visibility="collapsed")
+                with r_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            with cols4[3]:
+                l_input_col, l_text_col = st.columns([4, 1])
+                with l_input_col:
+                    physical_exam_data[f'{key_prefix}_dist_ext_L'] = st.text_input(f"{key_prefix}_dist_ext_L", key=f"pbc04_{key_prefix}_dist_ext_L", label_visibility="collapsed")
+                with l_text_col:
+                    st.markdown("<div style='padding-top: 8px;'>/5</div>", unsafe_allow_html=True)
+            st.divider()
+
+        create_motor_power_row("(1) Upper extremities", "upper")
+        create_motor_power_row("(2) Lower extremities", "lower")
 
         for label, key in exam_items_after_neuro:
             create_exam_row(label, key)
@@ -203,14 +290,25 @@ def render():
 
         st.markdown("###### การตรวจทางห้องปฏิบัติการอื่นๆ")
         
+        # Header
+        h_col1, h_col2, h_col3 = st.columns([1,2,1])
+        h_col1.markdown("**รายการตรวจ**")
+        h_col2.markdown("**ผลการตรวจ**")
+        h_col3.markdown("**วันที่ตรวจ**")
+
         other_lab_tests = ["CBC", "BUN/Cr", "SGPT/SGOT", "TB/DB", "Uric acid", "UA"]
         for test in other_lab_tests:
-            status = st.radio(test, ["ปกติ", "ผิดปกติ"], key=f"lab_{test}_status", horizontal=True)
-            detail = ""
-            if status == "ผิดปกติ":
-                detail = st.text_input("ระบุ:", key=f"lab_{test}_detail")
-            lab_results_data[test] = f"{status}{f' ({detail})' if detail else ''}"
-            lab_results_data[f'วันที่ตรวจ_{test}'] = st.date_input(f"วันที่ตรวจ_{test}", key=f"lab_{test}_date")
+            col1, col2, col3 = st.columns([1,2,1])
+            with col1:
+                st.write(test)
+            with col2:
+                status = st.radio(test, ["ปกติ", "ผิดปกติ"], key=f"lab_{test.replace('/', '_')}_status", horizontal=True, label_visibility="collapsed")
+                detail = ""
+                if status == "ผิดปกติ":
+                    detail = st.text_input("ระบุ:", key=f"lab_{test.replace('/', '_')}_detail", label_visibility="collapsed")
+                lab_results_data[test] = f"{status}{f' ({detail})' if detail else ''}"
+            with col3:
+                lab_results_data[f'วันที่ตรวจ_{test}'] = st.date_input(f"วันที่ตรวจ_{test}", key=f"lab_{test.replace('/', '_')}_date", label_visibility="collapsed")
         
         form_data['ผลทางห้องปฏิบัติการ'] = str(lab_results_data)
 
@@ -229,7 +327,7 @@ def render():
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        success = save_to_sheet("LeadEnvAdultHistory", form_data)
+        success = save_to_sheet(SHEET_NAME, form_data)
         if success:
             st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
         else:
