@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
-from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the Confined Space Investigation Form."""
@@ -153,9 +152,6 @@ def render():
 
         st.markdown("---")
         if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-            success = save_to_sheet("ConfinedSpace", form_data)
-            if success:
-                st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
-            else:
-                st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
-
+            st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+            # In a real app, you would save the 'form_data' dictionary here.
+            st.write(form_data)
