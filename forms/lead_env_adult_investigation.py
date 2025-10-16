@@ -1,6 +1,5 @@
 import streamlit as st
 import datetime
-from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the Lead Environmental Adult Investigation Form (Pb-1)"""
@@ -9,7 +8,6 @@ def render():
     st.info("คำชี้แจง: แบบสอบสวนโรคฉบับนี้ใช้ในการสัมภาษณ์ผู้ที่มีความเสี่ยงหรือสงสัยว่าป่วยด้วยโรคจากตะกั่วหรือสารประกอบของตะกั่ว ประกอบด้วย ข้อมูลทั้งจากการสัมภาษณ์ การสังเกต และบันทึกข้อมูลภาคสนาม")
 
     form_data = {}
-    SHEET_NAME = "LeadEnvAdultInvestigation"
 
     with st.container(border=True):
         col1, col2 = st.columns(2)
@@ -352,7 +350,7 @@ def render():
                         detail = st.text_input("โปรดระบุความผิดปกติที่ตรวจพบ", key=f"{key}_detail", label_visibility="collapsed")
                 physical_exam_data[item] = f"{status}{f' ({detail})' if detail else ''}"
 
-        form_data['การตรวจร่างกาย'] = str(physical_exam_data)
+        form_data['การตรวจร่างกาย'] = physical_exam_data
 
         st.subheader("ข้อมูลผลการตรวจทางห้องปฏิบัติการ")
         lab_results_data = {}
@@ -385,15 +383,15 @@ def render():
             with col1:
                 st.write(test)
             with col2:
-                status = st.radio(test, ["ปกติ", "ผิดปกติ"], key=f"lab_{test.replace('/', '_')}_status", horizontal=True, label_visibility="collapsed")
+                status = st.radio(test, ["ปกติ", "ผิดปกติ"], key=f"lab_{test}_status", horizontal=True, label_visibility="collapsed")
                 detail = ""
                 if status == "ผิดปกติ":
-                    detail = st.text_input("ระบุ", key=f"lab_{test.replace('/', '_')}_detail", label_visibility="collapsed")
+                    detail = st.text_input("ระบุ", key=f"lab_{test}_detail", label_visibility="collapsed")
                 lab_results_data[test] = f"{status}{f' ({detail})' if detail else ''}"
             with col3:
-                lab_results_data[f"วันที่ตรวจ_{test}"] = st.date_input("date", key=f"lab_{test.replace('/', '_')}_date", label_visibility="collapsed")
+                lab_results_data[f"วันที่ตรวจ_{test}"] = st.date_input("date", key=f"lab_{test}_date", label_visibility="collapsed")
         
-        form_data['ผลทางห้องปฏิบัติการ'] = str(lab_results_data)
+        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
 
     # --- Section 7 & 8: Diagnosis and Recommendations ---
     with st.expander("ส่วนที่ 7 และ 8: การวินิจฉัยและการรักษา", expanded=True):
@@ -419,9 +417,5 @@ def render():
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        success = save_to_sheet(SHEET_NAME, form_data)
-        if success:
-            st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
-        else:
-            st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
-
+        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+        st.write(form_data)
