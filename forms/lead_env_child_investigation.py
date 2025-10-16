@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import streamlit as st
 import datetime
-from utils.g_sheets_connector import save_to_sheet
 
 def render():
     """Renders the Lead Environmental Child Investigation Form (Pb), correctly structured as per the source document."""
@@ -111,7 +110,7 @@ def render():
             child_history_data['ความถี่ไปที่ทำงาน'] = st.radio("8) เด็กไปที่บริเวณงานเกี่ยวกับตะกั่วบ่อยแค่ไหน", ["นานๆ ไปครั้ง", "บ่อยมาก"], key="pb_visit_freq")
             child_history_data['ระยะเวลาที่ทำงาน'] = st.radio("9) ระยะเวลาเฉลี่ยในแต่ละวันที่เด็กอยู่บริเวณงานเกี่ยวกับตะกั่ว", ["น้อยกว่า 2 ชม.", "2 - 4 ชม.", "5 - 8 ชม.", "8 ชม. ขึ้นไป"], key="pb_visit_duration")
 
-        form_data['ประวัติเด็ก'] = str(child_history_data)
+        form_data['ประวัติเด็ก'] = child_history_data
 
 
     # --- Section 2: Risk Factors ---
@@ -149,8 +148,7 @@ def render():
 
         st.subheader("2.2 แผนผังลักษณะที่อยู่อาศัย")
         st.markdown("วาดแผนผังลักษณะที่อยู่อาศัย, บริเวณที่อยู่อาศัย, วัสดุ, บ้านเก่า, ทาสี, ลักษณะการเก็บข้าวของเครื่องใช้ในบ้าน และให้ใส่ **ดาว (⭐)** บริเวณที่ทำงานเกี่ยวกับตะกั่วในบ้าน, บริเวณที่นอน, ที่รับประทานอาหาร, สถานที่จัดเก็บอุปกรณ์ที่เกี่ยวข้องกับตะกั่ว (โดยการเดินสำรวจ)")
-        form_data['แผนผังที่อยู่อาศัย'] = "Placeholder for file upload" # This will be handled later
-        st.file_uploader("อัปโหลดรูปภาพแผนผัง", type=["png", "jpg", "jpeg"], key="pb_map_upload")
+        form_data['แผนผังที่อยู่อาศัย'] = st.file_uploader("อัปโหลดรูปภาพแผนผัง", type=["png", "jpg", "jpeg"], key="pb_map_upload")
         
         st.subheader("2.3 ปัจจัยเกี่ยวข้องกับการสัมผัสสารตะกั่วของเด็ก")
         risk_factors_data = {}
@@ -194,7 +192,7 @@ def render():
                         label_visibility="collapsed"
                     )
         
-        form_data['ปัจจัยเกี่ยวข้อง'] = str(risk_factors_data)
+        form_data['ปัจจัยเกี่ยวข้อง'] = risk_factors_data
 
     # --- Section 3: Environmental Measurement ---
     with st.expander("ส่วนที่ 3: การตรวจวัดสภาพแวดล้อมในบ้าน", expanded=True):
@@ -256,7 +254,7 @@ def render():
                     label_visibility="collapsed"
                 )
 
-        form_data['อาการเด็ก'] = str(symptoms_data_child)
+        form_data['อาการเด็ก'] = symptoms_data_child
 
         st.subheader("4.2 การตรวจร่างกายตามระบบ")
         physical_exam_data = {}
@@ -390,7 +388,7 @@ def render():
         for label, key in exam_items_after_neuro:
             create_exam_row(label, key)
 
-        form_data['การตรวจร่างกาย'] = str(physical_exam_data)
+        form_data['การตรวจร่างกาย'] = physical_exam_data
 
         st.subheader("4.3 ข้อมูลผลตรวจทางห้องปฏิบัติการ")
         lab_results_data = {}
@@ -412,7 +410,7 @@ def render():
         for test in other_lab_tests:
             create_lab_row(test, f"lab_{test.lower().replace('/', '')}")
             
-        form_data['ผลทางห้องปฏิบัติการ'] = str(lab_results_data)
+        form_data['ผลทางห้องปฏิบัติการ'] = lab_results_data
 
         st.markdown("---")
         st.write("**ข้อมูลแพทย์ผู้ตรวจ**")
@@ -425,9 +423,6 @@ def render():
 
     st.markdown("---")
     if st.button("บันทึกข้อมูล", use_container_width=True, type="primary", key="pb_submit_child_pb"):
-        success = save_to_sheet("LeadEnvChildInvestigation", form_data)
-        if success:
-            st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
-        else:
-            st.error("การบันทึกข้อมูลล้มเหลว กรุณาตรวจสอบการตั้งค่าและลองอีกครั้ง")
-
+        st.success("ข้อมูลถูกบันทึกเรียบร้อยแล้ว (จำลอง)")
+        # For debugging, you can uncomment the line below to see the collected data
+        # st.write(form_data)
