@@ -201,4 +201,3 @@ def render():
     if st.button("ส่งข้อมูล", use_container_width=True, type="primary"):
         st.success("ข้อมูลถูกส่งเรียบร้อยแล้ว (จำลอง)")
         st.write(form_data)
-
