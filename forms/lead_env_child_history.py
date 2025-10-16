@@ -9,6 +9,7 @@ def render():
     st.caption("ของเด็กแรกเกิดถึงอายุต่ำกว่า 15 ปี (แบบ PbC01)")
 
     form_data = {}
+    SHEET_NAME = "LeadEnvChildHistory"
 
     # --- Section 1: General Info ---
     with st.expander("ส่วนที่ 1: ข้อมูลทั่วไป", expanded=True):
@@ -135,7 +136,7 @@ def render():
 
     st.markdown("---")
     if st.button("เสร็จสิ้นและบันทึกข้อมูล", use_container_width=True, type="primary"):
-        success = save_to_sheet("LeadEnvChildHistory", form_data)
+        success = save_to_sheet(SHEET_NAME, form_data)
         if success:
             st.success("บันทึกข้อมูลเรียบร้อยแล้ว")
         else:
